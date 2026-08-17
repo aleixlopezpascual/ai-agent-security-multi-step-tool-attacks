@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 
 # Import the actual AttackAlgorithm (which will import our mocked aicomp_sdk)
 from attack import AttackAlgorithm
-from aicomp_sdk.core.types import AttackRunConfig
+from aicomp_sdk.attacks.contracts import AttackRunConfig
 
 class MockAttackEnv:
     """Simulates the Kaggle Gym sandbox environment with model latency."""

@@ -33,11 +33,11 @@ def mock_eval_predicates(trace_dict):
 
 # Register mock objects in sys.modules before any local test imports happen
 sys.modules["aicomp_sdk"] = MagicMock()
+sys.modules["aicomp_sdk.attacks"] = MagicMock()
+sys.modules["aicomp_sdk.attacks.contracts"] = MagicMock()
+sys.modules["aicomp_sdk.attacks.contracts"].AttackAlgorithmBase = MockAttackAlgorithmBase
+sys.modules["aicomp_sdk.attacks.contracts"].AttackCandidate = MockAttackCandidate
+sys.modules["aicomp_sdk.attacks.contracts"].AttackRunConfig = MockAttackRunConfig
 sys.modules["aicomp_sdk.core"] = MagicMock()
-sys.modules["aicomp_sdk.core.attack"] = MagicMock()
-sys.modules["aicomp_sdk.core.attack"].AttackAlgorithmBase = MockAttackAlgorithmBase
-sys.modules["aicomp_sdk.core.types"] = MagicMock()
-sys.modules["aicomp_sdk.core.types"].AttackCandidate = MockAttackCandidate
-sys.modules["aicomp_sdk.core.types"].AttackRunConfig = MockAttackRunConfig
 sys.modules["aicomp_sdk.core.predicates"] = MagicMock()
 sys.modules["aicomp_sdk.core.predicates"].eval_predicates = mock_eval_predicates

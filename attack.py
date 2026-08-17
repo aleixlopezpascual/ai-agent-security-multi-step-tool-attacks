@@ -1,8 +1,11 @@
 import time
 import itertools
 from typing import List
-from aicomp_sdk.core.attack import AttackAlgorithmBase
-from aicomp_sdk.core.types import AttackCandidate, AttackRunConfig
+from aicomp_sdk.attacks.contracts import (
+    AttackAlgorithmBase,
+    AttackCandidate,
+    AttackRunConfig,
+)
 from aicomp_sdk.core.predicates import eval_predicates
 
 # Literal that the EXFILTRATION predicate matches verbatim
@@ -143,7 +146,7 @@ class AttackAlgorithm(AttackAlgorithmBase):
                 
             if fired:
                 interact_times.append(t1 - t0)
-                findings.append(AttackCandidate(user_messages=tuple(messages)))
+                findings.append(AttackCandidate.from_messages(list(messages)))
             return fired
 
         def is_budget_safe():
@@ -224,6 +227,6 @@ class AttackAlgorithm(AttackAlgorithmBase):
         if not findings:
             for _ in range(8):
                 urls = [host("fallback") for _ in range(self.ENDPOINTS_PER_MSG)]
-                findings.append(AttackCandidate(user_messages=(_exfil_msg(urls),)))
+                findings.append(AttackCandidate.from_messages([_exfil_msg(urls)]))
 
         return findings
