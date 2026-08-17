@@ -1,0 +1,23 @@
+conductor/tracks/kaggle-attack/plan.md
+  s_8205d6a2305e4c::t_b36ab3386c5a2b 1-30,32-148,150-154
+  s_8205d6a2305e4c::t_9ec513a1aad922 149
+  s_8205d6a2305e4c::t_dae37b28500365 31
+.gitignore
+  s_8205d6a2305e4c::t_bdbfad2bb00234 1-5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "57d0ace1dea9dc1263895fd81716cb101835e1dd",
+  "prompts": {},
+  "sessions": {
+    "s_8205d6a2305e4c": {
+      "agent_id": {
+        "tool": "gemini",
+        "id": "b800cc5a-7fed-4dae-9025-ddc2e9c03a25",
+        "model": "gemini-3.5-flash"
+      },
+      "human_author": "Aleix López"
+    }
+  }
+}
