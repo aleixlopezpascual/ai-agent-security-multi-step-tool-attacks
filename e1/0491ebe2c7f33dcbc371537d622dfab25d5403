@@ -1,0 +1,20 @@
+conductor/tracks/track-a-dynamic-budget/plan.md
+  s_8205d6a2305e4c::t_9cf4ae268b3e5b 1-29,31-75,77-110,112-114,116-120
+  s_8205d6a2305e4c::t_6951caae69b0eb 30,76,111,115
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "e10491ebe2c7f33dcbc371537d622dfab25d5403",
+  "prompts": {},
+  "sessions": {
+    "s_8205d6a2305e4c": {
+      "agent_id": {
+        "tool": "gemini",
+        "id": "b800cc5a-7fed-4dae-9025-ddc2e9c03a25",
+        "model": "gemini-3.5-flash"
+      },
+      "human_author": "Aleix López"
+    }
+  }
+}
