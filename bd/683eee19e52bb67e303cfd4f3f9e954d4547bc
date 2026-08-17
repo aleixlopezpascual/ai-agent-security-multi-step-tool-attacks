@@ -1,0 +1,19 @@
+attack.py
+  s_8205d6a2305e4c::t_91ab9616e88660 1-113
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "bd683eee19e52bb67e303cfd4f3f9e954d4547bc",
+  "prompts": {},
+  "sessions": {
+    "s_8205d6a2305e4c": {
+      "agent_id": {
+        "tool": "gemini",
+        "id": "b800cc5a-7fed-4dae-9025-ddc2e9c03a25",
+        "model": "gemini-3.5-flash"
+      },
+      "human_author": "Aleix López"
+    }
+  }
+}
