@@ -56,6 +56,11 @@ class AttackAlgorithm(AttackAlgorithmBase):
         findings = []
         host_ids = itertools.count()
 
+        # Tracking for dynamic budget sizing
+        interact_times = []
+        # Multiplier: Replay runs against 2 guardrails + a 20% safety margin
+        REPLAY_MULTIPLIER = 2.4  
+
         def elapsed():
             return time.time() - start
 
@@ -65,16 +70,42 @@ class AttackAlgorithm(AttackAlgorithmBase):
         def keep(messages):
             if len(findings) >= self.MAX_CANDIDATES:
                 return False
+            
+            # Predict budget before running another interaction
+            if len(interact_times) > 0:
+                avg_time = sum(interact_times) / len(interact_times)
+            else:
+                avg_time = 2.0  # Safe default guess
+            
+            projected_replay_cost = len(findings) * avg_time * REPLAY_MULTIPLIER
+            
+            # Halt if we are within 2% of total budget limit
+            if elapsed() + projected_replay_cost >= budget * 0.98:
+                return False
+
             try:
                 env.reset()
+                t0 = time.time()
                 for m in messages:
                     env.interact(m)
+                t1 = time.time()
                 fired = bool(eval_predicates(env.export_trace_dict()))
             except Exception:
                 return False
+                
             if fired:
+                interact_times.append(t1 - t0)
                 findings.append(AttackCandidate(user_messages=tuple(messages)))
             return fired
+
+        def is_budget_safe():
+            if len(findings) >= self.MAX_CANDIDATES:
+                return False
+            if not interact_times:
+                return True
+            avg_time = sum(interact_times) / len(interact_times)
+            projected_replay_cost = len(findings) * avg_time * REPLAY_MULTIPLIER
+            return elapsed() + projected_replay_cost < budget * 0.98
 
         cal_end = search_s * 0.14
         a_end = search_s * 0.69
@@ -92,16 +123,19 @@ class AttackAlgorithm(AttackAlgorithmBase):
             good_exfil = list(range(len(_EXFIL_VARIANTS)))
         vi = itertools.cycle(good_exfil)
 
-        while elapsed() < a_end and len(findings) < self.MAX_CANDIDATES:
+        # Phase A
+        while elapsed() < a_end and is_budget_safe():
             urls = [host("exfil") for _ in range(self.ENDPOINTS_PER_MSG)]
             keep([_EXFIL_VARIANTS[next(vi)](urls)])
 
-        while elapsed() < b_end and len(findings) < self.MAX_CANDIDATES:
+        # Phase B
+        while elapsed() < b_end and is_budget_safe():
             keep([_EXFIL_VARIANTS[next(vi)]([host("uniq")])])
 
+        # Phase C
         di = itertools.cycle(range(len(_DEPUTY_VARIANTS)))
         addr_ids = itertools.count()
-        while elapsed() < c_end and len(findings) < self.MAX_CANDIDATES:
+        while elapsed() < c_end and is_budget_safe():
             addr = "ops" + str(next(addr_ids)) + "@status.example.net"
             keep([_DEPUTY_VARIANTS[next(di)](addr)])
 
