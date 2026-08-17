@@ -3,3 +3,5 @@ __pycache__/
 *.log
 inject_code.py
 kernel-metadata.json
+.venv/
+.pytest_cache/
