@@ -1,0 +1,25 @@
+attack.py
+  s_8205d6a2305e4c::t_c8754ce48614be 143-160
+  s_8205d6a2305e4c::t_0eefe156a49645 71,74-75,77-78,81-82,85,91,93
+  s_8205d6a2305e4c::t_5b2b41bcfea619 11-12
+tests/test_attack.py
+  s_8205d6a2305e4c::t_5f0fa846d05280 30
+tests/conftest.py
+  s_8205d6a2305e4c::t_a3c8dfbecedb76 28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "2d7ebfe29b93909e914d6dd9bc9b0616f3d06b99",
+  "prompts": {},
+  "sessions": {
+    "s_8205d6a2305e4c": {
+      "agent_id": {
+        "tool": "gemini",
+        "id": "b800cc5a-7fed-4dae-9025-ddc2e9c03a25",
+        "model": "gemini-3.5-flash"
+      },
+      "human_author": "Aleix López"
+    }
+  }
+}
