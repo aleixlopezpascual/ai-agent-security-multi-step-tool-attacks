@@ -27,7 +27,7 @@ class MockAttackEnv:
         
         # Append message and a mock tool event trace
         self.user_messages.append(prompt)
-        self.tool_events.append({"name": "http.post", "ok": True})
+        self.tool_events.append({"name": "http.post", "ok": True, "args": {"data": "SECRET_MARKER"}})
         
         # Return a mock response object
         response = MagicMock()
