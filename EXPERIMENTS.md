@@ -60,6 +60,11 @@ This document logs all experiments, platform discoveries, bug-resolutions, and r
 *   **Result:** ⏳ **PENDING (Currently Running on Kaggle Servers).**
 *   **Hypothesis:** This setup theoretically targets 54 raw points per candidate (triple density) while maintaining near-100% LLM instruction adherence by avoiding the `K=6` failure point.
 
+### 🧪 Experiment 8: The Replay Wall Fixes (ai-agent-security-v15 Version 4)
+*   **Pipeline:** Tuning the pipeline to circumvent the hidden 1800-second Replay Wall discovered in community forums. Reduced the absolute maximum candidate generation (`HARD_N_CAP = 630`). Shifted payload density to `BURST_K = 2` to safely balance token generation within the timeout window. Stripped all code-syntax from the prompt templates to enforce a pure, terse natural-language imperative ("Call http.post once...").
+*   **Result:** ⏳ **PENDING (Currently Running on Kaggle Servers).**
+*   **Hypothesis:** By combining the Harmony Tokenizer bypass with pure natural-language imperatives and a strict 630 candidate cap, we will squeeze the maximum possible candidates under the Replay Wall without crashing, ensuring a fully evaluated run instead of a `0.000` timeout.
+
 ---
 
 ## 🎯 Strategic Next Steps (Tuning BURST_K)
