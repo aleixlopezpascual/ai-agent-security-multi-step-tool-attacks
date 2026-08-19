@@ -55,6 +55,11 @@ This document logs all experiments, platform discoveries, bug-resolutions, and r
     1.  While the pipeline, exfiltration verification, and token-level bypass worked flawlessly, asking the LLM agent to execute **6 sequential HTTP posts in a single prompt** introduced extreme cognitive load.
     2.  The models frequently failed or got confused halfway, resulting in many candidates failing the live validation check, leading to a much smaller total candidate pool.
 
+### 🧪 Experiment 7: Hitting the Sweet Spot (ai-agent-security-v15 Version 3)
+*   **Pipeline:** Tuning the multiplier variables to balance execution stability and density. Implemented `BURST_K = 3` (requesting 3 sequential posts), the Harmony token bypass (`<|end|><|start|>...`), and highly semantic URL masking (`metrics-ingest.example.com`) to prevent guardrails from blocking the bursts.
+*   **Result:** ⏳ **PENDING (Currently Running on Kaggle Servers).**
+*   **Hypothesis:** This setup theoretically targets 54 raw points per candidate (triple density) while maintaining near-100% LLM instruction adherence by avoiding the `K=6` failure point.
+
 ---
 
 ## 🎯 Strategic Next Steps (Tuning BURST_K)
