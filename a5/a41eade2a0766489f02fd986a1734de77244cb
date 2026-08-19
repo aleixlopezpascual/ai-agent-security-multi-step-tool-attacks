@@ -1,0 +1,19 @@
+conductor/LOCAL_EVALUATION.md
+  s_8205d6a2305e4c::t_92c2708be8008a 1-62
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "a5a41eade2a0766489f02fd986a1734de77244cb",
+  "prompts": {},
+  "sessions": {
+    "s_8205d6a2305e4c": {
+      "agent_id": {
+        "tool": "gemini",
+        "id": "b800cc5a-7fed-4dae-9025-ddc2e9c03a25",
+        "model": "gemini-3.1-pro-preview"
+      },
+      "human_author": "Aleix López"
+    }
+  }
+}
