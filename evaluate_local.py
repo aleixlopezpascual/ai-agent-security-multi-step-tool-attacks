@@ -9,8 +9,8 @@ if not COMP_DIR.exists():
 if str(COMP_DIR) not in sys.path:
     sys.path.insert(0, str(COMP_DIR))
 
-GPT_OSS_PATH = Path('local_models/gpt_oss/gpt-oss-20b-Q4_K_M.gguf')
-GEMMA_PATH = Path('local_models/gemma/gemma-4-26B-A4B-it-UD-Q4_K_M.gguf')
+GPT_OSS_PATH = Path('local_models/gpt_oss/gpt_oss/gpt-oss-20b-Q4_K_M.gguf')
+GEMMA_PATH = Path('local_models/gemma/gemma/gemma-4-26B-A4B-it-UD-Q4_K_M.gguf')
 WORK_DIR = Path('local_eval_artifacts')
 WORK_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -32,15 +32,14 @@ def build_gguf_agent_factory(model_name: str):
         raise ValueError(f'Unknown model: {model_name}')
 
     # Update spec with local paths
-    spec['model_path'] = model_path
     server = GgufModelServer(spec)
     print(f'Loading {model_name} GGUF model into memory...')
-    server.start()
-    return server.agent_factory, server
+    server.load_model()
+    return (lambda: server._load_agent()), server
 
 def unload_model_server(server, model_name: str):
     print(f'Unloading {model_name} from memory...')
-    server.stop()
+    server.unload()
     import gc
     gc.collect()
 
@@ -62,6 +61,8 @@ def compact_event(e):
     }
 
 def main():
+    os.environ['GEMMA_MODEL_PATH'] = str(GEMMA_PATH)
+    os.environ['GPT_OSS_MODEL_PATH'] = str(GPT_OSS_PATH)
     parser = argparse.ArgumentParser(description="Locally evaluate Kaggle ai-agent-security attack.py")
     parser.add_argument('--attack', type=str, default='attack.py', help='Path to attack.py to evaluate')
     parser.add_argument('--model', type=str, choices=['gpt_oss', 'gemma', 'both'], default='gemma', help='Which model to evaluate against')
