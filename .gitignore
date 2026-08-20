@@ -8,3 +8,4 @@ competition_data/
 local_models/
 local_eval_artifacts/
 *.pyc
+local_attack_*.py
