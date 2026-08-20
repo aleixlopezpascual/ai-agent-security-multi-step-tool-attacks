@@ -82,6 +82,13 @@ This document logs all experiments, platform discoveries, bug-resolutions, and r
     *   **Capacity Configured:** **`1500`** (Fully unlocked!).
 *   **Learnings:** This completely solves the compromise of our previous runs. We no longer have to restrict our fast model's high-volume points just to protect our slow model from the Replay Wall. Gemma can now run wide to its full extent (scoring 140+ points) while GPT-OSS is safely throttled.
 
+### 🧪 Experiment 11: Ultra-Stable Model-Adaptive Sizing (ai-agent-security-v15 Version 7)
+*   **Pipeline:** High-volume single-hop exfiltrations (`BURST_K = 1`) coupled with our dynamic model classifier.
+    *   On **Gemma**, the cap is dynamically set to `cap = 1600` (completely safe from replay timeout limits since `K=1` uses minimal tokens).
+    *   On **GPT-OSS**, the cap is dynamically set to `cap = 500`.
+*   **Result:** ⏳ **PENDING (Currently Running on Kaggle Servers).**
+*   **Hypothesis:** By reverting to the ultra-stable `K=1` format but bypassing the GPT-OSS latency bottle-neck (raising its candidate volume from ~350 to 500), we will comfortably surpass the `88.740` baseline while remaining completely immune to the Replay Wall on both models.
+
 ---
 
 ## 🎯 Strategic Next Steps (Tuning BURST_K)
