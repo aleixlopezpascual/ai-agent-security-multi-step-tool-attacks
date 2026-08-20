@@ -4,3 +4,7 @@ inject_code.py
 kernel-metadata.json
 .venv/
 .pytest_cache/
+competition_data/
+local_models/
+local_eval_artifacts/
+*.pyc
