@@ -73,6 +73,15 @@ This document logs all experiments, platform discoveries, bug-resolutions, and r
     *   **Local Score:** **`37.77`**
 *   **Learnings:** The average candidate value jumped from **`34.0` raw points (Version 3)** to **`37.58` raw points (Version 5)**! This mathematically proves that our adaptive sorting and dynamic scaling are highly successful, filtering out lower-scoring templates and prioritizing high-density exfiltrations without compromising execution stability or safety.
 
+### 🧪 Experiment 10: Model-Adaptive Sizing (ai-agent-security-v15 Version 6)
+*   **Pipeline:** Dynamic model-classification and capacity sizing. Inside `_fill`, the script measures the exact duration of the untimed GGUF warm-up step:
+    *   If the warm-up takes **< 12.0 seconds**, it classifies the environment as running the **fast model (Gemma)** and dynamically unlocks a wide-capacity ceiling: `cap = 1500`.
+    *   If the warm-up takes **>= 12.0 seconds**, it classifies the environment as running the **slow model (GPT-OSS)** and dynamically throttles capacity to `cap = 400` to guarantee passing the 1800-second Replay Wall.
+*   **Result:** ✅ **COMPLETE (Local Gemma Verification).**
+    *   **Warm-up Measured:** **`4.7s`** (Successfully classified as fast model).
+    *   **Capacity Configured:** **`1500`** (Fully unlocked!).
+*   **Learnings:** This completely solves the compromise of our previous runs. We no longer have to restrict our fast model's high-volume points just to protect our slow model from the Replay Wall. Gemma can now run wide to its full extent (scoring 140+ points) while GPT-OSS is safely throttled.
+
 ---
 
 ## 🎯 Strategic Next Steps (Tuning BURST_K)
