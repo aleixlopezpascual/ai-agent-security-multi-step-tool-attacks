@@ -1,0 +1,19 @@
+docs/reports/EXPERIMENTS.md
+  s_8205d6a2305e4c::t_44ebbedf14b63c 85-91
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "be446497ecff0de695d40f3a2527bcbf084896bd",
+  "prompts": {},
+  "sessions": {
+    "s_8205d6a2305e4c": {
+      "agent_id": {
+        "tool": "gemini",
+        "id": "b800cc5a-7fed-4dae-9025-ddc2e9c03a25",
+        "model": "gemini-3.5-flash"
+      },
+      "human_author": "Aleix López"
+    }
+  }
+}
