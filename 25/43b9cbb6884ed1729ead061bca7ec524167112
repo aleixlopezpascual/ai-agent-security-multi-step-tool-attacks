@@ -1,0 +1,24 @@
+versions/v8_multiturn.py
+  s_86c46ba8e31ab2::t_fdeddebb24c891 20-29
+  s_86c46ba8e31ab2::t_6e77004398c084 189,192,194-201,206
+  s_86c46ba8e31ab2::t_acc13c67153aef 1-19,30-174,176-188,190-191,193,202-205,207-231
+  s_86c46ba8e31ab2::t_4b471db6f1822e 175
+versions/README.md
+  s_86c46ba8e31ab2::t_a6a57861b30740 12-34
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "2543b9cbb6884ed1729ead061bca7ec524167112",
+  "prompts": {},
+  "sessions": {
+    "s_86c46ba8e31ab2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b800cc5a-7fed-4dae-9025-ddc2e9c03a25",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Aleix López"
+    }
+  }
+}
