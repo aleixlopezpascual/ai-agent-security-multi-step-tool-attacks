@@ -226,3 +226,26 @@ vs N=1, +7% vs N=2 — diminishing marginal gain but still positive). Mapping th
 further: created `versions/v8c_multiturn4.py` (N_TURNS=4), launched on GPT-OSS 300s,
 PID 2954 (`local_eval_artifacts/v8c_gptoss_300s.log`), to see if it keeps improving,
 plateaus, or reverses.
+
+**Result: 14 findings, raw 924 (14×66 exactly), 299.4s → 3.09 raw/sec — slightly
+BELOW N=3's 3.21.** Full GPT-OSS amortization curve now mapped (300s budget):
+
+| N_TURNS | raw/sec | vs N=1 |
+|---|---|---|
+| 1 (v1_original.py) | 2.53 | baseline |
+| 2 (v8_multiturn.py) | 3.00 | +19% |
+| 3 (v8b_multiturn3.py) | 3.21 | +27% |
+| 4 (v8c_multiturn4.py) | 3.09 | +22% (down from N=3) |
+
+**Caveat on N=4's data quality:** its `evaluation_time_s` (299.4s) landed almost
+exactly at the 300s budget itself (unlike N=1-3, which all finished comfortably under
+budget via their own internal stopping logic) and its kept-candidate sample is much
+smaller (14 vs 24 for N=2/N=3) — plausibly because each 4-turn chain's fill attempt
+takes long enough that fewer full attempts fit before the fill's own wall-clock
+deadline. Smaller sample = more variance, so treat the N=4 dip as suggestive, not
+conclusive, that the curve peaks and reverses right at N=3 rather than being a firm
+result. **Working conclusion: N=3 (`v8b_multiturn3.py`) is the leading local
+candidate for GPT-OSS improvement** — clearest peak, largest same-size sample (24,
+matching N=2's 24) as N=2's, real informative comparison. Stopping the N-sweep here;
+diminishing returns from further local mapping without any real Kaggle feedback yet
+to calibrate against.

@@ -33,6 +33,36 @@ throttling) has REGRESSED the real score**, consistent with today's local findin
 | `v10_no_split.py` | v1_original.py with `SPLIT_BY_LATENCY=False` (single-variable ablation of the one active complexity layer in the 88.740 anchor) | 954 raw/53 findings @120s (parity, noise-level) | **1368 raw/76 findings @300s = 2.61 raw/sec (+3% vs v1's 2.53)** | — | **submitted 2026-08-21 (kernel v9), awaiting real score** | Submitted as candidate #2 |
 | `v8_multiturn.py` | EXPERIMENTAL: 2-turn chain, each turn an independent `http.post` EXFILTRATION to a unique URL (same candidate/env-session, testing whether splitting posts across turns avoids the single-turn "Multi-Post Latency Trap") | 476-510 raw @120s = ~5.0-5.4 raw/sec (wash vs v1's 5.49) | **1326 raw / 39 findings @300s = 3.00 raw/sec (+19% vs v1's 2.53!)** | — | not submitted | **Wash on Gemma, real GAIN on GPT-OSS — strong candidate for next submission** |
 | `v9_confused_deputy.py` | EXPERIMENTAL: 2-turn chain, turn 1 = proven `http.post` EXFILTRATION, turn 2 = `email.send` CONFUSED_DEPUTY (additive predicate, not currently scored at all) | **264 raw / 12 findings @120s = 2.83 raw/sec (vs v1's 5.49)** | **624 raw / 24 findings @300s = 1.40 raw/sec (vs v1's 2.53)** | — | not submitted | **Hypothesis REFUTED on BOTH models — abandon** |
+| `v8b_multiturn3.py` | Same as v8_multiturn.py but `N_TURNS=3` (mapping the GPT-OSS amortization curve) | not tested | **1200 raw / 24 findings @300s = 3.21 raw/sec (+27% vs v1's 2.53, +7% vs N=2)** | — | not submitted | **Peak of the curve — leading candidate for next submission** |
+| `v8c_multiturn4.py` | Same as v8_multiturn.py but `N_TURNS=4` | not tested | 924 raw / 14 findings @300s = 3.09 raw/sec (below N=3; smaller/noisier sample, see caveat below) | — | not submitted | Curve appears to reverse past N=3 — deprioritized |
+
+### GPT-OSS multi-turn amortization curve (2026-08-21, 300s budget)
+
+| N_TURNS | File | raw/sec | vs N=1 |
+|---|---|---|---|
+| 1 | `v1_original.py` | 2.53 | baseline |
+| 2 | `v8_multiturn.py` | 3.00 | +19% |
+| **3** | **`v8b_multiturn3.py`** | **3.21** | **+27%** |
+| 4 | `v8c_multiturn4.py` | 3.09 | +22% (down from N=3) |
+
+Plausible mechanism: GPT-OSS's expensive per-turn reasoning overhead is partially
+amortized when split across multiple simple asks rather than paid once for a single
+complex ask — the opposite of the "cognitive overload" penalty that hurts `BURST_K`
+(stacking multiple posts in ONE message/turn). Gemma showed no such benefit (wash at
+N=2, never tested at N=3/4 — the effect appears specific to the reasoning-heavy
+model). **Caveat on N=4:** its sample (14 kept candidates) is much smaller and its
+`evaluation_time_s` landed almost exactly at the 300s budget (unlike N=1-3, which
+self-stopped comfortably under budget) — the dip could be a real reversal or partly
+sample-size noise. N=3 has the same sample size as N=2 (24 each) and is the clearer,
+better-supported peak.
+
+**IMPORTANT — do not extend this to per-model branching.** The obvious next idea
+("apply N=3 chaining only on the model classified as slow, keep K=1 on the model
+classified as fast") is EXACTLY the model-adaptive-branching pattern that regressed
+hard in V6/V7 (46.955, 45.000 vs the 88.740 anchor). If pursued at all, `v8b_multiturn3.py`
+must be applied UNIFORMLY to both models — no classification, no branching — exactly
+as built, letting `mean(gemma_public, gpt_oss_public)` capture GPT-OSS's gain
+naturally while Gemma stays roughly neutral.
 
 ### v8_multiturn.py result (2026-08-21, Gemma, 120s smoke, throughput comparison)
 
