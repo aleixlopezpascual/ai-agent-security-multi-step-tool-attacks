@@ -211,3 +211,11 @@ and have no such cliff-edge failure mode.
   the consistent evidence that complexity has hurt every time on the real grader.
 - Competition deadline: 2026-08-25 (per public competition page) — plenty of runway
   for a "some hours" session, but don't be wasteful.
+
+## Cycle update (+4): both still PENDING (~8-9h). Deepening the v8 finding.
+
+No change on Kaggle. Created `versions/v8b_multiturn3.py` (identical to
+`v8_multiturn.py` except `N_TURNS=3` instead of 2) to check whether the GPT-OSS
+amortization benefit continues scaling with a 3rd turn or peaks/reverses at 2 —
+informs which N to eventually submit, purely local/no Kaggle risk. Launched on
+GPT-OSS, 300s budget, PID 99230 (`local_eval_artifacts/v8b_gptoss_300s.log`).
