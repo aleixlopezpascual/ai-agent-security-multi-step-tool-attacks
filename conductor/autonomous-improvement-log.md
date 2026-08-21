@@ -84,6 +84,12 @@ would have confounded the timing comparison via resource contention anyway.
   as unusual and re-checking `kaggle kernels status` for the underlying kernel for any
   error state, rather than assuming it's just queue delay indefinitely.
 
+**Cycle update (+1):** still both PENDING, no change. `kaggle kernels status` for
+`aleixlopez/ai-agent-security-v15` shows COMPLETE, but that only reflects the last
+push's cheap dev-mode run (kernel version 9), not the real competition-rerun grading
+job triggered by `kaggle competitions submit` — no evidence of an error/stuck state,
+just still queued/running. No local runs in progress. No action taken this cycle.
+
 ## Ideas not yet tried, and why margin-tuning is DEPRIORITIZED
 
 Checked `results/results.jsonl`: at the real 8750s budget, v1_original.py hits the
