@@ -138,15 +138,20 @@ using a local run over **both models**:
 4.  Treat the local↔Kaggle ratio you measure as the calibration constant for judging *new*
     versions. Do not trust an uncalibrated absolute local number as a leaderboard prediction.
 
-**First data point (2026-08-21):** V1 on Gemma alone, `--budget 8750`, `gym` env: **180.0**
-normalized (raw 36000, **hit the 2000-candidate cap exactly** — 2000/2000 unique cells, at
-K=1's ceiling of 18 raw/candidate). Wall-clock was only ~105 min, well under the ~4.9h
-worst case, because generation saturated the cap early. This is *not* comparable to `88.740`
-on its own (that's the 2-model mean) — it does confirm local Gemma alone comfortably
-saturates the 2000 cap at the real budget, consistent with prior notes that "Gemma can run
-wide to 140+" once unthrottled (`docs/reports/EXPERIMENTS.md`, Experiment 10). The
-GPT-OSS leg (typically much slower, historically capped well below 2000) still needs to run
-to get a true local blended mean comparable to `88.740`.
+**Calibration result (2026-08-21):** V1 (`versions/v1_original.py`), `--budget 8750`, `gym`
+env, both models run separately and averaged:
+- Gemma: **180.0** (raw 36000, 2000/2000 unique cells — hit the cap exactly, ~105min wall-clock)
+- GPT-OSS: **180.0** (raw 36000, 2000/2000 unique cells — hit the cap exactly, ~3.85h wall-clock)
+- **local_public_mean = 180.0** vs **Kaggle = 88.740** → **local ≈ 2.03x Kaggle**
+
+The key finding is *why*: both models independently saturated the 2000-candidate cap
+locally — the theoretical ceiling for a K=1 (one `http.post`/candidate) strategy
+(`2000 × 18 raw = 36000 → normalized 180`). On Kaggle's slower T4 hardware the same code
+evidently does **not** reach 2000 candidates within 8750s (prior notes: GPT-OSS historically
+~350-500 findings, Gemma "140+" — both well under the cap), which is what produces the lower
+blended score. See `versions/README.md` for the full write-up and the practical implication:
+once a local run is capped, its absolute score stops being informative about relative
+Kaggle performance — compare candidates-generated-per-second between versions instead.
 
 ---
 
