@@ -14,6 +14,12 @@ GEMMA_PATH = Path('local_models/gemma/gemma/gemma-4-26B-A4B-it-UD-Q4_K_M.gguf')
 WORK_DIR = Path('local_eval_artifacts')
 WORK_DIR.mkdir(parents=True, exist_ok=True)
 
+# Kaggle ground truth: the real attack gateway drives each model with this
+# per-model budget for both the generate and replay phases.
+# Source: competition_data/kaggle_evaluation/jed_attack_134815/jed_attack_gateway.py
+#   DEFAULT_BUDGET_S = 8750.0
+KAGGLE_BUDGET_S = 8750
+
 # Imports from SDK
 from aicomp_sdk.core.env.api import EnvSelection
 from aicomp_sdk.evaluation.runner import evaluate_redteam
@@ -66,9 +72,13 @@ def main():
     parser = argparse.ArgumentParser(description="Locally evaluate Kaggle ai-agent-security attack.py")
     parser.add_argument('--attack', type=str, default='attack.py', help='Path to attack.py to evaluate')
     parser.add_argument('--model', type=str, choices=['gpt_oss', 'gemma', 'both'], default='gemma', help='Which model to evaluate against')
-    parser.add_argument('--budget', type=int, default=9000, help='Time budget in seconds per model')
-    parser.add_argument('--simulate-kaggle-hardware', action='store_true', help='Simulate Kaggle T4x2 hardware speeds by scaling the budget')
-    parser.add_argument('--seed', type=int, default=123, help='Environment random seed')
+    parser.add_argument('--budget', type=int, default=KAGGLE_BUDGET_S,
+                        help='Time budget in seconds per model (default matches Kaggle DEFAULT_BUDGET_S=8750; '
+                             'lower it only for fast smoke tests)')
+    parser.add_argument('--seed', type=int, default=123, help='Environment random seed (matches gateway ATTACK_SEED=123)')
+    parser.add_argument('--results-file', type=str, default='results/results.jsonl',
+                        help='Append each run summary as a JSON line here for cross-version tracking '
+                             '(set to "" to disable)')
     args = parser.parse_args()
 
     AttackAlgorithm = load_attack_class(args.attack)
@@ -83,16 +93,7 @@ def main():
         
         agent_factory, model_server = build_gguf_agent_factory(model_name)
         t0 = time.time()
-        
 
-        effective_budget = args.budget
-        if args.simulate_kaggle_hardware:
-            if model_name == 'gemma':
-                effective_budget = args.budget / 3.45
-            elif model_name == 'gpt_oss':
-                effective_budget = args.budget / 4.0
-            print(f"Simulating Kaggle Hardware: Scaled {args.budget}s budget down to {effective_budget:.1f}s")
-        
         with RunDiagnostics(
 
             EvaluatorVerbosity.DEBUG,
@@ -102,10 +103,12 @@ def main():
         ) as diagnostics:
             execution = evaluate_redteam(
                 AttackAlgorithm,
-                budget_s=effective_budget,
+                budget_s=args.budget,
                 agent_factory=agent_factory,
                 agent_label=f'{model_name}_gguf',
-                env_selection=EnvSelection.SANDBOX,
+                # Kaggle attack gateway hard-requires ENV_SELECTION="gym" (GymAttackEnv)
+                # and raises ValueError otherwise. SANDBOX is the defense gateway's env.
+                env_selection=EnvSelection.GYM,
                 fixtures_dir=COMP_DIR / 'aicomp_sdk' / 'fixtures',
                 diagnostics=diagnostics,
                 attack_env_seed=args.seed,
@@ -126,7 +129,22 @@ def main():
         print(json.dumps(summary, indent=2))
         print(f"Validated findings: {len(attack.findings)}")
         scores[model_name] = attack.score
-        
+
+        if args.results_file:
+            record = {
+                'utc': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
+                'attack': args.attack,
+                'budget_s': args.budget,
+                'seed': args.seed,
+                'env': 'gym',
+                **summary,
+            }
+            results_path = Path(args.results_file)
+            results_path.parent.mkdir(parents=True, exist_ok=True)
+            with results_path.open('a') as rf:
+                rf.write(json.dumps(record) + '\n')
+            print(f"Appended result to {results_path}")
+
         unload_model_server(model_server, model_name)
     
     if args.model == 'both':

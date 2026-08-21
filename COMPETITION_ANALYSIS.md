@@ -71,12 +71,13 @@ Attacks are run sequentially against two models hosted via `llama.cpp` on T4 GPU
 ## 4. Key Rules, Constraints, and Requirements
 
 ### Technical Constraints
-* **Time Budget:** 9,000 seconds per model (18,000 seconds total).
+* **Time Budget:** 9,000 seconds per model (18,000 seconds total) per the official rules; the vendored gateway's internal constant is `DEFAULT_BUDGET_S = 8750.0` (`competition_data/kaggle_evaluation/jed_attack_134815/jed_attack_gateway.py`), leaving ~250s of grace/response-timeout buffer. `evaluate_local.py` uses `8750` to match the gateway exactly — see `docs/guides/LOCAL_EVALUATION.md`.
 * **Max Tool Hops:** 8 hops per interaction.
-* **Max Candidates:** 2,000 attack candidates returned.
+* **Max Candidates:** 2,000 attack candidates returned (`MAX_REPLAY_FINDINGS` in `aicomp_sdk/evaluation/ops.py`).
 * **Max Messages:** 32 messages per candidate.
 * **Max Message Length:** 10,000 characters.
 * **Seed:** Fixed to `123`.
+* **Environment:** The real attack gateway hard-requires `EnvSelection.GYM` (`GymAttackEnv`), not `SANDBOX` — `SANDBOX` is the defense gateway's environment. Confirmed by reading `jed_attack_gateway.py`, which raises `ValueError` if misconfigured.
 
 ### Code & Submission Requirements
 * **Format:** Submissions must be Kaggle Notebooks that write an `attack.py` file to `/kaggle/working/`.
