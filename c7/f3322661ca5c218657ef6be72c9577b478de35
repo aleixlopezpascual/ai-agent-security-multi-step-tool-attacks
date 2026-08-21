@@ -1,0 +1,24 @@
+notebooks/ai-agent-security-v15.ipynb
+  s_86c46ba8e31ab2::t_c11bada9aaa61d 15
+versions/README.md
+  s_86c46ba8e31ab2::t_e9ec81912d45ac 36
+conductor/autonomous-improvement-log.md
+  s_86c46ba8e31ab2::t_a3af85fa05af13 29,31
+  s_86c46ba8e31ab2::t_e98a68e864e09a 271-300
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "c7f3322661ca5c218657ef6be72c9577b478de35",
+  "prompts": {},
+  "sessions": {
+    "s_86c46ba8e31ab2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b800cc5a-7fed-4dae-9025-ddc2e9c03a25",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Aleix López"
+    }
+  }
+}
