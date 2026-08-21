@@ -298,3 +298,6 @@ literal "N submissions remaining" text from the `submit` command's own response.
 **Current state: 3 submissions pending (#1, #2, #3), 2 slots left.** Given this, do
 NOT submit again until at least one of the three lands — we have less runway than
 previously assumed and should not risk using both remaining slots blind.
+
+**Cycle update (+7):** all 3 still PENDING, no change. No local runs in progress.
+Nothing new to act on; holding discipline, not submitting further.
