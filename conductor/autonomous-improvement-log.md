@@ -114,6 +114,19 @@ remains untested on GPT-OSS — lower priority than v9 was, since it was already
 "wash" on Gemma rather than a clear loss, but could still be checked if time allows
 and nothing else is more pressing.
 
+**Cycle update (+3): recalibrating wait-time expectations.** Both submissions still
+PENDING after many cron cycles. Re-derived expected grading duration from the
+mechanics rather than assuming anomaly: each model gets a FRESH full budget for BOTH
+generation (up to 8750s) AND replay (up to another 8750s) — up to ~4.86h/model, ~9.7h
+for both models, even with zero queue delay. On Kaggle's slower T4 hardware (vs our
+local Apple Silicon, where GPT-OSS alone took 3.85h at full budget), a many-hour real
+grading time is EXPECTED, not unusual. No longer treating this wait as a signal
+something's wrong; continuing to check each cycle without escalating.
+
+Launched `versions/v8_multiturn.py` on GPT-OSS, 300s budget, PID 88367
+(`local_eval_artifacts/v8_gptoss_300s.log`) — the last untested local
+experiment from the decision tree.
+
 ## Ideas not yet tried, and why margin-tuning is DEPRIORITIZED
 
 Checked `results/results.jsonl`: at the real 8750s budget, v1_original.py hits the
