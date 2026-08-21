@@ -1,0 +1,23 @@
+results/results.jsonl
+  ai_agent 2
+docs/guides/LOCAL_EVALUATION.md
+  s_86c46ba8e31ab2::t_acbb7413c6edb7 141-154
+versions/README.md
+  s_86c46ba8e31ab2::t_b7f9c9827a5436 7-35,38-40
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "0038ba64c39b477d87a8ad7cd1b36ebebba2ada3",
+  "prompts": {},
+  "sessions": {
+    "s_86c46ba8e31ab2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b800cc5a-7fed-4dae-9025-ddc2e9c03a25",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Aleix López"
+    }
+  }
+}
