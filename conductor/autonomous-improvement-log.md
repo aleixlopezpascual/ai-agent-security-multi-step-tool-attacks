@@ -248,4 +248,22 @@ result. **Working conclusion: N=3 (`v8b_multiturn3.py`) is the leading local
 candidate for GPT-OSS improvement** — clearest peak, largest same-size sample (24,
 matching N=2's 24) as N=2's, real informative comparison. Stopping the N-sweep here;
 diminishing returns from further local mapping without any real Kaggle feedback yet
-to calibrate against.
+to calibrate against. Note: `v8_multiturn.py`/`v8b`/`v8c` never used
+`SPLIT_BY_LATENCY`/`FRAME_TEMPLATE` at all (standalone implementations, plain
+`TEMPLATE` for every turn) — so v8b_multiturn3.py already IS the "no per-model
+branching + multi-turn" combination; no separate merge step needed.
+
+## Cycle update (+5): both still PENDING (~10h). Confirmed no diagnostic visibility
+into the real grading run's progress exists via the CLI.
+
+Downloaded `kaggle kernels output` for the live kernel to check for any stuck/error
+signal — it only returns the CHEAP DEV-MODE run's output (14.5s, mock all-zero
+`submission.csv`, "Set GPU T4 x2, Internet Off, then Submit." message), confirming
+this endpoint reflects the push's dev-run, not the actual competition-rerun grading
+job triggered by `kaggle competitions submit`. There is no CLI-exposed way to see
+intermediate progress of the real grading run — `SubmissionStatus.PENDING` is opaque
+by design until it flips to COMPLETE. No error/stuck-state evidence found; ~10h is
+within the 15h-per-run ceiling. Local research (multi-turn N-sweep, confused_deputy,
+no_split ablation, all validated on both models) is now fairly exhaustive for the
+ideas identified so far — no new local experiment queued this cycle. Waiting for
+real feedback before the next action.
