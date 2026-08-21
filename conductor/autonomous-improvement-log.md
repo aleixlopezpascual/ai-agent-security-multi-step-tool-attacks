@@ -100,6 +100,20 @@ entirely, and it costs no submission slot. Launched
 (`local_eval_artifacts/v9_gptoss_300s.log`). Compare against v1's existing GPT-OSS
 300s baseline (2.53 raw/sec) once done.
 
+**Result: 24 findings, raw 624, 445.95s → 1.40 raw/sec.** Only ~55% of v1's 2.53
+raw/sec baseline on GPT-OSS — the hypothesis that GPT-OSS's different (reasoning-
+heavy) cost structure might favor the EXFILTRATION+CONFUSED_DEPUTY combo is
+**refuted**; if anything the extra turn is proportionally about as costly there as on
+Gemma (which was ~52% of baseline). Curiosity: raw/candidate averaged 26, not the
+expected 22 (16 EXFIL + 4 DEPUTY + 2 cell bonus) — some candidates apparently
+triggered an extra predicate beyond the two explicitly gated on. Didn't chase this
+further (would need trace inspection) since it doesn't change the throughput verdict:
+**v9_confused_deputy.py is now refuted on BOTH models and should not be pursued
+further as a real candidate.** `versions/v8_multiturn.py` (2-turn pure exfil chain)
+remains untested on GPT-OSS — lower priority than v9 was, since it was already only a
+"wash" on Gemma rather than a clear loss, but could still be checked if time allows
+and nothing else is more pressing.
+
 ## Ideas not yet tried, and why margin-tuning is DEPRIORITIZED
 
 Checked `results/results.jsonl`: at the real 8750s budget, v1_original.py hits the
