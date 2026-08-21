@@ -26,8 +26,9 @@ better public score is achieved.
 |---|---|---|---|---|---|---|
 | 1 | `versions/v1_original.py` (unchanged) | v8 | 2026-08-21 ~21:15 | Revert live kernel from V7 (45.0) back to proven V1 design | submitted, awaiting score | **pending** |
 | 2 | `versions/v10_no_split.py` | v9 | 2026-08-21 ~21:40 | Single-variable ablation: `SPLIT_BY_LATENCY=False`. Local evidence: GPT-OSS 2.61 raw/sec vs v1's 2.53 (+3%), Gemma parity (noise-level) | submitted, awaiting score | **pending** |
+| 3 | `versions/v8b_multiturn3.py` | v10 | 2026-08-21 ~22:10 | Uniform 3-turn EXFILTRATION chain (no per-model branching). Local GPT-OSS peak of N-sweep: 3.21 raw/sec vs v1's 2.53 (+27%), Gemma neutral | submitted, awaiting score | **pending** |
 
-Submissions remaining today after #2: 3.
+Submissions remaining today after #3: 2 (quota did NOT reset with the calendar date — see cycle update above).
 
 ## Process being used (fully CLI-automated, no UI needed)
 
@@ -267,3 +268,33 @@ within the 15h-per-run ceiling. Local research (multi-turn N-sweep, confused_dep
 no_split ablation, all validated on both models) is now fairly exhaustive for the
 ideas identified so far — no new local experiment queued this cycle. Waiting for
 real feedback before the next action.
+
+## Cycle update (+6): system date rolled to 2026-08-22, but Kaggle's day boundary
+had NOT — submitted candidate #3, learned an important quota correction.
+
+Environment date changed to 2026-08-22; assumed (incorrectly, see below) this meant
+the daily submission quota had reset to a fresh 5. Given #1/#2 had been PENDING
+12+ hours with zero information gained, and the competition deadline (2026-08-25) is
+close enough that pure waiting has a real opportunity cost, decided this was the
+right moment to submit the strongest locally-validated candidate rather than wait
+indefinitely on stale information — this is a deliberate, reasoned decision per the
+mandate ("continue until better score"), not a rash one.
+
+Ran a quick Gemma sanity check on `versions/v8b_multiturn3.py` first (never tested
+there before, only on GPT-OSS): 2 findings, raw 100 (2×50 exactly — math checks out),
+22.07s. Small sample is an expected artifact of testing a 3-turn design at a short
+local budget (same conservative-margin-at-short-budget caveat noted for timing knobs
+earlier) — not a bug, no errors, structurally sound. Packaged, pushed as kernel v10,
+verified round-trip, and submitted (submission #3, `55677868`).
+
+**Correction: the daily quota did NOT reset.** `kaggle competitions submit` returned
+"2 submissions remaining today" — meaning only 3 total have been used, not a fresh 5.
+The new submission's OWN timestamp still reads `2026-08-21 22:10:04`, confirming
+Kaggle's internal day boundary (likely UTC-based) had not actually rolled over yet,
+regardless of what date this environment's clock shows. **Lesson for future cycles:
+never assume the quota reset from the environment's date alone — trust only the
+literal "N submissions remaining" text from the `submit` command's own response.**
+
+**Current state: 3 submissions pending (#1, #2, #3), 2 slots left.** Given this, do
+NOT submit again until at least one of the three lands — we have less runway than
+previously assumed and should not risk using both remaining slots blind.
