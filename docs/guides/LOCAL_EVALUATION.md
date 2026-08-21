@@ -119,15 +119,34 @@ not under-report. (There is no reliable fixed "hardware divisor"; an earlier
 `--simulate-kaggle-hardware` flag that divided the budget by 3.45/4.0 was removed because those
 divisors were unvalidated and pointed the wrong way against the observed data.)
 
-To calibrate, anchor against a **known Kaggle score for identical code**:
+**Important — the recorded Kaggle scores are a 2-model MEAN, not per-model.** The public
+leaderboard score is `mean(gemma_public, gpt_oss_public)` (per the v15 notebook's own
+comment and `submission.csv` schema). There is no recorded Kaggle *Gemma-only* number to
+compare a single-model local run against directly — comparing a Gemma-only local run to the
+blended `88.740` is apples-to-oranges.
 
-1.  Pick a version with a recorded public-leaderboard score (e.g. V1 / `versions/v1_original.py`).
-2.  Run it locally at the real budget: `evaluate_local.py --attack versions/v1_original.py --model gemma --budget 8750`.
-3.  Compare local normalized score to that version's Kaggle Gemma row. Run 2–3× — generation is
-    **stochastic** (neither local nor the SDK backend sets a model sampling seed; `--seed 123`
-    only seeds the environment), so expect run-to-run variance.
+To calibrate correctly, anchor against a **known Kaggle mean score for identical code**,
+using a local run over **both models**:
+
+1.  Pick a version with a recorded public-leaderboard score (e.g. V1 / `versions/v1_original.py`, `88.740`).
+2.  Run it locally over both models at the real budget: `./simulate_kaggle.sh versions/v1_original.py`
+    (== `evaluate_local.py --attack versions/v1_original.py --model both --budget 8750`), and take
+    `local_public_mean` from the output.
+3.  Compare that mean to the Kaggle mean. Run 2–3× — generation is **stochastic** (neither
+    local nor the SDK backend sets a model sampling seed; `--seed 123` only seeds the
+    environment), so expect run-to-run variance.
 4.  Treat the local↔Kaggle ratio you measure as the calibration constant for judging *new*
     versions. Do not trust an uncalibrated absolute local number as a leaderboard prediction.
+
+**First data point (2026-08-21):** V1 on Gemma alone, `--budget 8750`, `gym` env: **180.0**
+normalized (raw 36000, **hit the 2000-candidate cap exactly** — 2000/2000 unique cells, at
+K=1's ceiling of 18 raw/candidate). Wall-clock was only ~105 min, well under the ~4.9h
+worst case, because generation saturated the cap early. This is *not* comparable to `88.740`
+on its own (that's the 2-model mean) — it does confirm local Gemma alone comfortably
+saturates the 2000 cap at the real budget, consistent with prior notes that "Gemma can run
+wide to 140+" once unthrottled (`docs/reports/EXPERIMENTS.md`, Experiment 10). The
+GPT-OSS leg (typically much slower, historically capped well below 2000) still needs to run
+to get a true local blended mean comparable to `88.740`.
 
 ---
 
