@@ -219,3 +219,10 @@ No change on Kaggle. Created `versions/v8b_multiturn3.py` (identical to
 amortization benefit continues scaling with a 3rd turn or peaks/reverses at 2 —
 informs which N to eventually submit, purely local/no Kaggle risk. Launched on
 GPT-OSS, 300s budget, PID 99230 (`local_eval_artifacts/v8b_gptoss_300s.log`).
+
+**Result: 24 findings, raw 1200 (24×50 exactly), 374.1s → 3.21 raw/sec.** The trend
+CONTINUES improving: N=1 (v1) = 2.53, N=2 (v8) = 3.00 (+19%), N=3 (v8b) = 3.21 (+27%
+vs N=1, +7% vs N=2 — diminishing marginal gain but still positive). Mapping the curve
+further: created `versions/v8c_multiturn4.py` (N_TURNS=4), launched on GPT-OSS 300s,
+PID 2954 (`local_eval_artifacts/v8c_gptoss_300s.log`), to see if it keeps improving,
+plateaus, or reverses.
