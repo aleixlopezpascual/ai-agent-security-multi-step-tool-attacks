@@ -301,3 +301,16 @@ previously assumed and should not risk using both remaining slots blind.
 
 **Cycle update (+7):** all 3 still PENDING, no change. No local runs in progress.
 Nothing new to act on; holding discipline, not submitting further.
+
+**Cycle update (+8):** all 3 STILL PENDING, no change, spanning many cron cycles now
+across the 08-21/08-22 boundary. This is a genuinely extended wait — likely at or
+past the ~15h/run ceiling implied by the competition rules, though I don't have a
+precise elapsed-time readout to state an exact number confidently. No error status,
+no diagnostic signal available (confirmed no CLI visibility into the real grading
+job in an earlier cycle). **Flagging clearly for the user's attention when they
+return: 3 submissions have been pending unusually long; worth checking the Kaggle
+web UI directly (may show more detail than the CLI, e.g. a specific error message or
+queue position) if this is still unresolved.** Continuing to hold discipline — not
+submitting a 4th blind candidate, no local experiments left that would add new
+information without fresh Kaggle feedback to calibrate against. Local research is
+exhausted for now (see prior cycles); this cycle's only action is documentation.
