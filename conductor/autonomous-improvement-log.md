@@ -127,6 +127,31 @@ Launched `versions/v8_multiturn.py` on GPT-OSS, 300s budget, PID 88367
 (`local_eval_artifacts/v8_gptoss_300s.log`) — the last untested local
 experiment from the decision tree.
 
+**Result: 39 findings, raw 1326 (39×34 exactly), 441.4s → 3.00 raw/sec — a genuine
++19% over v1's GPT-OSS baseline (2.53 raw/sec).** This is a DIFFERENT outcome than
+Gemma, where v8 was a wash/slight loss (5.36 vs 5.49, ~-2.4%). Plausible mechanism:
+GPT-OSS's expensive per-turn reasoning overhead may be partially amortized when split
+across two SEPARATE simple asks rather than reasoning once about a combined complex
+ask — the opposite of a "cognitive overload" penalty, an "amortization" benefit,
+specific to the slow/reasoning-heavy model.
+
+**Important restraint: NOT submitting this yet, on purpose.** Two reasons: (1) my own
+rule above says don't spend another slot until #1 or #2 has real feedback — this is
+a genuinely different axis from the SPLIT_BY_LATENCY question, but I still have zero
+real Kaggle confirmation that ANY local raw/sec signal predicts real score direction,
+and burning 3 slots blind risks learning nothing if there's a systemic mismatch; (2)
+the OBVIOUS next move (apply multi-turn ONLY on the classified-slow model, keep K=1 on
+the classified-fast model) is EXACTLY the model-adaptive-branching pattern that
+regressed hard in V6/V7 (46.955, 45.000) -- do NOT do that. If this idea is pursued,
+it must be `v8_multiturn.py` applied UNIFORMLY to both models (no classification, no
+branching) exactly as already built and tested -- letting the natural
+mean(gemma_public, gpt_oss_public) capture GPT-OSS's gain while Gemma stays roughly
+neutral, without reintroducing the risky per-model-decision mechanism.
+
+**v8_multiturn.py is now the strongest untested-on-Kaggle candidate** — validated on
+both models locally, dual-model-neutral-to-positive, no model-classification risk.
+Queue this for submission once #1 or #2 lands (see updated decision tree below).
+
 ## Ideas not yet tried, and why margin-tuning is DEPRIORITIZED
 
 Checked `results/results.jsonl`: at the real 8750s budget, v1_original.py hits the
@@ -166,6 +191,13 @@ and have no such cliff-edge failure mode.
 - In all cases: update this log + versions/README.md with the score, keep local
   smoke-test validation mandatory before any new submission, and don't spend more than
   1 submission slot per cron cycle without a fresh result to react to.
+- **New option (added after v8's GPT-OSS result, see above): once #1 or #2 lands,
+  `versions/v8_multiturn.py` (UNIFORM, no per-model branching) is a strong candidate
+  regardless of which branch above fires** — it's a genuinely different axis
+  (candidate structure, not per-model classification) with dual-model local validation
+  (Gemma: neutral/-2.4%, GPT-OSS: +19%). Consider it as the NEXT submission after
+  whichever branch-specific candidate above is chosen, or in its place if none of the
+  above branches yield a clear next idea.
 
 ## Rules of engagement for this autonomous run
 
