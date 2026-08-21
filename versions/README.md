@@ -2,14 +2,37 @@
 
 Each file here is a standalone `class AttackAlgorithm` runnable with
 `evaluate_local.py --attack versions/<file>.py` (see `../docs/guides/VERSIONING_WORKFLOW.md`).
-Kaggle scores below are the recorded public-leaderboard results from `docs/reports/EXPERIMENTS.md`.
+
+## ⚠️ Real Kaggle submission history (verified 2026-08-21 via `kaggle competitions submissions`)
+
+`docs/reports/EXPERIMENTS.md` contains STALE claims — it says V7 was "PENDING, projected
+~106.2." In reality V7 had already completed and scored far below baseline. The real,
+CLI-verified history (best first):
+
+| Score | Version | Date | Notes |
+|---|---|---|---|
+| **88.740** | V1 — plain BURST_K=1, no per-model caps | 2026-08-17 | **Best real score — the anchor.** |
+| 87.075 | "v22 public notebook" | 2026-08-19 | A copied/adapted public kernel, not our own lineage. |
+| 54.960 | (unnamed) | 2026-08-20 | |
+| 52.055 | V3 — BURST_K=3, semantic URLs, Harmony bypass | 2026-08-19 | |
+| 51.820 | (unnamed) | 2026-08-19 | |
+| 46.955 | V6 — Model-Adaptive Sizing (cap=1500/400) | 2026-08-20 | |
+| 45.000 | V7 — Model-Adaptive Sizing (cap=1600/500) | 2026-08-20 | Was the LIVE kernel until reverted 2026-08-21. |
+
+**Pattern: every structural addition on top of plain V1 (density stacking, per-model cap
+throttling) has REGRESSED the real score**, consistent with today's local findings that
+`v8_multiturn.py`/`v9_confused_deputy.py` also underperform plain K=1. See
+`conductor/autonomous-improvement-log.md` for the live autonomous-improvement session log
+(submission-by-submission), the fully-CLI-automated push/submit process, and current status.
 
 | File | Description | Local (Gemma) | Local (GPT-OSS) | Local mean | Kaggle public (mean) | Status |
 |---|---|---|---|---|---|---|
-| `v1_original.py` | BURST_K=1 ground-truth original | **180.0** @8750s/gym (2000/2000 cap, 105min — 2026-08-21) | **180.0** @8750s/gym (2000/2000 cap, 3.85h — 2026-08-21) | **180.0** | **88.740** | Calibration anchor — do not delete |
-| `v6_adaptive.py` | Model-Adaptive Sizing, BURST_K=2, warm-up latency classification | 37.85 @900s/sandbox (stale env, historical) | not yet run | — | — (not submitted standalone) | Superseded by v7 |
-| `v7_k1_live.py` | Ultra-Stable K=1 Model-Adaptive Sizing (extracted from `notebooks/ai-agent-security-v15.ipynb`, the current live submission) | not yet run | not yet run | — | pending (~106.2 projected) | **Current live submission** |
-| `v8_multiturn.py` | EXPERIMENTAL: 2-turn chain, each turn an independent `http.post` EXFILTRATION to a unique URL (same candidate/env-session, testing whether splitting posts across turns avoids the single-turn "Multi-Post Latency Trap") | 476-510 raw @120s smoke (14-15 findings) — see below | not yet run | — | not submitted | Hypothesis NOT confirmed — see note below |
+| `v1_original.py` | BURST_K=1 ground-truth original | **180.0** @8750s/gym (2000/2000 cap, 105min — 2026-08-21) | **180.0** @8750s/gym (2000/2000 cap, 3.85h — 2026-08-21) | **180.0** | **88.740 (real, verified)** | **Calibration anchor — re-pushed live 2026-08-21, do not delete** |
+| `v6_adaptive.py` | Model-Adaptive Sizing, BURST_K=2, warm-up latency classification | 37.85 @900s/sandbox (stale env, historical) | not yet run | — | **46.955 (real)** | Superseded by v7 |
+| `v7_k1_live.py` | Ultra-Stable K=1 Model-Adaptive Sizing (extracted from `notebooks/ai-agent-security-v15.ipynb`) | not yet run | not yet run | — | **45.000 (real) — regression, not 106.2** | Was live; reverted to v1_original.py 2026-08-21 |
+| `v10_no_split.py` | v1_original.py with `SPLIT_BY_LATENCY=False` (single-variable ablation of the one active complexity layer in the 88.740 anchor) | testing | not yet run | — | not submitted | In progress |
+| `v8_multiturn.py` | EXPERIMENTAL: 2-turn chain, each turn an independent `http.post` EXFILTRATION to a unique URL (same candidate/env-session, testing whether splitting posts across turns avoids the single-turn "Multi-Post Latency Trap") | 476-510 raw @120s smoke (14-15 findings) — see below | not yet run | — | not submitted | Hypothesis NOT confirmed (wash) — see note below |
+| `v9_confused_deputy.py` | EXPERIMENTAL: 2-turn chain, turn 1 = proven `http.post` EXFILTRATION, turn 2 = `email.send` CONFUSED_DEPUTY (additive predicate, not currently scored at all) | **264 raw / 12 findings @120s smoke — WORSE than v1, see below** | not yet run | — | not submitted | Hypothesis REFUTED on Gemma — see note below |
 
 ### v8_multiturn.py result (2026-08-21, Gemma, 120s smoke, throughput comparison)
 
