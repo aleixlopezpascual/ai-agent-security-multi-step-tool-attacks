@@ -59,19 +59,39 @@ SEQUENTIALLY, not in parallel** — running two GGUF models simultaneously nearl
 exhausted free memory (34GB total, ~24GB combined RSS, ~126MB free pages left) and
 would have confounded the timing comparison via resource contention anyway.
 
-- `local_eval_artifacts/v1_gptoss_300s.log` — PID 48364, started ~21:16 local time.
-- `v10_no_split.py`'s GPT-OSS run was killed before starting (PID 48365) to avoid the
-  memory/timing contention; queue it to run AFTER v1's GPT-OSS test finishes.
+- `local_eval_artifacts/v1_gptoss_300s.log` — **FINISHED**: 71 findings, raw 1278
+  (71×18 exactly), 504.75s → **2.53 raw/sec** on GPT-OSS.
+- `v10_no_split.py`'s GPT-OSS run relaunched cleanly (PID 55199, started ~21:24 local
+  time) now that v1's finished — sequential, avoiding the earlier memory contention.
+  Not yet complete as of this update.
 
 ## Status as of last update in this log (check `git log` / this file's mtime for freshness)
 
-- Submission #1 (v1 revert, kernel v8): **SubmissionStatus.PENDING** — no score yet.
-- Local: v1 GPT-OSS 300s comparison run in progress (not yet finished).
-- Next actions for the cron continuation: (1) check submission #1 for a score; (2) if
-  the v1 GPT-OSS run finished, read its log, then launch v10_no_split.py's GPT-OSS run
-  at the same budget for a clean comparison; (3) once both local GPT-OSS numbers and/or
-  submission #1's real score are in, decide whether to submit v10_no_split.py as
-  submission #2, or pursue a different hypothesis if v10 doesn't look promising.
+- Submission #1 (v1 revert, kernel v8): **SubmissionStatus.PENDING** — no score yet
+  (checked again at this update, still pending).
+- Local: v1 GPT-OSS 300s = 2.53 raw/sec (done). v10 GPT-OSS 300s run in progress.
+- Next actions for the cron continuation: (1) check submission #1 for a score; (2)
+  check if the v10 GPT-OSS run (PID 55199) finished — read
+  `local_eval_artifacts/v10_gptoss_300s.log`; (3) compare v10's raw/sec to v1's 2.53
+  raw/sec baseline on GPT-OSS — if v10 is meaningfully higher, that's real evidence
+  `SPLIT_BY_LATENCY=True` (the FRAME_TEMPLATE/Harmony-bypass branch) is HURTING the
+  slow model's throughput, in which case submit v10_no_split.py as submission #2; if
+  v10 is similar or worse, this ablation is inconclusive/negative and a different
+  hypothesis should be tried next (see "ideas not yet tried" below).
+
+## Ideas not yet tried (for the cron to consider if v10 doesn't pan out)
+
+- Simply re-submitting v1_original.py again to check for run-to-run stochastic
+  variance in the REAL Kaggle score (generation is non-deterministic — see
+  docs/guides/LOCAL_EVALUATION.md) — informative but costs a slot for no design change.
+- Loosening v1's own conservative safety margins slightly (MARGIN_S, REPLAY_SAFE_FRAC,
+  FILL_BUDGET_FRAC) to reclaim a bit more fill capacity within budget, IF local
+  evidence suggests margin is being left on the table without risking the replay-wall
+  timeout that voids a whole model row.
+  - Only pursue this AFTER checking local logs for how much margin is actually unused
+    (e.g. wall_time_s vs the nominal 2x budget) — don't tune blind.
+- Testing on the ACTUAL competition deadline pressure (2026-08-25) — don't let
+  experimentation run past leaving enough days for a final confirmed-good submission.
 
 ## Rules of engagement for this autonomous run
 
