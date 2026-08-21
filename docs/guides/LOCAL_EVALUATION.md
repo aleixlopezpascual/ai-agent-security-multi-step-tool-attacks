@@ -144,14 +144,27 @@ env, both models run separately and averaged:
 - GPT-OSS: **180.0** (raw 36000, 2000/2000 unique cells — hit the cap exactly, ~3.85h wall-clock)
 - **local_public_mean = 180.0** vs **Kaggle = 88.740** → **local ≈ 2.03x Kaggle**
 
-The key finding is *why*: both models independently saturated the 2000-candidate cap
-locally — the theoretical ceiling for a K=1 (one `http.post`/candidate) strategy
-(`2000 × 18 raw = 36000 → normalized 180`). On Kaggle's slower T4 hardware the same code
-evidently does **not** reach 2000 candidates within 8750s (prior notes: GPT-OSS historically
-~350-500 findings, Gemma "140+" — both well under the cap), which is what produces the lower
-blended score. See `versions/README.md` for the full write-up and the practical implication:
-once a local run is capped, its absolute score stops being informative about relative
-Kaggle performance — compare candidates-generated-per-second between versions instead.
+**What's confirmed vs. hypothesized:**
+- **Confirmed (mechanical/arithmetic):** `180.0` is not the max possible score (max is
+  `1000`) — it's the deterministic ceiling for a K=1 (one `http.post`/candidate) strategy
+  once it produces >2000 valid, uniquely-celled candidates: `2000 × 18 raw = 36000 →
+  normalized 180`. Both models landing on the exact same number isn't a coincidence or a
+  bug — it's what happens whenever a run's valid-candidate count exceeds the 2000 cap with a
+  uniform per-candidate value.
+- **Hypothesized, NOT confirmed:** that Kaggle's slower T4 hardware is *why* the blended
+  score is lower (i.e., that the same code doesn't reach 2000 candidates per model within
+  8750s on Kaggle). This is plausible but we have no real per-model Kaggle candidate counts
+  to verify it — figures like "GPT-OSS ~350" or "Gemma 140+" seen in `docs/reports/EXPERIMENTS.md`
+  are **self-imposed candidate caps a prior session's attack code was configured to target**,
+  not observed Kaggle telemetry, and should not be treated as ground truth.
+- **What we actually, solidly know:** identical V1 code scores `180.0` locally
+  (`local_public_mean`, both models capped) vs `88.740` on Kaggle (the recorded public
+  leaderboard mean). The ~2.03x ratio is a real measured gap; its root cause (hardware
+  throughput vs. some other still-undiscovered difference) is unconfirmed.
+
+See `versions/README.md` for the full write-up. Practical implication either way: once a
+local run hits the 2000 cap, its absolute score stops discriminating between versions —
+compare candidates-generated-per-second (`findings_count / evaluation_time_s`) instead.
 
 ---
 

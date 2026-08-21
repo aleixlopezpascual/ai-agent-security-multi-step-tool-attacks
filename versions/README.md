@@ -15,24 +15,28 @@ Kaggle scores below are the recorded public-leaderboard results from `docs/repor
 `v1_original.py` @ `--budget 8750`/`gym`, both models: **local_public_mean = 180.0** vs
 **Kaggle = 88.740** → **local ≈ 2.03x Kaggle** for this attack under these conditions.
 
-Both models independently hit the exact same 2000-candidate cap (2000/2000 unique cells,
-36000 raw = 18/candidate × 2000, the K=1 ceiling). That's the key finding: **on this local
-machine V1 saturates the 2000-candidate cap for both models within 8750s; on Kaggle it
-evidently does not** (prior notes: GPT-OSS historically ~350-500 findings, Gemma "140+" —
-both well under 2000). So the gap here isn't about candidate *design* (both environments
-would score the max 180 once they fill 2000 slots) — it's that Kaggle's T4 hardware doesn't
-generate 2000 valid candidates in 8750s for this attack, especially for GPT-OSS.
+**What's confirmed (arithmetic, not a bug):** `180.0` is NOT the max possible score (max is
+`1000`) — it's the deterministic ceiling of a K=1 (one `http.post`/candidate) strategy once
+it produces >2000 valid, uniquely-celled candidates: `2000 × 18 raw/candidate = 36000 →
+normalized 180`. Both models landing on the identical number is mechanical, not a
+coincidence or evidence of a bug — it's what happens whenever a run's valid-candidate count
+exceeds the cap with a uniform per-candidate value (16 severity-5 + 2 unique-cell = 18,
+every time, for every candidate that validates).
 
-**Practical implication for judging new versions:** a local score near the 180 ceiling only
-tells you the design *would* be optimal *if* Kaggle could also fill 2000 slots — it does not
-predict the Kaggle score, because Kaggle's real bottleneck is generation throughput on
-slower hardware, not candidate quality. To improve the *actual* Kaggle score, optimize for
-candidates-generated-per-second (shorter prompts/turns, avoid slow multi-post bursts — see
-Experiment 11's "Multi-Post Latency Trap") rather than for the local capped score. Until a
-version's local run stays *below* the 2000 cap (so throughput differences actually show up
-in the score), local numbers for different versions aren't very discriminating — prefer
-comparing findings_count/time (candidates-per-second) between versions over the capped
-normalized score.
+**What's genuinely uncertain:** *why* the Kaggle mean (`88.740`) is lower. The obvious guess
+is that Kaggle's slower T4 hardware doesn't generate 2000 valid candidates per model within
+8750s, so the same code scores less there. This is plausible but **not verified** — we have
+no real per-model Kaggle candidate counts. Numbers like "GPT-OSS ~350" or "Gemma 140+" that
+appear in `docs/reports/EXPERIMENTS.md` are **self-imposed candidate caps a prior session's
+attack code was configured to target** (based on guesses from an earlier broken local run),
+not observed Kaggle telemetry — do not treat them as ground truth about Kaggle's real
+throughput.
+
+**Practical implication for judging new versions either way:** once a local run hits the
+2000 cap (as this one did on both models), its absolute score stops discriminating between
+versions — anything that overflows the cap scores the same 180. Prefer comparing
+candidates-generated-per-second (`findings_count / evaluation_time_s`) between versions,
+since that's the metric more likely to matter if the real Kaggle bottleneck is throughput.
 
 Notes:
 - **Kaggle public score is `mean(gemma_public, gpt_oss_public)`, not per-model.** Compare
