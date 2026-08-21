@@ -316,3 +316,5 @@ information without fresh Kaggle feedback to calibrate against. Local research i
 exhausted for now (see prior cycles); this cycle's only action is documentation.
 
 **Cycle update (+9):** all 3 still PENDING, no change. No local runs. Nothing new.
+
+**Cycle update (+10):** all 3 still PENDING, no change. Tried checking the leaderboard directly (in case of API sync lag between submissions/leaderboard endpoints) — no new info, team not found on first page, submissions endpoint remains the authoritative source and says PENDING. No local runs. Nothing new to act on.
