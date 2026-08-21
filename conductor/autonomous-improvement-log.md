@@ -314,3 +314,5 @@ queue position) if this is still unresolved.** Continuing to hold discipline —
 submitting a 4th blind candidate, no local experiments left that would add new
 information without fresh Kaggle feedback to calibrate against. Local research is
 exhausted for now (see prior cycles); this cycle's only action is documentation.
+
+**Cycle update (+9):** all 3 still PENDING, no change. No local runs. Nothing new.
