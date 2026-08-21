@@ -49,6 +49,30 @@ itself helped or hurt the 88.740 result, since it was active in that run and we'
 never tested it OFF. Lowest-risk, highest-information single-variable ablation
 available, given the strong pattern that added complexity has hurt every time so far.
 
+**Local Gemma-only test of v10 was uninformative by design** (53 vs 52 findings,
+within noise) — `SPLIT_BY_LATENCY` only changes behavior on the model classified as
+*slow* (GPT-OSS branch, using `FRAME_TEMPLATE`); Gemma converges to the same plain
+`TEMPLATE` either way after the 8-candidate classification window. Started a GPT-OSS
+local comparison instead (the model where this setting can actually matter), 300s
+budget, `versions/v1_original.py` vs `versions/v10_no_split.py`. **Ran these
+SEQUENTIALLY, not in parallel** — running two GGUF models simultaneously nearly
+exhausted free memory (34GB total, ~24GB combined RSS, ~126MB free pages left) and
+would have confounded the timing comparison via resource contention anyway.
+
+- `local_eval_artifacts/v1_gptoss_300s.log` — PID 48364, started ~21:16 local time.
+- `v10_no_split.py`'s GPT-OSS run was killed before starting (PID 48365) to avoid the
+  memory/timing contention; queue it to run AFTER v1's GPT-OSS test finishes.
+
+## Status as of last update in this log (check `git log` / this file's mtime for freshness)
+
+- Submission #1 (v1 revert, kernel v8): **SubmissionStatus.PENDING** — no score yet.
+- Local: v1 GPT-OSS 300s comparison run in progress (not yet finished).
+- Next actions for the cron continuation: (1) check submission #1 for a score; (2) if
+  the v1 GPT-OSS run finished, read its log, then launch v10_no_split.py's GPT-OSS run
+  at the same budget for a clean comparison; (3) once both local GPT-OSS numbers and/or
+  submission #1's real score are in, decide whether to submit v10_no_split.py as
+  submission #2, or pursue a different hypothesis if v10 doesn't look promising.
+
 ## Rules of engagement for this autonomous run
 
 - Max 5 submissions/day (competition rule) — spend them on genuinely different,
