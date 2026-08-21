@@ -72,31 +72,53 @@ would have confounded the timing comparison via resource contention anyway.
 
 ## Status as of last update in this log (check `git log` / this file's mtime for freshness)
 
-- Submission #1 (v1 revert, kernel v8): **SubmissionStatus.PENDING** — no score yet,
-  ~2h20m elapsed since submit.
-- Submission #2 (v10_no_split, kernel v9): **SubmissionStatus.PENDING** — just submitted.
-- Local GPT-OSS comparison complete: v1=2.53 raw/sec, v10=2.61 raw/sec.
-- Next actions for the cron continuation: (1) check both submissions for scores; (2)
-  once EITHER lands, record it here and in versions/README.md; (3) if v10 (submission
-  #2) beats 88.740, mandate achieved — stop submitting and report; if v10 doesn't beat
-  it but beats v1's reconfirmed score, that's still useful signal for the next
-  candidate; if neither beats 88.740, move to "ideas not yet tried" below with 3
-  submission slots remaining today; (4) don't submit a 3rd candidate until at least
-  one of #1/#2 has landed, to avoid submitting blind without fresh information.
+- Submission #1 (v1 revert, kernel v8): **SubmissionStatus.PENDING** — ~3h elapsed.
+- Submission #2 (v10_no_split, kernel v9): **SubmissionStatus.PENDING** — ~2.5h elapsed.
+- No local background runs in progress this cycle; used the wait time to analyze
+  whether margin/timing tuning is a good next candidate (concluded: deprioritize, see
+  above) and write the decision tree for once #1/#2 land (see above).
+- **Do not submit a 3rd candidate until at least one of #1/#2 has a real score** —
+  follow the decision tree above once that happens.
 
-## Ideas not yet tried (for the cron to consider if v10 doesn't pan out)
+## Ideas not yet tried, and why margin-tuning is DEPRIORITIZED
 
-- Simply re-submitting v1_original.py again to check for run-to-run stochastic
-  variance in the REAL Kaggle score (generation is non-deterministic — see
-  docs/guides/LOCAL_EVALUATION.md) — informative but costs a slot for no design change.
-- Loosening v1's own conservative safety margins slightly (MARGIN_S, REPLAY_SAFE_FRAC,
-  FILL_BUDGET_FRAC) to reclaim a bit more fill capacity within budget, IF local
-  evidence suggests margin is being left on the table without risking the replay-wall
-  timeout that voids a whole model row.
-  - Only pursue this AFTER checking local logs for how much margin is actually unused
-    (e.g. wall_time_s vs the nominal 2x budget) — don't tune blind.
-- Testing on the ACTUAL competition deadline pressure (2026-08-25) — don't let
-  experimentation run past leaving enough days for a final confirmed-good submission.
+Checked `results/results.jsonl`: at the real 8750s budget, v1_original.py hits the
+2000-candidate cap comfortably on BOTH models locally (13868.9s wall for GPT-OSS, well
+under the 17500s theoretical max) — meaning v1's CURRENT margins are already generous
+enough locally. Margin/timing knobs (`MARGIN_S`, `REPLAY_SAFE_FRAC`,
+`REPLAY_SAFE_SIZING`) are fundamentally different from content-level knobs (template
+wording, `SPLIT_BY_LATENCY`) in one critical way: **they can't be reliably validated at
+short local budgets.** A 47s margin is ~16% of a 300s test budget but ~0.5% of the real
+8750s budget — short-budget timing behavior doesn't generalize. Properly testing a
+margin change requires either an hours-long full-budget local run or a direct Kaggle
+submission with NO cheap pre-validation. Given the downside of a bad margin estimate is
+catastrophic (voids the WHOLE model row -> that row scores 0, not just "suboptimal"),
+this is deprioritized below content-level ablations, which are safe to validate cheaply
+and have no such cliff-edge failure mode.
+
+## Decision tree for the next cron cycle once #1 and/or #2 land
+
+- **If v10 (submission #2, SPLIT_BY_LATENCY=False) beats 88.740:** mandate achieved.
+  Stop submitting, report to the user, keep it as the new live kernel (already is).
+- **If v10 beats v1's reconfirmed score (#1) but not 88.740 itself:** the ablation
+  direction (simplify) is validated as an improvement lever. Next candidate: dig one
+  layer deeper into what ELSE can be simplified/removed. Do NOT test `SLOW_MULTIPOST_N`
+  or other options gated behind `SPLIT_BY_LATENCY=True` -- those are moot if the split
+  mechanism itself is a net negative.
+- **If v10 underperforms v1:** the split-by-latency/Harmony-framing mechanism has real
+  value after all (contradicts today's local GPT-OSS smoke signal -- local ≠ Kaggle
+  hardware, revisit that assumption). Next candidate: leave `SPLIT_BY_LATENCY=True` and
+  look for a DIFFERENT ablation (e.g. test disabling `REPLAY_SAFE_SIZING` instead,
+  accepting the higher validation cost/risk noted above, OR simply re-submit v1
+  unchanged as a clean control and pause further structural changes pending user input).
+- **If both #1 and #2 come back close to each other and below 88.740:** possible grader
+  drift since 2026-08-17, or real run-to-run variance (generation is stochastic, see
+  docs/guides/LOCAL_EVALUATION.md) -- don't over-react to a single data point; consider
+  a repeat submission of the SAME code to distinguish drift/noise from a real effect
+  before concluding anything from one sample.
+- In all cases: update this log + versions/README.md with the score, keep local
+  smoke-test validation mandatory before any new submission, and don't spend more than
+  1 submission slot per cron cycle without a fresh result to react to.
 
 ## Rules of engagement for this autonomous run
 
