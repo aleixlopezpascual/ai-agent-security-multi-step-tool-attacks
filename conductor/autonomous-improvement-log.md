@@ -72,13 +72,17 @@ would have confounded the timing comparison via resource contention anyway.
 
 ## Status as of last update in this log (check `git log` / this file's mtime for freshness)
 
-- Submission #1 (v1 revert, kernel v8): **SubmissionStatus.PENDING** — ~3h elapsed.
-- Submission #2 (v10_no_split, kernel v9): **SubmissionStatus.PENDING** — ~2.5h elapsed.
-- No local background runs in progress this cycle; used the wait time to analyze
-  whether margin/timing tuning is a good next candidate (concluded: deprioritize, see
-  above) and write the decision tree for once #1/#2 land (see above).
+- Submission #1 (v1 revert, kernel v8): **SubmissionStatus.PENDING** — ~5h elapsed.
+- Submission #2 (v10_no_split, kernel v9): **SubmissionStatus.PENDING** — ~4.5h elapsed.
+- Still no score on either. Competition rules allow up to 15h per run, and deadline
+  (2026-08-25) proximity likely means GPU queue contention across all competitors —
+  this long a wait isn't necessarily abnormal, no evidence of an error/stuck state.
+  Nothing new to act on this cycle; not forcing a 3rd submission without fresh data.
 - **Do not submit a 3rd candidate until at least one of #1/#2 has a real score** —
-  follow the decision tree above once that happens.
+  follow the decision tree above once that happens. If either is STILL pending after
+  ~10-12h total (i.e. a few more cron cycles from now), that would be worth flagging
+  as unusual and re-checking `kaggle kernels status` for the underlying kernel for any
+  error state, rather than assuming it's just queue delay indefinitely.
 
 ## Ideas not yet tried, and why margin-tuning is DEPRIORITIZED
 
