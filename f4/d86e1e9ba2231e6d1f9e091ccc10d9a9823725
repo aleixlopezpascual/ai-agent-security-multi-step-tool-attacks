@@ -1,0 +1,23 @@
+versions/README.md
+  s_86c46ba8e31ab2::t_ebf5f56a6db144 35
+conductor/autonomous-improvement-log.md
+  s_86c46ba8e31ab2::t_ac4834f3f80463 103-116
+results/results.jsonl
+  s_86c46ba8e31ab2::t_992f1f8dfccc1e 10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "f4d86e1e9ba2231e6d1f9e091ccc10d9a9823725",
+  "prompts": {},
+  "sessions": {
+    "s_86c46ba8e31ab2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b800cc5a-7fed-4dae-9025-ddc2e9c03a25",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Aleix López"
+    }
+  }
+}
