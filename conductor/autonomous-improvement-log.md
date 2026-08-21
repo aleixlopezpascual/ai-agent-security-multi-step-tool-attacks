@@ -90,6 +90,16 @@ push's cheap dev-mode run (kernel version 9), not the real competition-rerun gra
 job triggered by `kaggle competitions submit` — no evidence of an error/stuck state,
 just still queued/running. No local runs in progress. No action taken this cycle.
 
+**Cycle update (+2):** still both PENDING, no change on Kaggle. Used the wait
+productively: `v8_multiturn.py`/`v9_confused_deputy.py` were only ever tested on
+Gemma (both underperformed plain K=1 there — see earlier sections). GPT-OSS has a
+very different cost structure (long chain-of-thought reasoning per turn), so the
+Gemma-only conclusion may not transfer — worth checking before ruling these ideas out
+entirely, and it costs no submission slot. Launched
+`versions/v9_confused_deputy.py` on GPT-OSS, 300s budget, PID 83257
+(`local_eval_artifacts/v9_gptoss_300s.log`). Compare against v1's existing GPT-OSS
+300s baseline (2.53 raw/sec) once done.
+
 ## Ideas not yet tried, and why margin-tuning is DEPRIORITIZED
 
 Checked `results/results.jsonl`: at the real 8750s budget, v1_original.py hits the
