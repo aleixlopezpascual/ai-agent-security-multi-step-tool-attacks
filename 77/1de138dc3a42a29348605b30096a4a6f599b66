@@ -1,0 +1,53 @@
+conductor/local-alignment-plan.md
+  s_86c46ba8e31ab2::t_277f252855154b 1-66
+docs/guides/LOCAL_EVALUATION.md
+  s_86c46ba8e31ab2::t_3fc87ef8da9a24 124-125
+  s_86c46ba8e31ab2::t_bbf24e50e33aeb 39,42,44-46,49-50
+  s_86c46ba8e31ab2::t_286439e167f826 55-61
+  s_86c46ba8e31ab2::t_9db14c8cad7a45 3-13,19,23-26,32-34,38,41,43,52-54,64-67,69-70,72-80,82-84,86-90,94,96,98-105,107-109,113,115-120,122-123,126-142
+versions/README.md
+  s_86c46ba8e31ab2::t_e0916296c28e74 1-17
+versions/v1_original.py
+  s_86c46ba8e31ab2::t_c4d9e74a545d33 1-459
+simulate_kaggle.sh
+  s_86c46ba8e31ab2::t_69a587f65d95ff 2-5,10-12
+  s_86c46ba8e31ab2::t_08a4e431b44509 6-9
+versions/v6_adaptive.py
+  s_86c46ba8e31ab2::t_c4d9e74a545d33 1-450
+extract_attack.py
+  s_86c46ba8e31ab2::t_530d7f760da384 103,105-107,109-115,117-119
+  s_86c46ba8e31ab2::t_ced97a92613c2c 28,32-33,35,39-55
+  s_86c46ba8e31ab2::t_26b1d470f1b986 4,10-14,16
+  s_86c46ba8e31ab2::t_7ea6f761a1033f 1-3,5-9,15,17-27,29-31,34,36-38,56-58,63-66,68,80-102,104,108,116,120-149
+  s_86c46ba8e31ab2::t_e456bcaec20b9b 59-62,67,69-79
+evaluate_local.py
+  s_86c46ba8e31ab2::t_94f3a5d0502c3c 75-78
+  s_86c46ba8e31ab2::t_3ae6671fbd13b9 79-81
+  s_86c46ba8e31ab2::t_60d673c76b88f4 17-22
+  s_86c46ba8e31ab2::t_1cae153d2400eb 106,109-111
+  s_86c46ba8e31ab2::t_4d84e402067aac 132-147
+package_submission.py
+  s_86c46ba8e31ab2::t_79f580b3451f66 1-145
+versions/v7_k1_live.py
+  s_86c46ba8e31ab2::t_471813600a7b27 1-446
+docs/guides/VERSIONING_WORKFLOW.md
+  s_86c46ba8e31ab2::t_0b527873ece5f0 1-110
+COMPETITION_ANALYSIS.md
+  s_86c46ba8e31ab2::t_26134c0d0b50bd 74,76,80
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "771de138dc3a42a29348605b30096a4a6f599b66",
+  "prompts": {},
+  "sessions": {
+    "s_86c46ba8e31ab2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b800cc5a-7fed-4dae-9025-ddc2e9c03a25",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Aleix López"
+    }
+  }
+}
