@@ -66,7 +66,8 @@ def main():
     parser = argparse.ArgumentParser(description="Locally evaluate Kaggle ai-agent-security attack.py")
     parser.add_argument('--attack', type=str, default='attack.py', help='Path to attack.py to evaluate')
     parser.add_argument('--model', type=str, choices=['gpt_oss', 'gemma', 'both'], default='gemma', help='Which model to evaluate against')
-    parser.add_argument('--budget', type=int, default=300, help='Time budget in seconds per model')
+    parser.add_argument('--budget', type=int, default=9000, help='Time budget in seconds per model')
+    parser.add_argument('--simulate-kaggle-hardware', action='store_true', help='Simulate Kaggle T4x2 hardware speeds by scaling the budget')
     parser.add_argument('--seed', type=int, default=123, help='Environment random seed')
     args = parser.parse_args()
 
@@ -83,7 +84,17 @@ def main():
         agent_factory, model_server = build_gguf_agent_factory(model_name)
         t0 = time.time()
         
+
+        effective_budget = args.budget
+        if args.simulate_kaggle_hardware:
+            if model_name == 'gemma':
+                effective_budget = args.budget / 3.45
+            elif model_name == 'gpt_oss':
+                effective_budget = args.budget / 4.0
+            print(f"Simulating Kaggle Hardware: Scaled {args.budget}s budget down to {effective_budget:.1f}s")
+        
         with RunDiagnostics(
+
             EvaluatorVerbosity.DEBUG,
             transcript_file=transcript_file,
             event_log_file=framework_file,
@@ -91,10 +102,10 @@ def main():
         ) as diagnostics:
             execution = evaluate_redteam(
                 AttackAlgorithm,
-                budget_s=args.budget,
+                budget_s=effective_budget,
                 agent_factory=agent_factory,
                 agent_label=f'{model_name}_gguf',
-                env_selection=EnvSelection.GYM,
+                env_selection=EnvSelection.SANDBOX,
                 fixtures_dir=COMP_DIR / 'aicomp_sdk' / 'fixtures',
                 diagnostics=diagnostics,
                 attack_env_seed=args.seed,
