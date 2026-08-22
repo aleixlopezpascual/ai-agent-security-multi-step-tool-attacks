@@ -450,3 +450,35 @@ have already been tried and refuted. The most promising unexplored direction per
 leaderboard-gap analysis is throughput (why do top teams get so much higher volume?), not
 new predicate combinations — worth focused investigation before spending the last submission
 slot today.
+
+## Submission #4: v11_multiturn_harmony.py — combines multi-turn WITH the Harmony bypass
+
+Built to resolve the confound identified in v8b's regression: the entire v8/v8b/v8c
+multi-turn family was a from-scratch reimplementation that never included
+SPLIT_BY_LATENCY/FRAME_TEMPLATE — the same mechanism v10 independently proved worth
+~28%. So v8b's real-world loss (58.750) couldn't distinguish "multi-turn hurts" from
+"multi-turn loses the same ~28% v10 lost, on top of whatever multi-turn itself does."
+
+`v11_multiturn_harmony.py` starts from v1_original.py's EXACT proven code (fill loop,
+adaptive margin, REPLAY_SAFE_SIZING, SPLIT_BY_LATENCY/FRAME_TEMPLATE all intact) and
+changes only the exfil structure to a 3-turn chain, using whichever template the
+classifier already chose for each turn. Verified before submitting:
+- `N_TURNS=1` config produces byte-identical candidates to v1_original.py (confirmed
+  programmatically) -- the refactor is provably safe for the baseline case.
+- Smoke-tested on both models: Gemma 150 raw/3 findings (3x50 exactly, 120s), GPT-OSS
+  1250 raw/25 findings (25x50 exactly, 300s, ~3.24 raw/sec) -- no errors, math checks
+  out exactly on both. This validates CORRECTNESS only, not a real-score prediction,
+  given local signals have failed twice already.
+
+Packaged, pushed as kernel v11, submitted (submission 55694099, PENDING).
+**Quota correction: "4 submissions remaining" after this one** -- Kaggle's own day
+boundary rolled over since yesterday's submissions, giving more runway than the
+"2 remaining" tracked at the end of the previous session. Confirms: always read the
+literal remaining-count text, never assume from the environment's date.
+
+This is now the most carefully-reasoned candidate of the session -- if it also
+regresses, that's strong evidence multi-turn chaining itself (not the missing Harmony
+bypass) is the real problem, and the multi-turn line of inquiry should be closed. If
+it beats v10/v8b but still not 88.740, that confirms the confound was real and
+points toward further Harmony-bypass-preserving refinements. If it beats 88.740,
+mandate achieved.

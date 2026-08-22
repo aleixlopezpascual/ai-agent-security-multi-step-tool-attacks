@@ -189,3 +189,28 @@ Verified directly against `competition_data/aicomp_sdk/` source (not forum hears
 Full sourcing and verification detail: see memory files `kaggle-community-intel-aug22`,
 `optimal-guardrail-source-verified`, `kaggle-real-submission-history` (persist across
 sessions, not in this repo).
+
+## v11_multiturn_harmony.py — combines multi-turn with the proven Harmony bypass (2026-08-22)
+
+Starts from `v1_original.py`'s exact proven fill loop, safety margins, and (critically)
+`SPLIT_BY_LATENCY`/`FRAME_TEMPLATE` mechanism, changing only the exfil structure to a
+3-turn chain. Rationale: `v8b_multiturn3.py`'s regression (58.750) was confounded — its
+family never included the Harmony bypass at all, and `v10_no_split.py` independently
+proved that mechanism is worth ~28% on its own. `v11` isolates the real question: does
+multi-turn help *on top of* the mechanism we already know matters?
+
+Verified before submitting:
+- `N_TURNS=1` config reduces to byte-identical output vs `v1_original.py` (same URL
+  indexing, same classification/margin arithmetic, same forge-plan branch) — confirms the
+  refactor didn't silently change anything for the proven baseline case.
+- Smoke-tested on both models at `N_TURNS=3` (the default): Gemma 150 raw/3 findings
+  (3×50 exactly, 120s); GPT-OSS 1250 raw/25 findings (25×50 exactly, 300s, ~3.24 raw/sec
+  — comparable to v8b's 3.21, confirming the classification+chaining integration works).
+  No errors on either model.
+
+Given local signals have now failed to predict real score direction twice (v10, v8b),
+this smoke test is validation-of-correctness only, NOT a prediction of the real outcome.
+
+| File | Local (Gemma) | Local (GPT-OSS) | Kaggle | Status |
+|---|---|---|---|---|
+| `v11_multiturn_harmony.py` | 150 raw/3 findings @120s | 1250 raw/25 findings @300s = 3.24 raw/sec | pending (submission 55694099) | Submitted as candidate #4, kernel v11 |
