@@ -11,8 +11,10 @@ CLI-verified history (best first):
 
 | Score | Version | Date | Notes |
 |---|---|---|---|
-| **88.740** | V1 — plain BURST_K=1, no per-model caps | 2026-08-17 | **Best real score — the anchor.** |
+| **88.740** | V1 — plain BURST_K=1, no per-model caps | 2026-08-17 | **Best real score to date.** |
 | 87.075 | "v22 public notebook" | 2026-08-19 | A copied/adapted public kernel, not our own lineage. |
+| 81.225 | V1 — SAME code as 88.740, re-submitted | 2026-08-21 | **Real run-to-run variance for IDENTICAL code (~8.5%).** |
+| 58.545 | v10_no_split — `SPLIT_BY_LATENCY=False` | 2026-08-21 | Local smoke test said +3% on GPT-OSS; REAL result was -28% vs the 81.225 re-run. |
 | 54.960 | (unnamed) | 2026-08-20 | |
 | 52.055 | V3 — BURST_K=3, semantic URLs, Harmony bypass | 2026-08-19 | |
 | 51.820 | (unnamed) | 2026-08-19 | |
@@ -20,17 +22,20 @@ CLI-verified history (best first):
 | 45.000 | V7 — Model-Adaptive Sizing (cap=1600/500) | 2026-08-20 | Was the LIVE kernel until reverted 2026-08-21. |
 
 **Pattern: every structural addition on top of plain V1 (density stacking, per-model cap
-throttling) has REGRESSED the real score**, consistent with today's local findings that
-`v8_multiturn.py`/`v9_confused_deputy.py` also underperform plain K=1. See
+throttling) has REGRESSED the real score.** Local smoke tests are directionally
+UNRELIABLE at least once (v10 looked flat/positive locally, was substantially worse for
+real) — weight real submission feedback over local raw/sec signals when they conflict.
+Also note: identical code has real ~8.5% score variance run-to-run (generation is
+stochastic) — a "win" needs real margin over 88.740, not a razor-thin edge. See
 `conductor/autonomous-improvement-log.md` for the live autonomous-improvement session log
 (submission-by-submission), the fully-CLI-automated push/submit process, and current status.
 
 | File | Description | Local (Gemma) | Local (GPT-OSS) | Local mean | Kaggle public (mean) | Status |
 |---|---|---|---|---|---|---|
-| `v1_original.py` | BURST_K=1 ground-truth original | **180.0** @8750s/gym (2000/2000 cap, 105min — 2026-08-21) | **180.0** @8750s/gym (2000/2000 cap, 3.85h — 2026-08-21) | **180.0** | **88.740 (real, verified)** | **Calibration anchor — re-pushed live 2026-08-21, do not delete** |
+| `v1_original.py` | BURST_K=1 ground-truth original | **180.0** @8750s/gym (2000/2000 cap, 105min — 2026-08-21) | **180.0** @8750s/gym (2000/2000 cap, 3.85h — 2026-08-21) | **180.0** | **88.740 (2026-08-17) / 81.225 (re-run 2026-08-21, IDENTICAL code — real ~8.5% run-to-run variance)** | **Calibration anchor — re-pushed live 2026-08-21, do not delete** |
 | `v6_adaptive.py` | Model-Adaptive Sizing, BURST_K=2, warm-up latency classification | 37.85 @900s/sandbox (stale env, historical) | not yet run | — | **46.955 (real)** | Superseded by v7 |
 | `v7_k1_live.py` | Ultra-Stable K=1 Model-Adaptive Sizing (extracted from `notebooks/ai-agent-security-v15.ipynb`) | not yet run | not yet run | — | **45.000 (real) — regression, not 106.2** | Was live; reverted to v1_original.py 2026-08-21 |
-| `v10_no_split.py` | v1_original.py with `SPLIT_BY_LATENCY=False` (single-variable ablation of the one active complexity layer in the 88.740 anchor) | 954 raw/53 findings @120s (parity, noise-level) | **1368 raw/76 findings @300s = 2.61 raw/sec (+3% vs v1's 2.53)** | — | **submitted 2026-08-21 (kernel v9), awaiting real score** | Submitted as candidate #2 |
+| `v10_no_split.py` | v1_original.py with `SPLIT_BY_LATENCY=False` (single-variable ablation of the one active complexity layer in the 88.740 anchor) | 954 raw/53 findings @120s (parity, noise-level) | **1368 raw/76 findings @300s = 2.61 raw/sec (+3% vs v1's 2.53)** | — | **58.545 (real, 2026-08-21) — REFUTED, ~28% worse than v1's 81.225** | Local smoke signal was WRONG direction — SPLIT_BY_LATENCY has real value, do not remove |
 | `v8_multiturn.py` | EXPERIMENTAL: 2-turn chain, each turn an independent `http.post` EXFILTRATION to a unique URL (same candidate/env-session, testing whether splitting posts across turns avoids the single-turn "Multi-Post Latency Trap") | 476-510 raw @120s = ~5.0-5.4 raw/sec (wash vs v1's 5.49) | **1326 raw / 39 findings @300s = 3.00 raw/sec (+19% vs v1's 2.53!)** | — | not submitted | **Wash on Gemma, real GAIN on GPT-OSS — strong candidate for next submission** |
 | `v9_confused_deputy.py` | EXPERIMENTAL: 2-turn chain, turn 1 = proven `http.post` EXFILTRATION, turn 2 = `email.send` CONFUSED_DEPUTY (additive predicate, not currently scored at all) | **264 raw / 12 findings @120s = 2.83 raw/sec (vs v1's 5.49)** | **624 raw / 24 findings @300s = 1.40 raw/sec (vs v1's 2.53)** | — | not submitted | **Hypothesis REFUTED on BOTH models — abandon** |
 | `v8b_multiturn3.py` | Same as v8_multiturn.py but `N_TURNS=3` (mapping the GPT-OSS amortization curve) | 100 raw / 2 findings @120s (small sample, structurally sound, no errors) | **1200 raw / 24 findings @300s = 3.21 raw/sec (+27% vs v1's 2.53, +7% vs N=2)** | — | **submitted 2026-08-21 (kernel v10), awaiting real score** | Submitted as candidate #3 |

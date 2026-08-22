@@ -24,8 +24,8 @@ better public score is achieved.
 
 | # | Version pushed | Kernel ver | Submitted (UTC-ish) | Change | Status | Public score |
 |---|---|---|---|---|---|---|
-| 1 | `versions/v1_original.py` (unchanged) | v8 | 2026-08-21 ~21:15 | Revert live kernel from V7 (45.0) back to proven V1 design | submitted, awaiting score | **pending** |
-| 2 | `versions/v10_no_split.py` | v9 | 2026-08-21 ~21:40 | Single-variable ablation: `SPLIT_BY_LATENCY=False`. Local evidence: GPT-OSS 2.61 raw/sec vs v1's 2.53 (+3%), Gemma parity (noise-level) | submitted, awaiting score | **pending** |
+| 1 | `versions/v1_original.py` (unchanged) | v8 | 2026-08-21 ~21:15 | Revert live kernel from V7 (45.0) back to proven V1 design | **COMPLETE** | **81.225** |
+| 2 | `versions/v10_no_split.py` | v9 | 2026-08-21 ~21:40 | Single-variable ablation: `SPLIT_BY_LATENCY=False`. Local evidence: GPT-OSS 2.61 raw/sec vs v1's 2.53 (+3%), Gemma parity (noise-level) | **COMPLETE** | **58.545** |
 | 3 | `versions/v8b_multiturn3.py` | v10 | 2026-08-21 ~22:10 | Uniform 3-turn EXFILTRATION chain (no per-model branching). Local GPT-OSS peak of N-sweep: 3.21 raw/sec vs v1's 2.53 (+27%), Gemma neutral | submitted, awaiting score | **pending** |
 
 Submissions remaining today after #3: 2 (quota did NOT reset with the calendar date — see cycle update above).
@@ -318,3 +318,38 @@ exhausted for now (see prior cycles); this cycle's only action is documentation.
 **Cycle update (+9):** all 3 still PENDING, no change. No local runs. Nothing new.
 
 **Cycle update (+10):** all 3 still PENDING, no change. Tried checking the leaderboard directly (in case of API sync lag between submissions/leaderboard endpoints) — no new info, team not found on first page, submissions endpoint remains the authoritative source and says PENDING. No local runs. Nothing new to act on.
+
+## Real scores landed (user returned, checked live) — CRITICAL findings
+
+**Submission #1 (`v1_original.py`, byte-identical to the historical 88.740 code):
+scored 81.225.** Confirms real run-to-run stochastic variance in the actual Kaggle
+score for IDENTICAL code (~8.5% swing). 88.740 was a good roll, not a guaranteed
+floor — treat "beat 88.740" as needing real margin, not a razor-thin win, since a
+lucky/unlucky generation run could account for several points either way.
+
+**Submission #2 (`v10_no_split.py`, `SPLIT_BY_LATENCY=False`): scored 58.545 — a
+~28% DROP from v1's reconfirmed 81.225.** This REFUTES the local GPT-OSS smoke
+signal (+3% raw/sec), which pointed the wrong direction. Per the decision tree
+written before this landed: **the split-by-latency/Harmony-bypass-framing mechanism
+has REAL value on the actual Kaggle grader that our short local budget tests could
+not detect.** Do NOT remove `SPLIT_BY_LATENCY` again without a much stronger reason.
+
+**Important methodological lesson:** local raw/sec at short budgets (120-300s) is
+NOT a reliable predictor of real Kaggle score direction — v10 looked flat-to-slightly-
+positive locally but was substantially worse for real. This raises real doubt about
+whether `v8b_multiturn3.py`'s strong local signal (+27% on GPT-OSS) will hold up
+either; treat its still-pending result with real uncertainty, not confidence, until
+it lands. Going forward, weight actual submission feedback far more heavily than
+local smoke signals when they conflict.
+
+**Submission #3 (`v8b_multiturn3.py`) still PENDING** — this is our best remaining
+hope to beat 88.740 from the current batch. **Current best real, confirmed score
+remains 88.740** (2026-08-17, not yet beaten by anything reconfirmed or tested since).
+
+**1 submission slot left today** (confirmed via the last `submit` response text, not
+assumed from date). Do not spend it until v8b's result is known — if v8b also
+underperforms, the safest next move is very likely simply re-submitting
+`v1_original.py` again to get a second real data point on its true variance range
+(is 81-89 the real band, or was 81.225 itself an unlucky draw?), rather than
+introducing more untested structural changes, given local smoke signals have now
+proven unreliable for at least one real case.
