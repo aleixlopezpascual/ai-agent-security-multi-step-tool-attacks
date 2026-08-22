@@ -26,7 +26,7 @@ better public score is achieved.
 |---|---|---|---|---|---|---|
 | 1 | `versions/v1_original.py` (unchanged) | v8 | 2026-08-21 ~21:15 | Revert live kernel from V7 (45.0) back to proven V1 design | **COMPLETE** | **81.225** |
 | 2 | `versions/v10_no_split.py` | v9 | 2026-08-21 ~21:40 | Single-variable ablation: `SPLIT_BY_LATENCY=False`. Local evidence: GPT-OSS 2.61 raw/sec vs v1's 2.53 (+3%), Gemma parity (noise-level) | **COMPLETE** | **58.545** |
-| 3 | `versions/v8b_multiturn3.py` | v10 | 2026-08-21 ~22:10 | Uniform 3-turn EXFILTRATION chain (no per-model branching). Local GPT-OSS peak of N-sweep: 3.21 raw/sec vs v1's 2.53 (+27%), Gemma neutral | submitted, awaiting score | **pending** |
+| 3 | `versions/v8b_multiturn3.py` | v10 | 2026-08-21 ~22:10 | Uniform 3-turn EXFILTRATION chain (no per-model branching). Local GPT-OSS peak of N-sweep: 3.21 raw/sec vs v1's 2.53 (+27%), Gemma neutral | **COMPLETE** | **58.750 -- REGRESSION** |
 
 Submissions remaining today after #3: 2 (quota did NOT reset with the calendar date — see cycle update above).
 
@@ -411,3 +411,42 @@ Refresh"** — the important one:
    it's the only evidence we have.
 
 Sources: [Evaluator update and FAQ](https://www.kaggle.com/competitions/ai-agent-security-multi-step-tool-attacks/discussion/712642), [Upcoming Evaluation Updates and Leaderboard Refresh](https://www.kaggle.com/competitions/ai-agent-security-multi-step-tool-attacks/discussion/733058), [Evaluator update planned for Monday](https://www.kaggle.com/competitions/ai-agent-security-multi-step-tool-attacks/discussion/710234) — all read directly via `kaggle forums topics show <id>`.
+
+## Submission #3 confirmed: 58.750 — REGRESSION, 6th in a row
+
+`v8b_multiturn3.py` (our strongest local candidate at +27% raw/sec on GPT-OSS) scored
+**58.750** — a regression from v1's 81.225, same pattern as v10. **Local raw/sec has now
+failed to predict real score direction twice in a row** (v10: +3% local -> -28% real; v8b:
++27% local -> regression again). Current best real, confirmed score remains **88.740**
+(2026-08-17) / **81.225** (2026-08-21 re-run) — nothing from this session's 3 submissions
+has beaten it. 1 submission slot remains today; holding it pending a better-reasoned
+candidate rather than continuing to trust local raw/sec signals blindly.
+
+## Deeper research since (parallel session, 2026-08-22) — source-verified guardrail limits
+
+A separate session did further research, captured in memory (`optimal-guardrail-source-
+verified`, `kaggle-community-intel-aug22`) and now folded into `versions/README.md`:
+
+- **Source-proved (not hearsay): only `EXFILTRATION` and `CONFUSED_DEPUTY` are reachable at
+  all** under the public `OptimalGuardrail` — `UNTRUSTED_TO_ACTION` and `DESTRUCTIVE_WRITE`
+  are structurally blocked by the guardrail's taint-window check before their predicates can
+  ever fire (window(2) ⊆ window(5), same trace/index — no timing trick escapes it). Stop
+  chasing those two predicate types.
+- Real leaderboard gap: top teams score ~124-138 vs our 88.740 anchor. Since our K=1 ceiling
+  (18 raw/candidate) and the 2-predicate limit are both confirmed, top teams are winning via
+  either higher throughput or a stacking approach we haven't found — not yet identified.
+- No live private-guardrail feedback exists (candidates replay blind against it) — portfolio
+  diversification is the only lever against private-guardrail risk.
+- Unconfirmed (forum thread #736246, flagged not verified): the Gemma tool-call bug may be
+  worse than documented — predicate outcomes possibly flipping entirely run-to-run even under
+  nominally identical settings, not just "drops subsequent calls." If true, this could help
+  explain why local signals keep failing to predict real outcomes.
+- Process suggestion worth adopting: hash-track each submitted `attack.py`; only count a "win"
+  after a REPEAT run beats the prior anchor, given the documented 88.740->81.225 variance.
+
+**Where this leaves us:** 6 consecutive real-Kaggle regressions for anything beyond plain
+K=1 V1. The two reachable predicates (EXFIL, CONFUSED_DEPUTY) and their obvious combination
+have already been tried and refuted. The most promising unexplored direction per the
+leaderboard-gap analysis is throughput (why do top teams get so much higher volume?), not
+new predicate combinations — worth focused investigation before spending the last submission
+slot today.
