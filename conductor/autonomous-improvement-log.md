@@ -353,3 +353,61 @@ underperforms, the safest next move is very likely simply re-submitting
 (is 81-89 the real band, or was 81.225 itself an unlucky draw?), rather than
 introducing more untested structural changes, given local smoke signals have now
 proven unreliable for at least one real case.
+
+## CORRECTION (user pushback, verified via `kaggle forums topics show`): score differences are NOT primarily "stochastic sampling" — real, documented evaluator changes are the better explanation
+
+User rightly pushed back on "stochastic generation" as the explanation for 88.740 -> 81.225
+(identical code) and v10's 58.545. Checked the competition's actual discussion forum via
+`kaggle forums topics list`/`show` (CLI reads raw content directly, bypassing search-engine
+indexing gaps and JS-rendering issues that blocked WebFetch). Found two organizer threads:
+
+**Topic 712642 (2026-06-23), "Evaluator update and FAQ":** confirmed 9000s/phase budget,
+raised the GLOBAL job ceiling to 15h, fixed secret-exfiltration scoring to use authoritative
+replay traces + reversible-encoding detection. Explicitly: "If replay exceeds its budget,
+the submission fails without a score" (at that time).
+
+**Topic 733058 (2026-08-05), "[IMPORTANT] Upcoming Evaluation Updates and Leaderboard
+Refresh"** — the important one:
+- Organizers found "some Gemma tool calls were parsed" incorrectly: "Gemma wrapped
+  subsequent tool-call responses in {}, which prevented them from being parsed correctly."
+- Changed replay-timeout behavior: "Public and private replays will now preserve the score
+  accumulated before a timeout instead of returning 0.0" (previously all-or-nothing).
+- Because of these changes, **the organizers INVALIDATED THE ENTIRE LEADERBOARD**: "results
+  from the previous and updated evaluation setups are not directly comparable... we will
+  invalidate the current leaderboard."
+- With ~68,000 submissions, a full rerun was infeasible; offered 2 free reruns/team
+  (selection deadline 2026-08-07 9am PT, else auto-select the team's 2 highest-scoring).
+- **Multiple participants report the Gemma tool-call parsing bug is STILL NOT FULLY FIXED**
+  as late as 2026-08-18 (Renee: "Just dropping in again to say Gemma tool calls are still
+  broken"; Syed Asad Ali, 2026-08-08, confirmed independently: asked Gemma for 2/3/4
+  sequential http.post calls, "got exactly 1 pos[t]" back each time) — i.e. asking for
+  MULTIPLE tool calls in a row can still silently drop all but the first.
+
+**Corrected understanding:**
+1. Both our 88.740 (2026-08-17) and 81.225 (2026-08-21) submissions post-date the Aug 5
+   evaluator update and leaderboard reset — so they're NOT comparing across evaluator
+   versions in the way "old vs new leaderboard" would be; the drop is real variance WITHIN
+   the current evaluator regime, not a stale-baseline artifact for this specific pair.
+2. BUT the mechanism for that real variance is much more concrete than generic "LLM
+   sampling stochasticity": there is a DOCUMENTED, still-unresolved parsing bug that can
+   silently drop tool calls, PLUS genuine model-sampling non-determinism (no fixed seed,
+   confirmed in the vendored SDK), PLUS GPU/infra speed variance affecting how many
+   candidates fit in the time budget, PLUS the new partial-credit-on-timeout mechanic
+   adding another source of run-to-run outcome variability. "Stochastic" undersold this —
+   it's a real, reported, partially-understood bug interacting with inherent non-determinism,
+   not pure token-sampling noise.
+3. **Confound for our own experiments:** the multi-tool-call parsing bug specifically affects
+   designs asking Gemma for MULTIPLE sequential tool calls in a row. Our K=1 designs
+   (`v1_original.py`, `v10_no_split.py`) and multi-TURN designs (`v8_multiturn.py` family —
+   separate `env.interact()` calls, each asking for exactly ONE call) should be unaffected,
+   since each turn's post is the FIRST tool call of that turn, not a "subsequent" one. This
+   makes v8b_multiturn3.py's still-pending result MORE trustworthy on this specific axis than
+   it would be for a BURST_K>1-style single-message multi-post design (which WOULD hit this
+   bug directly — consistent with why V3/V6/V7's BURST_K>1 approaches regressed).
+4. v10's 58.545 vs v1's 81.225 comparison could still be partly confounded by this bug/
+   variance rather than being a completely clean causal read on SPLIT_BY_LATENCY alone —
+   worth keeping appropriate uncertainty about the magnitude of that specific effect, even
+   though the DIRECTION (don't remove SPLIT_BY_LATENCY) is still the safer conclusion given
+   it's the only evidence we have.
+
+Sources: [Evaluator update and FAQ](https://www.kaggle.com/competitions/ai-agent-security-multi-step-tool-attacks/discussion/712642), [Upcoming Evaluation Updates and Leaderboard Refresh](https://www.kaggle.com/competitions/ai-agent-security-multi-step-tool-attacks/discussion/733058), [Evaluator update planned for Monday](https://www.kaggle.com/competitions/ai-agent-security-multi-step-tool-attacks/discussion/710234) — all read directly via `kaggle forums topics show <id>`.

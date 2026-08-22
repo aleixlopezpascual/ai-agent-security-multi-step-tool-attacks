@@ -25,10 +25,22 @@ CLI-verified history (best first):
 throttling) has REGRESSED the real score.** Local smoke tests are directionally
 UNRELIABLE at least once (v10 looked flat/positive locally, was substantially worse for
 real) — weight real submission feedback over local raw/sec signals when they conflict.
-Also note: identical code has real ~8.5% score variance run-to-run (generation is
-stochastic) — a "win" needs real margin over 88.740, not a razor-thin edge. See
-`conductor/autonomous-improvement-log.md` for the live autonomous-improvement session log
-(submission-by-submission), the fully-CLI-automated push/submit process, and current status.
+Also note: identical code has real ~8.5% score variance run-to-run. **Correction
+(verified via the competition's own discussion forum, `kaggle forums topics show`):** this
+isn't primarily generic LLM sampling "stochasticity" — the organizers deployed a major
+evaluator update on 2026-08-05 (fixed a Gemma tool-call parsing bug where "subsequent
+tool-call responses" wrapped in `{}` failed to parse; changed replay timeouts from
+all-or-nothing to partial-credit) and **invalidated the entire leaderboard** as a result.
+Multiple participants report the Gemma multi-tool-call parsing bug is STILL not fully
+fixed as of 2026-08-18 (asking Gemma for 2-4 sequential `http.post` calls in one turn
+often only registers 1). This directly implicates any BURST_K>1-style design (single
+message, multiple calls) — consistent with why V3/V6/V7 regressed — but should NOT affect
+K=1 or multi-TURN designs (`v8_multiturn.py` family), since each turn's post is the FIRST
+call of that turn, not a "subsequent" one. A "win" needs real margin over 88.740, not a
+razor-thin edge — both from residual variance and from this bug's uneven impact across
+designs. See `conductor/autonomous-improvement-log.md` for the live autonomous-improvement
+session log (submission-by-submission), the fully-CLI-automated push/submit process, full
+forum-research writeup, and current status.
 
 | File | Description | Local (Gemma) | Local (GPT-OSS) | Local mean | Kaggle public (mean) | Status |
 |---|---|---|---|---|---|---|
