@@ -1,0 +1,34 @@
+conductor/autonomous-improvement-log.md
+  s_86c46ba8e31ab2::t_074217d61cf3f7 453-484
+versions/README.md
+  s_86c46ba8e31ab2::t_8cb1693a387af1 216
+  s_86c46ba8e31ab2::t_3956c9b6a71712 192-215
+notebooks/ai-agent-security-v15.ipynb
+  s_86c46ba8e31ab2::t_2eb2758e09226e 15
+versions/v11_multiturn_harmony.py
+  s_86c46ba8e31ab2::t_6f696099d9063b 341,343-345
+  s_86c46ba8e31ab2::t_a60c16236d4610 1-29
+  s_86c46ba8e31ab2::t_84f2402a9b9269 277-287
+  s_86c46ba8e31ab2::t_dd375e922eeeb4 354,358,361,366,368,372
+  s_86c46ba8e31ab2::t_59be4e354bbef5 514-533
+  s_86c46ba8e31ab2::t_04b4540201e403 438,450,453-456,460-462,467,469,474-476,481-482,485,492-493
+  s_86c46ba8e31ab2::t_b2e0793f2bcd21 374-378
+  s_86c46ba8e31ab2::t_a2ceeb7580b0c1 30-176,186-276,288-340,342,346-353,355-357,359-360,362-365,367,369-371,373,379-437,439-449,451-452,457-459,463-466,468,470-473,477-480,483-484,486-491,494-513,534-536
+  s_86c46ba8e31ab2::t_305a8b31137939 177-185
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "88f5b514c1d9506226507b4d1413a22d8ff3e80e",
+  "prompts": {},
+  "sessions": {
+    "s_86c46ba8e31ab2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b800cc5a-7fed-4dae-9025-ddc2e9c03a25",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Aleix López"
+    }
+  }
+}
