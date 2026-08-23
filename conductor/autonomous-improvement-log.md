@@ -763,3 +763,9 @@ result if it happens. No action taken this cycle; still pausing.
 
 v12 ~13h56m pending (not yet at the ~15h watch-point), v16 ~3h pending. No new memory
 files, no competing local processes. Pausing, no action.
+
+## Cron check-in (2026-08-24 00:13): v12 now ~14h12m, still pending, nothing new
+
+Approaching the ~15h historical watch-point noted last cycle. No new memory files, no
+competing local processes. Pausing, no action -- will watch closely next cycle for either
+a resolved score or a failure around the 15h mark.
