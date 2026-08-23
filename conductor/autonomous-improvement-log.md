@@ -758,3 +758,8 @@ COMPLETE with a score) around the ~15h mark, that's a data point worth recording
 capacity-related failure, not necessarily a verdict on the REPLAY_SAFE_FRAC lever itself)
 -- don't conflate a queue-capacity failure with a "the margin change caused an overrun"
 result if it happens. No action taken this cycle; still pausing.
+
+## Cron check-in (2026-08-23 23:57): still pending, nothing new
+
+v12 ~13h56m pending (not yet at the ~15h watch-point), v16 ~3h pending. No new memory
+files, no competing local processes. Pausing, no action.
