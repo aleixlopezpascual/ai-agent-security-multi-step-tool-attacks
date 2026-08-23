@@ -815,3 +815,35 @@ independently right now (before anything new has resolved to justify a choice) r
 wasting it on an uncoordinated guess. Not submitting anything this cycle. Continuing to
 monitor v12 (~14h34m, past the informal ~15h historical watch-point territory now -- worth
 watching very closely next cycle) and the three SLOW_MULTIPOST_N submissions.
+
+## Cron check-in (2026-08-24 00:58): v12 RESOLVED -- 88.290, breaks the 6-for-6 regression streak; quota now fully exhausted
+
+**v12_tight_margins (55711937) is COMPLETE: public score 88.290**, after ~12.5h pending --
+the longest pending duration this session. This resolves the standing open question from
+`k1-ceiling-decision-2026-08-23`: does the Aug-5 partial-credit-on-timeout fix also cover
+the fill-phase `wall_deadline` overrun risk? **Answer: no catastrophic void occurred** --
+`REPLAY_SAFE_FRAC`/`FILL_BUDGET_FRAC` 0.99/0.99 completed normally and scored within the
+established 81.225-88.740 variance band (near the top), not a hard zero. This is the
+**first structural change all session to NOT clearly regress** -- breaks the prior 6-for-6
+regression pattern (V3, V6, V7, v10_no_split, v9, v8b all regressed 25-90%). Caveat: 88.290
+is still below the 88.740 anchor and inside the ~8.5% run-to-run noise band from the two
+identical-code V1 submissions, so this is "not dangerous, plausibly neutral-to-mildly-positive"
+evidence, not a confirmed win -- do not treat REPLAY_SAFE_FRAC as fully validated, but the
+catastrophic-downside framing that justified pausing this lever is now specifically refuted
+for the 0.99 value tested.
+
+**Quota fully exhausted today**: the parallel session used the 4th slot on `v18_slow_multipost_n3`
+(55726522, N=3, PENDING) and the 5th/final slot on `v19_slow_multipost_n8` (55726763, N=8,
+PENDING) -- per explicit user choice via AskUserQuestion to push the sweep past the
+originally-tested range rather than wait. **5/5 submissions used today (v12, v16, v17, v18,
+v19), 0 remaining** -- confirmed both via `submission-limits` and the submit command's own
+"0 submissions remaining today" response. Full `SLOW_MULTIPOST_N` sweep now in flight:
+N=2 (55726389), N=3 (55726522), N=4 (55725150), N=8 (55726763) -- ALL still PENDING as of
+this writing, alongside the resolved v12.
+
+**Decision this cycle**: nothing to submit (0 slots remain today regardless of any new
+lever's merit). Updated `versions/README.md`'s submission history table and regression-
+pattern note with the 88.290 result. Next cycle: check whether any of the four
+SLOW_MULTIPOST_N submissions have resolved -- once they do, we'll have real N=2/3/4/8 data
+points to inform tomorrow's plan (continue the sweep further, pick the best N and retest
+for confirmation, or combine with the now-partially-validated REPLAY_SAFE_FRAC=0.99).

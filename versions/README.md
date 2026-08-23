@@ -12,6 +12,7 @@ CLI-verified history (best first):
 | Score | Version | Date | Notes |
 |---|---|---|---|
 | **88.740** | V1 — plain BURST_K=1, no per-model caps | 2026-08-17 | **Best real score to date.** |
+| 88.290 | v12_tight_margins — `FILL_BUDGET_FRAC`/`REPLAY_SAFE_FRAC` 0.95/0.98→0.99/0.99 | 2026-08-23/24 (~12.5h pending) | **First structural change that does NOT clearly regress** — within the 81.225-88.740 variance band, near the top. Resolves the standing open question: no catastrophic fill-phase-overrun void occurred at 0.99. Not a confirmed win (still inside noise), but breaks the prior 6-for-6 regression streak. |
 | 87.075 | "v22 public notebook" | 2026-08-19 | A copied/adapted public kernel, not our own lineage. |
 | 81.225 | V1 — SAME code as 88.740, re-submitted | 2026-08-21 | **Real run-to-run variance for IDENTICAL code (~8.5%).** |
 | 58.545 | v10_no_split — `SPLIT_BY_LATENCY=False` | 2026-08-21 | Local smoke test said +3% on GPT-OSS; REAL result was -28% vs the 81.225 re-run. |
@@ -21,15 +22,21 @@ CLI-verified history (best first):
 | 46.955 | V6 — Model-Adaptive Sizing (cap=1500/400) | 2026-08-20 | |
 | 45.000 | V7 — Model-Adaptive Sizing (cap=1600/500) | 2026-08-20 | Was the LIVE kernel until reverted 2026-08-21. |
 
-**Pattern: every structural addition on top of plain V1 has REGRESSED the real score —
-now 6-for-6** (V3, V6, V7, v10_no_split, v9_confused_deputy [local-only, refuted before
-submitting], v8b_multiturn3 [58.750, confirmed 2026-08-22]). **Local raw/sec signals have
-NEVER once translated into a real Kaggle win** for anything beyond the plain K=1 primitive
-itself — v10 looked flat/positive locally (+3%) and lost by 28% for real; v8b looked
-strongly positive locally (+27%) and still regressed to 58.750. Treat any future local
-"+X% raw/sec" result as low-confidence noise, not a green light to submit, until we
-understand WHY local signals keep pointing the wrong way — weight real submission feedback
-far more heavily than local smoke tests when they conflict.
+**Pattern update (2026-08-24): the prior "6-for-6 regression" streak is now broken.**
+`v12_tight_margins` (88.290) is the first structural change that lands within the normal
+variance band instead of regressing 25-50%+. This does NOT mean margin-tuning is a
+confirmed win — 88.290 is still below the 88.740 anchor and inside the ~8.5% run-to-run
+noise band established by the two identical-code V1 submissions — but it does mean the
+"every structural change regresses" heuristic should no longer be applied uncritically.
+Remaining prior pattern (V3, V6, V7, v10_no_split, v9_confused_deputy [local-only],
+v8b_multiturn3 [58.750]) still stands as-is; only v12 breaks it. **Local raw/sec signals
+have still NEVER once translated cleanly into a real Kaggle win** for anything beyond the
+plain K=1 primitive itself — v10 looked flat/positive locally (+3%) and lost by 28% for
+real; v8b looked strongly positive locally (+27%) and still regressed to 58.750. Treat any
+future local "+X% raw/sec" result as low-confidence noise, not a green light to submit,
+until proven otherwise by a real result — weight real submission feedback far more heavily
+than local smoke tests when they conflict. The SLOW_MULTIPOST_N sweep (v16/v17/v18/v19,
+N=4/2/3/8, all PENDING as of 2026-08-24 00:51) is the next real-world test of this.
 Also note: identical code has real ~8.5% score variance run-to-run. **Correction
 (verified via the competition's own discussion forum, `kaggle forums topics show`):** this
 isn't primarily generic LLM sampling "stochasticity" — the organizers deployed a major
@@ -381,9 +388,15 @@ under the real grading harness instead). Also: `kaggle competitions submission-l
 than inferring the daily reset from the local calendar date (confirmed the day boundary
 does NOT track local midnight).
 
-**Quota state as of 2026-08-24 00:35: 4/5 used today (v12, v16, v17, v18), 1 remaining. All
-four are PENDING.** Coordination note for whoever spends the 5th slot: the parallel
-session's own stated plan is to wait for v16/v17/v18 to resolve so the last slot is
-evidence-based (three real SLOW_MULTIPOST_N data points instead of a guess) rather than
-racing to spend it immediately — deferring to that plan rather than independently spending
-the shared last slot on an uncoordinated guess.
+**Update (2026-08-24 00:51): 5th/final slot spent on `v19_slow_multipost_n8.py`**
+(`SLOW_MULTIPOST_N` 3→8, one line changed from v18), submitted as `55726763`, PENDING —
+per explicit user choice (asked via AskUserQuestion: wait / resubmit baseline / push to
+N=8 / other) to push the sweep past the originally-tested range rather than wait for
+N=2/3/4 to resolve first. **Today's quota is now fully exhausted: 5/5 used (v12, v16, v17,
+v18, v19), 0 remaining** — `kaggle competitions submit` itself confirmed "0 submissions
+remaining today" after this push. Full sweep in flight: N=2 (55726389), N=3 (55726522), N=4
+(55725150), N=8 (55726763) — none resolved as of this writing. `v12_tight_margins`
+resolved in the meantime: **88.290, COMPLETE** (see submission history table above) — the
+first structural change to land within the normal variance band rather than regress.
+Next session/cycle: check whether any of the four SLOW_MULTIPOST_N submissions have
+resolved before proposing tomorrow's plan.
