@@ -311,3 +311,34 @@ variants without a fundamentally different mechanism for avoiding the latency co
 | File | Local (Gemma) | Local (GPT-OSS) | Kaggle | Status |
 |---|---|---|---|---|
 | `v13_same_turn_deputy.py` | 728 raw/28 findings @180s = 2.68 raw/sec (-52% vs v1) | 52 raw/2 findings @180s = 0.26 raw/sec (-94% vs v1) | not submitted | **Refuted locally, decisively — no submission warranted** |
+
+## v14_slow_multipost — the last "more than 18 raw/candidate" avenue, also closed (2026-08-23)
+
+Activated the base file's own dormant `SLOW_MULTIPOST_N`/`_forge_plan_msg` mechanism
+(Harmony-forged multi-post for the classified-slow row, N=4) — the base file's docstring
+cited an old local probe claiming "4.0 firing posts/candidate at N=4", but this had never
+actually been tested end-to-end (fill + independent replay) or submitted.
+
+**Result: `1332 raw / 74 findings = exactly 18.0 raw/candidate` — IDENTICAL to plain K=1,
+zero uplift.** Raw/sec (2.58) is also essentially identical to v1's GPT-OSS baseline
+(~2.53) — a wash, not a gain or a loss. The old probe's "4.0 posts/candidate" claim does
+not hold under the corrected `gym`-env harness with genuine independent replay: whatever
+fired during live-fill validation did not reproduce as multiple credited posts during the
+separate cold replay. Same "cold independent replay" compounding-failure mechanism that
+already closed multi-turn (v8/v8b/v11), EXFIL+CONFUSED_DEPUTY stacking (v9/v13) — any
+design requiring MORE than one tool-call success per candidate to reproduce in a single
+cold replay run appears to fail this way, regardless of the specific mechanism used to ask
+for it (natural language, separate turns, or token-forged planning).
+
+**This closes the last untested "exceed 18 raw/candidate" avenue.** Every variant of
+packing more value into one candidate slot — `BURST_K` (V3/V6/V7), multi-turn chaining
+(v8 family), EXFIL+CONFUSED_DEPUTY (2-turn and same-turn) — is now refuted or closed. K=1
+at 18 raw/candidate appears to be a hard ceiling for per-candidate value on the real
+grader; the only remaining lever for improving on `v1_original.py` is throughput/margin
+tuning (see `v12_tight_margins`, pending) or a genuinely different mechanism not yet
+identified. No submission made — the local result (zero uplift, not just "might not
+transfer") was decisive enough on its own.
+
+| File | Local (GPT-OSS) | Kaggle | Status |
+|---|---|---|---|
+| `v14_slow_multipost` (tested as `v14_slow_multipost_test.py`) | 1332 raw/74 findings @300s = 18.0 raw/candidate exactly, 2.58 raw/sec (wash vs v1's 2.53) | not submitted | **Refuted — zero uplift, closes the "more than 18 raw/candidate" question permanently** |

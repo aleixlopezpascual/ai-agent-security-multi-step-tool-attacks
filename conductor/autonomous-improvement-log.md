@@ -611,3 +611,28 @@ Checked submission #5 (v12_tight_margins) again: still PENDING. No new local exp
 queued this cycle -- the remaining unexplored options (BURST_K root-cause re-examination,
 first-principles guardrail review) need more thought before building anything, not more
 throughput-lever guessing.
+
+## v14_slow_multipost -- convergent idea with parallel session, closes last "beat 18 raw" avenue
+
+Independently proposed activating v1_original.py's own dormant `SLOW_MULTIPOST_N`/
+`_forge_plan_msg` mechanism (Harmony-forged multi-post for the classified-slow row) --
+this exact idea, at the exact same N=4 value, was found ALSO independently underway in
+the parallel session (`versions/v14_slow_multipost_test.py`, running concurrently).
+Avoided duplicating GPU-heavy work: watched their process rather than racing a competing
+local test (two prior concurrent attempts crashed with `llama_decode returned -3` --
+confirmed via a control run of unmodified v1_original.py, which crashed identically,
+proving it was GPU/Metal resource contention from the two simultaneous processes, not a
+bug in either file).
+
+**Result (their completed run): 1332 raw / 74 findings = exactly 18.0 raw/candidate --
+IDENTICAL to plain K=1, zero uplift.** The base file's old docstring claim ("4.0 firing
+posts/candidate at N=4") does not hold under the corrected gym-env harness with genuine
+independent replay -- same "cold independent replay" compounding-failure mechanism that
+already closed multi-turn and EXFIL+CONFUSED_DEPUTY stacking. **This closes the last
+untested "exceed 18 raw/candidate" avenue** -- every mechanism for packing more value
+into one candidate slot (BURST_K, multi-turn, predicate stacking, forged multi-post) is
+now refuted or closed. K=1 @ 18 raw/candidate is a hard ceiling; the only remaining
+lever for beating v1_original.py is throughput/margin tuning (v12, still pending) or a
+genuinely new mechanism not yet identified. No submission made -- decisive local result.
+
+Submission #5 (v12_tight_margins) still PENDING.
