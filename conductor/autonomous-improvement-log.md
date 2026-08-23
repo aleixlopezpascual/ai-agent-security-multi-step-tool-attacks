@@ -636,3 +636,70 @@ lever for beating v1_original.py is throughput/margin tuning (v12, still pending
 genuinely new mechanism not yet identified. No submission made -- decisive local result.
 
 Submission #5 (v12_tight_margins) still PENDING.
+
+## CORRECTION (2026-08-23, later cycle): the v14 "closed, zero uplift" conclusion above was CONFOUNDED
+
+The "1332 raw / 74 findings = 18.0 raw/candidate, zero uplift" result above was a **silent
+no-op control run, not a genuine null result**. Root cause (found and documented by the
+parallel session, `slow-multipost-n-first-positive-lever` memory): `SPLIT_THRESHOLD_S=12.0`
+was calibrated from REAL Kaggle 2xT4 timings (real GPT-OSS ~20.4s/candidate, real Gemma
+~8.5s/candidate). On this local Mac GGUF setup, GPT-OSS's actual local latency is only
+~3.5s/candidate -- well under 12.0s -- so `split_on` NEVER fires locally at the default
+threshold, and even the already-proven-valuable `FRAME_TEMPLATE` bypass silently no-ops in
+any naive local smoke test at default settings. The first v14 test never actually exercised
+`_forge_plan_msg` at all.
+
+**Re-tested correctly**: forced `SPLIT_THRESHOLD_S=0.5` (LOCAL-OBSERVABILITY-ONLY change,
+guarantees the slow branch fires on this hardware) in `versions/v15_forced_split_control.py`
+(N=1, control) and `versions/v14_slow_multipost_test.py` (N=4, test), 300s GPT-OSS runs:
+
+| run | variant | kept findings | raw | raw/sec |
+|---|---|---|---|---|
+| 1st (parallel session) | v15 control | 194 | 3492 | 6.60 |
+| 1st (parallel session) | v14 test (N=4) | 60 | 3576 | 6.85 (+3.8%) |
+| 2nd (this session, repeat) | v15 control | 185 | 3330 | 6.33 |
+| 2nd (this session, repeat) | v14 test (N=4) | 60 | 3576 | 6.85 (byte-identical to 1st run) |
+
+**This reproduces cleanly**: v14/N=4 landed at the exact same raw/candidate (59.6) and
+raw/sec (6.85) on two fully independent runs, while the N=1 control varied 6.60→6.33 (the
+actual noise source). Combined delta vs the control's mean (6.465) is **+5.9%**, not the
+single-run +3.8% first estimated -- and it's the **first structural change all session to
+come back net POSITIVE on a repeat run**, not just less-negative (every prior gamble --
+BURST_K, PROBE_HOPS, multi-turn, CONFUSED_DEPUTY 2-turn and same-turn -- regressed both
+times it was tried). `_forge_plan_msg` is a token-level Harmony channel forge (near-100%
+compliance per the code's own historical probe comment), categorically different from the
+natural-language "call K times" instructions that failed for BURST_K/v9/v13.
+
+**Real-Kaggle safety check before acting on this**: does the SAME threshold miscalibration
+also affect real Kaggle (i.e. is real GPT-OSS ALSO misclassified as "fast")? No --
+`SPLIT_THRESHOLD_S`'s own comment states real GPT-OSS latency is ~20.4s/candidate, already
+well above the 12.0s threshold (correctly classified "slow" today, which is why
+`v10_no_split`'s real 58.545 regression already proved `FRAME_TEMPLATE` has genuine live
+value). Real Gemma (~8.5s) stays correctly under threshold too. The local hardware being
+unusually fast is why local smoke tests need the threshold forced down to observe the
+effect at all -- **this is a local-observability-only change; SPLIT_THRESHOLD_S must NOT be
+changed for a real submission.** (I independently derived and then discarded a competing
+hypothesis that the 12.0s threshold might ALSO misfire on real Kaggle, based on the
+back-solved ~8.7s real per-candidate cost in `k1-ceiling-decision-2026-08-23` appearing to
+match a "misclassified GPT-OSS" prediction almost exactly (8.58s) -- but that ~8.7s figure
+is a blended/Gemma-ballpark calibration constant, not GPT-OSS-specific, and is superseded
+by the code's own explicit ~20.4s GPT-OSS real-latency comment. Recorded here so this
+plausible-but-wrong lead isn't re-investigated by a future cycle.)
+
+## v16_slow_multipost_n4.py -- submitting the validated lever (single-variable: SLOW_MULTIPOST_N 1->4)
+
+Built `versions/v16_slow_multipost_n4.py`: byte-identical to `v1_original.py` except
+`SLOW_MULTIPOST_N = 1` -> `4` (confirmed via `diff`, only the docstring header and that one
+line differ). `SPLIT_THRESHOLD_S` stays at the default 12.0 (untouched) -- on real Kaggle
+this only activates the multi-post Harmony-forge on the row already correctly classified
+"slow" (GPT-OSS), never Gemma. Does not touch `REPLAY_SAFE_FRAC`/`FILL_BUDGET_FRAC` (the
+still-live-risk wall_deadline knob paused after the v12 analysis) -- this is a genuinely
+independent, previously-never-activated variable on a real submission. Compiles clean,
+packaged via `package_submission.py --sync-metadata`, dry-run emit smoke-tested (5
+candidates, no crash).
+
+Risk framing: this is the single most locally-validated (2 independent reproductions,
+consistent direction, mechanistically distinct from every previously-refuted lever) and
+lowest-incremental-risk candidate found this session. Proceeding to submit per the
+standing mandate ("continue until a submission beats 88.740 by a real margin"), using one
+of today's remaining submission slots.
