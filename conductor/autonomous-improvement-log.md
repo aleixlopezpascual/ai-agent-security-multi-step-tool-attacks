@@ -709,3 +709,18 @@ auto-derives id from the attack filename; ran COMPLETE on first status check), s
 `55725150` at 2026-08-23 20:52:51, status PENDING. 3 submissions remaining today after this
 one. `v12_tight_margins` (55711937, submitted 10:01:30 same day) is STILL PENDING ~11h later
 -- unusually long even for this evaluator; keep checking both each cycle.
+
+## Cron check-in (2026-08-23, no new information)
+
+Both `v12_tight_margins` (55711937, ~12h pending) and `v16_slow_multipost_n4` (55725150,
+~2h pending) remain `SubmissionStatus.PENDING` -- no scores yet. Checked shared memory dir:
+no new files since my own `v16-slow-multipost-submitted-2026-08-23.md`/`MEMORY.md` writes
+last cycle (mtimes unchanged, no parallel-session activity). No competing local
+`evaluate_local.py` processes running. Nothing to reconcile or act on this cycle.
+
+Per the standing rule ("if no new lever is clearly justified, it's fine to pause and report
+status rather than force a low-confidence submission"): both pending submissions each
+resolve a real open question (v12: does the Aug-5 partial-credit fix cover fill-phase
+wall-clock overruns; v16: does the corrected SLOW_MULTIPOST_N finding transfer to real
+Kaggle). Spending more quota on a new speculative lever before either resolves would waste
+information value -- pausing here, not taking action, letting the cron continue.
