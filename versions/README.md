@@ -57,6 +57,7 @@ forum-research writeup, and current status.
 | `v9_confused_deputy.py` | EXPERIMENTAL: 2-turn chain, turn 1 = proven `http.post` EXFILTRATION, turn 2 = `email.send` CONFUSED_DEPUTY (additive predicate, not currently scored at all) | **264 raw / 12 findings @120s = 2.83 raw/sec (vs v1's 5.49)** | **624 raw / 24 findings @300s = 1.40 raw/sec (vs v1's 2.53)** | — | not submitted | **Hypothesis REFUTED on BOTH models — abandon** |
 | `v8b_multiturn3.py` | Same as v8_multiturn.py but `N_TURNS=3` (mapping the GPT-OSS amortization curve) | 100 raw / 2 findings @120s (small sample, structurally sound, no errors) | **1200 raw / 24 findings @300s = 3.21 raw/sec (+27% vs v1's 2.53, +7% vs N=2)** | — | **58.750 (real, confirmed) — REGRESSION, same pattern as v10** | Local +27% signal did NOT transfer to real score — 6th structural change in a row to regress |
 | `v8c_multiturn4.py` | Same as v8_multiturn.py but `N_TURNS=4` | not tested | 924 raw / 14 findings @300s = 3.09 raw/sec (below N=3; smaller/noisier sample, see caveat below) | — | not submitted | Curve appears to reverse past N=3 — deprioritized |
+| `v11_probe_hops.py` | EXPERIMENTAL (from a parallel session, `session/dashing-magpie-6gad`): activates the previously-documented-but-never-used `PROBE_HOPS=1` fill-throughput lever, `REPLAY_COST_COEF=2.1` (calibrated to GPT-OSS's measured worse-case speedup ratio) | 1512 raw/84 findings @300s (vs v1's 2862/159 — regression) | 1008 raw/56 findings @300s (vs v1's 1386/77 — regression) | — | not submitted | **Permanently abandoned** — analytically proven structurally dead under `REPLAY_SAFE_SIZING`: the replay-cost ledger (not fill wall-clock) binds achievable candidate count, and that ceiling is invariant to probe speed. Any safety margin on `REPLAY_COST_COEF` is pure lost throughput with zero possible upside. See memory `probe-hops-calibration-result`. |
 
 ### GPT-OSS multi-turn amortization curve (2026-08-21, 300s budget)
 
@@ -267,3 +268,18 @@ Gemma 900 raw/50 findings (50×18 exactly, 120s), GPT-OSS 1332 raw/74 findings
 | File | Local (Gemma) | Local (GPT-OSS) | Kaggle | Status |
 |---|---|---|---|---|
 | `v12_tight_margins.py` | 900 raw/50 findings @120s | 1332 raw/74 findings @300s | pending (submission 55711937) | Submitted as candidate #5, kernel v12 |
+
+**IMPORTANT self-correction (2026-08-23):** this exact lever (`REPLAY_SAFE_FRAC` retuning) was
+independently analyzed by a parallel session (`session/dashing-magpie-6gad`, see memory
+`k1-ceiling-decision-2026-08-23`) and paused as bad risk/reward BEFORE this submission was made
+— that analysis wasn't checked first. The reasoning error: `REPLAY_SAFE_FRAC` also controls
+`wall_deadline` (the fill/attack.py-phase's OWN overrun protection), a risk the 2026-08-05
+partial-credit fix does NOT cover (that fix only preserves score on a *replay*-phase timeout;
+"submissions that exceed the timeout during the attack.py phase will still be terminated" per
+the organizers' own words). `FILL_BUDGET_FRAC`'s change was inert (dead code path when
+`REPLAY_SAFE_SIZING=True`, which it is) — only the `REPLAY_SAFE_FRAC` 0.98→0.99 change had real
+effect, and it touches the still-dangerous mechanism. This submission is now a live empirical
+test of a genuinely open question (does the fill-phase overrun risk still work exactly as the
+old code comment describes, post-Aug-5?) rather than a validated safe bet — treat its resolved
+score as informative regardless of outcome, but do not repeat this specific lever again without
+first checking whether this exact question has already been answered elsewhere.

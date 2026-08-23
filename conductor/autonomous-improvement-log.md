@@ -551,3 +551,39 @@ structure -- a genuinely different axis from every prior attempt (all 7 of which
 changed what candidates say, not how conservatively the fill loop stops). If this
 doesn't move the needle, the more aggressive next step (REPLAY_SAFE_SIZING=False
 entirely, reverting to the flat MARGIN_S-only stop) is the natural follow-up.
+
+## Reconciled parallel-session work (2026-08-23)
+
+Discovered a second parallel Claude session working in a sibling worktree
+(`session/dashing-magpie-6gad`, sharing this project's persistent memory but a
+separate git branch). It had done rigorous, valuable, UNCOMMITTED research:
+- Proved `PROBE_HOPS` structurally dead under `REPLAY_SAFE_SIZING` (not just
+  mis-tuned) — the replay-cost ledger, not fill wall-clock, binds achievable
+  candidate count, and that ceiling is invariant to fill-loop probe speed. Built
+  and smoke-tested `versions/v11_probe_hops.py` (regressed locally on both models,
+  consistent with the analytical proof). Never submitted.
+- Had ALREADY analyzed the exact `REPLAY_SAFE_FRAC` retuning I submitted as v12,
+  and the user had agreed there to pause it as bad risk/reward (<1pt expected gain
+  vs a catastrophic-void downside) — a decision I wasn't aware of when I proposed
+  and submitted v12_tight_margins.py. Root cause of my error: `REPLAY_SAFE_FRAC`
+  also controls `wall_deadline` (fill-phase overrun protection), a risk the Aug-5
+  partial-credit fix does NOT cover (that fix only applies to REPLAY-phase
+  timeouts; attack.py-phase overruns still hard-fail per the organizers' own
+  words). `FILL_BUDGET_FRAC`'s change was inert (dead code path under
+  `REPLAY_SAFE_SIZING=True`) -- only `REPLAY_SAFE_FRAC` had real, risky effect.
+- Its own notes, on observing my submission, reframed it fairly: their pause
+  assumed the code's "voids the whole submission" comment is still accurate
+  post-Aug-5 -- itself unverified. My submission is a legitimate live test of
+  that open question, not simply an ignored warning.
+- Corrected `docs/reports/EXPERIMENTS.md`'s stale "PENDING/projected" claims with
+  real confirmed scores (Experiments 7, 8, 12) and current status.
+
+Merged into this branch: `docs/reports/EXPERIMENTS.md` (clean apply, no conflict),
+`versions/v11_probe_hops.py` (new file), and a `versions/README.md` entry for it,
+plus an explicit self-correction note on the v12_tight_margins entry documenting
+this exact coordination gap so it isn't repeated. **Lesson for future cycles:
+before proposing/submitting a throughput/margin-tuning lever, check whether a
+parallel session has already analyzed and decided on it** -- this is a real risk
+specific to multi-worktree/multi-session work on the same shared memory.
+
+v12_tight_margins.py (submission 55711937) still PENDING.

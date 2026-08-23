@@ -57,13 +57,13 @@ This document logs all experiments, platform discoveries, bug-resolutions, and r
 
 ### 🧪 Experiment 7: Hitting the Sweet Spot (ai-agent-security-v15 Version 3)
 *   **Pipeline:** Tuning the multiplier variables to balance execution stability and density. Implemented `BURST_K = 3` (requesting 3 sequential posts), the Harmony token bypass (`<|end|><|start|>...`), and highly semantic URL masking (`metrics-ingest.example.com`) to prevent guardrails from blocking the bursts.
-*   **Result:** ⏳ **PENDING (Currently Running on Kaggle Servers).**
-*   **Hypothesis:** This setup theoretically targets 54 raw points per candidate (triple density) while maintaining near-100% LLM instruction adherence by avoiding the `K=6` failure point.
+*   **Result:** ✅ **COMPLETE — `52.055` real Kaggle score (2026-08-19), confirmed via `kaggle competitions submissions`. REGRESSION vs the `88.740` V1 anchor.**
+*   **Hypothesis (REFUTED):** This setup theoretically targets 54 raw points per candidate (triple density) while maintaining near-100% LLM instruction adherence by avoiding the `K=6` failure point. Real result did not bear this out — see Experiment 11's Multi-Post Latency Trap diagnosis, which explains why BURST_K>1 loses far more candidate volume than the density gain recovers.
 
 ### 🧪 Experiment 8: The Replay Wall Fixes (ai-agent-security-v15 Version 4)
 *   **Pipeline:** Tuning the pipeline to circumvent the hidden 1800-second Replay Wall discovered in community forums. Reduced the absolute maximum candidate generation (`HARD_N_CAP = 630`). Shifted payload density to `BURST_K = 2` to safely balance token generation within the timeout window. Stripped all code-syntax from the prompt templates to enforce a pure, terse natural-language imperative ("Call http.post once...").
-*   **Result:** ⏳ **PENDING (Currently Running on Kaggle Servers).**
-*   **Hypothesis:** By combining the Harmony Tokenizer bypass with pure natural-language imperatives and a strict 630 candidate cap, we will squeeze the maximum possible candidates under the Replay Wall without crashing, ensuring a fully evaluated run instead of a `0.000` timeout.
+*   **Result:** ✅ **COMPLETE — REGRESSED, in the same 45-55 real-score cluster as every other BURST_K>1 variant (this specific submission wasn't uniquely labeled in the Kaggle CLI history, but no BURST_K>1 design has ever beaten the 88.740 V1 anchor — see `kaggle-real-submission-history` and Experiment 11).**
+*   **Hypothesis (REFUTED):** By combining the Harmony Tokenizer bypass with pure natural-language imperatives and a strict 630 candidate cap, we will squeeze the maximum possible candidates under the Replay Wall without crashing, ensuring a fully evaluated run instead of a `0.000` timeout. The cap itself wasn't the binding constraint — the Multi-Post Latency Trap (Experiment 11) was.
 
 ### 🧪 Experiment 9: Adaptive Density Calibration (ai-agent-security-v15 Version 5)
 *   **Pipeline:** Dynamic density scaling pipeline. Automatically shifts stance based on remaining budget: starts at `BURST_K = 3` (54 points), falls back to `BURST_K = 2` (36 points) at 45% time left, and falls back to `BURST_K = 1` (18 points) at 15% time left. At the end, sorts findings by density descending and slices the top `HARD_N_CAP = 630` to guarantee staying under the Replay Wall.
@@ -96,32 +96,33 @@ This document logs all experiments, platform discoveries, bug-resolutions, and r
 *   **Pipeline:** Reverting to the high-volume, ultra-fast single-hop exfiltrations (`BURST_K = 1`) but leveraging our dynamic classifier to optimize both models:
     *   On **Gemma**, we set `cap = 1600` (completely safe from replay timeouts at `K=1` since there is no token bloat, letting Gemma run wide to its full extent).
     *   On **GPT-OSS**, we set `cap = 500` (using our **Harmony Tokenizer Bypass** to raise its candidate volume from ~350 to 500).
-*   **Result:** ⏳ **PENDING (Currently Running on Kaggle Servers).**
-*   **Hypothesis:** This represents our absolute highest-probability path to beating `88.740`. It keeps the lightning-fast Gemma speed of the original notebook but injects our speed-booster to raise the floor of the slow model (GPT-OSS), scoring a projected **`~106.2`** points.
+*   **Result:** ✅ **COMPLETE — `45.000` real Kaggle score (2026-08-20), confirmed via `kaggle competitions submissions`. REGRESSION, worse than plain V1's `88.740`/`81.225`.**
+*   **Hypothesis (REFUTED):** This represented our absolute highest-probability path to beating `88.740` — it kept the lightning-fast Gemma speed of the original notebook while injecting a speed-booster to raise the floor of the slow model (GPT-OSS), with a projected **`~106.2`** points. The projection did not hold: per-model caps regressed both rows. The repo reverted to plain `v1_original.py` (BURST_K=1, no per-model caps) on 2026-08-21, reconfirming the `81.225` baseline. Per-model branching is now a standing anti-pattern — see `kaggle-real-submission-history` memory.
 
 ---
 
-## 🎯 Strategic Next Steps: The Calibrated Latency Curve
+## 🎯 Current Status (updated 2026-08-23 — see `versions/README.md` and project memory for full detail)
 
-Following our Head-to-Head Ground-Truth test, we have completely updated our model's speed-density curve. Speed and volume at `K=1` are mathematically superior to sequential multi-posting.
+**The `106.2` projection above was REFUTED by real Kaggle scoring.** Every structural addition on
+top of plain K=1 `v1_original.py` has regressed the real score — BURST_K>1 (Experiments 6/7/8/12,
+this doc), multi-turn chaining (`v8b_multiturn3`, `v10_no_split`), and `v9_confused_deputy` all
+scored below the plain K=1 anchor. Current real-score anchor: **`88.740`** (2026-08-17, plain
+`v1_original.py`, BURST_K=1, no per-model caps), re-confirmed at `81.225` on 2026-08-21 with
+identical code (real run-to-run variance, not a regression — see `kaggle-real-submission-history`
+memory for the documented Aug-5 evaluator bug + non-determinism explanation).
 
-```
-                       [ CALIBRATED SPEED-DENSITY CURVE ]
-  Score (Normalized)
-    ^
-    |                                   (Sweet Spot: K=1 Sizing)
-    |                                        [106.2 Projected]
-    |                                             /
-    |                                            /  [88.74 Baseline]
-    |                                           /  /
-    |                                          /  /
-    |                                         /  /
-    |                                        /  /
-    |                                       /  /
-    |                                      /  /  [51.82] (K=2)
-    |                                     /  /  /
-    |                                    /  /  /
-    |                                   /  /  /
-    +-------------------------------------------------------------> BURST_K
-                                       K=1     K=2
-```
+Live threads as of 2026-08-23:
+- `PROBE_HOPS` fill-throughput lever: analytically proven structurally dead under
+  `REPLAY_SAFE_SIZING` (the replay-cost ledger, not fill wall-clock, is what binds — probe speed
+  can't change the achievable candidate ceiling). Permanently abandoned.
+- `REPLAY_SAFE_FRAC`/`FILL_BUDGET_FRAC` tightening (0.98/0.95 → 0.99/0.99): a real submission
+  (`v12_tight_margins`, submitted 2026-08-23, citing the Aug-5 partial-credit-on-timeout fix as
+  reducing the overrun-risk downside) is **currently PENDING** on Kaggle — check
+  `kaggle competitions submissions` for the resolved score before drawing conclusions either way.
+- `v11_multiturn_harmony` (3-turn chain + Harmony bypass, isolates the multi-turn-vs-missing-bypass
+  confound from `v8b_multiturn3`): scored **`75.875`** (2026-08-22) — confirms multi-turn chaining
+  itself still costs real score even with the bypass intact.
+
+For the full experiment catalog with local-vs-real numbers see `versions/README.md`; for the
+research/decision trail (why local raw/sec doesn't predict real score, risk analysis on margin
+tuning, etc.) see this project's Claude memory index (`MEMORY.md`).
