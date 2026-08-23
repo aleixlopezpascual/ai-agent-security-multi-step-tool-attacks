@@ -358,3 +358,32 @@ the one variable that was built but never activated on any real submission.
 |---|---|---|---|
 | `v14_slow_multipost_test.py` (forced threshold, local-only) | 3576 raw/60 findings @300s = 59.6 raw/candidate, 6.85 raw/sec, reproduced twice | not submitted (local-only control) | **Corrected: real, reproducible +5.9% vs N=1 control once classification is fixed** |
 | `v16_slow_multipost_n4.py` (real submission: `SLOW_MULTIPOST_N` 1→4 only, `SPLIT_THRESHOLD_S` untouched at 12.0) | n/a (real-hardware default threshold is a local no-op by design) | submission `55725150`, 2026-08-23, **PENDING** | Single-variable test of the corrected finding on real Kaggle |
+
+## v17/v18 — SLOW_MULTIPOST_N sweep (N=2, N=3), submitted before v16 resolved, per explicit user directive (2026-08-23/24)
+
+User's explicit standing instruction (verbatim, via parallel session): *"yeah let's submit,
+we have 5 submissions per day which i want to exhaust every day to have more possibilities
+of winning."* This is a real, direct user preference that overrides the usual "only submit
+on strong evidence" caution for the daily quota specifically — spend all 5 slots/day even
+when a candidate isn't independently strongly justified, rather than leaving slots unused
+waiting for perfect evidence.
+
+Built by the parallel session directly in this worktree: `versions/v17_slow_multipost_n2.py`
+(`v16`'s code, `SLOW_MULTIPOST_N` 4→2) and `versions/v18_slow_multipost_n3.py` (`SLOW_MULTIPOST_N`
+2→3) — filling in the sweep so N=2/3/4 all get a real Kaggle data point instead of just the
+N=4 endpoint, once all three resolve. Submitted as `55726389` (v17) and `55726522` (v18),
+both **PENDING**. This also surfaced the correct submission CLI form for this code
+competition: `kaggle competitions submit -c <slug> -k <owner/kernel-slug> -f submission.csv
+-v <kernel-version> -m "..."` (a bare `-f submission.csv` upload gets a `400 Bad Request` —
+the downloaded kernel output is just a placeholder; Kaggle reruns the named kernel VERSION
+under the real grading harness instead). Also: `kaggle competitions submission-limits -c
+<slug>` gives an authoritative "Submissions today / Remaining today" count — more reliable
+than inferring the daily reset from the local calendar date (confirmed the day boundary
+does NOT track local midnight).
+
+**Quota state as of 2026-08-24 00:35: 4/5 used today (v12, v16, v17, v18), 1 remaining. All
+four are PENDING.** Coordination note for whoever spends the 5th slot: the parallel
+session's own stated plan is to wait for v16/v17/v18 to resolve so the last slot is
+evidence-based (three real SLOW_MULTIPOST_N data points instead of a guess) rather than
+racing to spend it immediately — deferring to that plan rather than independently spending
+the shared last slot on an uncoordinated guess.

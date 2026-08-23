@@ -788,3 +788,30 @@ evidence of a completed action. **I have NOT submitted this file, altered it, or
 its claims** -- leaving it for the parallel session to handle via its own workflow, and
 noting it here so my own future cycles don't mistake it for something I built or verified.
 Will re-check the submissions list and memory dir next cycle for confirmation either way.
+
+## Cron check-in (2026-08-24 00:35): v17/v18 confirmed real, new user directive found, quota nearly exhausted
+
+Yesterday's v17 draft was in fact submitted (memory `v17-slow-multipost-n2-submitted.md`,
+written by the parallel session): a genuine, direct user instruction was given --
+*"yeah let's submit, we have 5 submissions per day which i want to exhaust every day to
+have more possibilities of winning."* This changes the standing risk posture for the
+DAILY QUOTA specifically: exhausting all 5 slots/day is now an explicit user goal, not
+just "submit when evidence is strong." The parallel session acted on it: submitted
+`v17_slow_multipost_n2` (55726389, SLOW_MULTIPOST_N=2) and `v18_slow_multipost_n3`
+(55726522, SLOW_MULTIPOST_N=3), filling out the N=2/3/4 sweep alongside my own `v16`
+(N=4, 55725150). `kaggle competitions submission-limits` confirms: **4/5 used today,
+1 remaining.** All four of today's submissions (v12, v16, v17, v18) are still PENDING.
+
+Also picked up two useful procedural findings from that memory: the correct submission
+CLI form is `-k <owner/kernel-slug> -f submission.csv -v <kernel-version>` (bare `-f`
+alone 400s), and `kaggle competitions submission-limits -c <slug>` is the authoritative
+quota check (the daily boundary does not track local midnight -- confirmed).
+
+**Decision on the last slot**: the parallel session's own documented plan is to wait for
+v16/v17/v18 to resolve so the 5th slot is evidence-based (three real SLOW_MULTIPOST_N data
+points instead of another guess) rather than spend it immediately. Deferring to that plan
+-- both sessions draw from the SAME shared daily quota, so racing to spend the last slot
+independently right now (before anything new has resolved to justify a choice) risks
+wasting it on an uncoordinated guess. Not submitting anything this cycle. Continuing to
+monitor v12 (~14h34m, past the informal ~15h historical watch-point territory now -- worth
+watching very closely next cycle) and the three SLOW_MULTIPOST_N submissions.
