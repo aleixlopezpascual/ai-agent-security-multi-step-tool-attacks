@@ -240,3 +240,30 @@ this smoke test is validation-of-correctness only, NOT a prediction of the real 
 v8b, v11) for anything beyond plain single-turn K=1 with the Harmony bypass. That
 specific combination (`v1_original.py` as-is) remains the best real result, with a
 real variance band of roughly 81-89 observed so far (2 real data points).
+
+## v12_tight_margins.py — new axis: margin/timing tuning, externally validated (2026-08-23)
+
+Single-variable change to `v1_original.py`: `FILL_BUDGET_FRAC` 0.95→0.99,
+`REPLAY_SAFE_FRAC` 0.98→0.99, matching a public kernel with the identical
+architecture already running safely at these values. Rationale (full sourcing in
+`conductor/autonomous-improvement-log.md`):
+- A June 2026 forum thread (55 votes) reported real replay throughput of only
+  ~600-800 candidates/9000s on Kaggle — far below our 2000-candidate local ceiling.
+  Backward-computing from our own 81.225 score implies ~900 candidates/model; top
+  real scores (124-138) imply ~1400-1500 — a throughput gap, not a different mechanism.
+- `REPLAY_SAFE_SIZING` was built (pre-Aug-5) to avoid a catastrophic failure mode
+  (a replay-budget overrun zeroing the WHOLE model row) that the organizers'
+  2026-08-05 evaluator update removed (replay timeouts now preserve partial credit).
+  The mechanism is very likely now over-conservative, trading real throughput for
+  protection against a risk that no longer exists.
+- This is a genuinely new axis (timing, not candidate content/structure) — distinct
+  from every prior candidate this session (multi-turn, no-split, confused-deputy).
+
+Smoke-tested clean on both models (correctness only — short local budgets can't
+validate timing changes meaningfully; needs a real submission to test the hypothesis):
+Gemma 900 raw/50 findings (50×18 exactly, 120s), GPT-OSS 1332 raw/74 findings
+(74×18 exactly, 300s). No errors on either model.
+
+| File | Local (Gemma) | Local (GPT-OSS) | Kaggle | Status |
+|---|---|---|---|---|
+| `v12_tight_margins.py` | 900 raw/50 findings @120s | 1332 raw/74 findings @300s | pending (submission 55711937) | Submitted as candidate #5, kernel v12 |

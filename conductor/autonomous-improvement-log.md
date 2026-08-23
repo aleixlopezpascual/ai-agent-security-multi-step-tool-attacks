@@ -504,3 +504,50 @@ Both hypotheses cleanly confirmed:
 
 Quota: 4 submissions were available after v11's submit yesterday; check fresh count
 before spending more.
+
+## Research: what are top teams (124-138) doing? Real forum + public-kernel investigation
+
+Pulled and diffed 6 of the highest-engagement public kernels for this competition
+(up to 401 votes). Findings:
+- One kernel (401 votes) is **byte-identical** to our own `v1_original.py`; two others
+  are byte-identical to each other. The public ecosystem has converged on our exact
+  same architecture, not a different mechanism.
+- A creative-looking idea (378 votes: pairing `http.post` with `fs.delete
+  path=secret.txt` for a claimed +8 raw via DESTRUCTIVE_WRITE) was checked against the
+  actual guardrail source and is WRONG -- `secret.txt` contains "secret", so
+  `_is_ultra_dangerous` denies that call unconditionally (`ok=False`), and
+  `DESTRUCTIVE_WRITE` requires `ok is True`. Confirms our source-verified guardrail
+  analysis; popular does not mean correct.
+- **The real lead**: a June 2026 forum thread (55 votes, topic 711457) reported real
+  Kaggle replay throughput of only ~600-800 candidates per 9000s budget -- far below
+  our 2000-candidate local ceiling. A follow-up thread (topic 715259) says this got
+  WORSE after a mid-competition update (~300), before the 2026-08-05 partial-credit
+  fix we'd already found. Backward-computing from our own 81.225 real score implies
+  ~900 candidates/model actually scored; reaching 124-138 (top real scores) implies
+  ~1400-1500 -- a throughput gap, not a missing mechanism.
+- **REPLAY_SAFE_SIZING was built (pre-Aug-5) specifically to avoid a catastrophic
+  failure mode (replay overrun zeroing the WHOLE model row) that no longer exists**
+  post the Aug-5 partial-credit-preserved-on-timeout fix. It's very likely now
+  over-conservative, trading real throughput for protection against a neutralized risk.
+- Found direct external validation: `probe-and-flood-strategy` (60 votes), the SAME
+  architecture as ours, already runs `FILL_BUDGET_FRAC=0.99`/`REPLAY_SAFE_FRAC=0.99`
+  (vs our 0.95/0.98) -- another team has already proven these tighter margins don't
+  catastrophically fail.
+
+## Submission #5: v12_tight_margins.py -- new axis, margin/timing not structure
+
+Single-variable change: `FILL_BUDGET_FRAC` 0.95->0.99, `REPLAY_SAFE_FRAC` 0.98->0.99,
+matching the externally-validated public kernel's values. Smoke-tested clean on both
+models (Gemma 50x18=900 exactly, GPT-OSS 74x18=1332 exactly, no errors) -- correctness
+only, since short local budgets can't validate timing changes (a 47s-scale margin is a
+huge fraction of a 120-300s test but tiny at the real 8750-9000s budget).
+
+Packaged, pushed as kernel v12, submitted (submission 55711937, PENDING). Quota: 4
+remaining after this one (5 were available today -- quota DID reset since yesterday,
+confirming it's tied to Kaggle's own day boundary as documented).
+
+This is the first candidate targeting THROUGHPUT rather than candidate CONTENT/
+structure -- a genuinely different axis from every prior attempt (all 7 of which
+changed what candidates say, not how conservatively the fill loop stops). If this
+doesn't move the needle, the more aggressive next step (REPLAY_SAFE_SIZING=False
+entirely, reverting to the flat MARGIN_S-only stop) is the natural follow-up.
