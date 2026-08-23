@@ -1,0 +1,31 @@
+versions/v13_same_turn_deputy.py
+  s_22c9ee6b3f4710::t_6e6af9a022a59f 1-199
+versions/README.md
+  s_86c46ba8e31ab2::t_8d02030e3a5978 286-313
+conductor/autonomous-improvement-log.md
+  s_86c46ba8e31ab2::t_fac12203140e5f 590-613
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "67362cfe3c9efbe78fa35e606f4ecd66f2fbec3c",
+  "prompts": {},
+  "sessions": {
+    "s_22c9ee6b3f4710": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a9f8ab84-6209-463d-9dc5-6b48a6555eac",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Aleix López"
+    },
+    "s_86c46ba8e31ab2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b800cc5a-7fed-4dae-9025-ddc2e9c03a25",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Aleix López"
+    }
+  }
+}
