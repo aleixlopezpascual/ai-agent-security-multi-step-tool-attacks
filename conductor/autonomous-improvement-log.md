@@ -769,3 +769,22 @@ files, no competing local processes. Pausing, no action.
 Approaching the ~15h historical watch-point noted last cycle. No new memory files, no
 competing local processes. Pausing, no action -- will watch closely next cycle for either
 a resolved score or a failure around the 15h mark.
+
+## Correction: previous commit accidentally included a parallel-session file, mis-attributed
+
+My previous commit's `git add -A` swept up `versions/v17_slow_multipost_n2.py` (mtime
+2026-08-23 23:57), which I did NOT write -- this is the parallel session (sibling worktree
+`session/dashing-magpie-6gad`) writing directly into this shared worktree, as previously
+documented for v13/v14/v15. The commit message didn't mention it, which is misleading; not
+rewriting the already-pushed commit (no force-push/history-rewrite without explicit
+instruction), documenting the correction here instead.
+
+**What the file claims vs what's actually verified**: its docstring says it was "submitted
+BEFORE v16's real score is known (user explicitly chose to spend a slot on this now...)" --
+but `kaggle competitions submissions` shows NO v17 entry, and no shared-memory file
+documents this decision or user sign-off yet. Most likely this is an in-progress draft
+written in anticipation of a submission that hasn't happened yet (or is about to), not
+evidence of a completed action. **I have NOT submitted this file, altered it, or acted on
+its claims** -- leaving it for the parallel session to handle via its own workflow, and
+noting it here so my own future cycles don't mistake it for something I built or verified.
+Will re-check the submissions list and memory dir next cycle for confirmation either way.
