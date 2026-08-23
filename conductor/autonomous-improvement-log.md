@@ -482,3 +482,25 @@ bypass) is the real problem, and the multi-turn line of inquiry should be closed
 it beats v10/v8b but still not 88.740, that confirms the confound was real and
 points toward further Harmony-bypass-preserving refinements. If it beats 88.740,
 mandate achieved.
+
+## Submission #4 confirmed (2026-08-23): 75.875 — confound resolved, multi-turn closed
+
+Both hypotheses cleanly confirmed:
+1. **Confound was real**: v11 (3-turn + Harmony bypass) = 75.875, recovering ~17 points
+   over v10/v8b's 58.5-58.7 (both missing the Harmony bypass). Confirms
+   SPLIT_BY_LATENCY/FRAME_TEMPLATE is the dominant lever, worth ~28% on its own,
+   independent of turn count.
+2. **Multi-turn chaining is a genuine, smaller net negative** even properly combined
+   (75.875 vs v1's 81.225, -6.6%) — not just an artifact of the missing Harmony bypass.
+   **Closing the multi-turn line of inquiry** — don't build more N-variants expecting a
+   different result once combined with the bypass; the mechanism itself costs real
+   score, plausibly via compounding replay-risk (more turns = more chances for
+   non-determinism to drop a call during the FRESH replay environment) rather than the
+   BURST_K-specific Gemma parsing bug (shouldn't apply to separate turns/messages).
+
+**7 consecutive regressions now.** Best real result remains plain `v1_original.py`
+(K=1, single-turn, Harmony bypass intact) — 81.225/88.740, real variance band roughly
+81-89 on 2 data points. No structural change found yet that beats it.
+
+Quota: 4 submissions were available after v11's submit yesterday; check fresh count
+before spending more.

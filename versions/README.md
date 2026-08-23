@@ -213,4 +213,30 @@ this smoke test is validation-of-correctness only, NOT a prediction of the real 
 
 | File | Local (Gemma) | Local (GPT-OSS) | Kaggle | Status |
 |---|---|---|---|---|
-| `v11_multiturn_harmony.py` | 150 raw/3 findings @120s | 1250 raw/25 findings @300s = 3.24 raw/sec | pending (submission 55694099) | Submitted as candidate #4, kernel v11 |
+| `v11_multiturn_harmony.py` | 150 raw/3 findings @120s | 1250 raw/25 findings @300s = 3.24 raw/sec | **75.875 (real, confirmed 2026-08-23)** | Confounded confirmed: recovers +17pts vs v10/v8b (58.5-58.7) but still -6.6% vs v1's 81.225 |
+
+## v11 result confirms the confound AND closes the multi-turn line of inquiry (2026-08-23)
+
+**Real score: 75.875.** Comparison:
+- v1 (K=1, Harmony bypass): **81.225**
+- v11 (3-turn, Harmony bypass): **75.875** (-6.6% vs v1)
+- v10 (K=1, no Harmony bypass): 58.545
+- v8b (3-turn, no Harmony bypass): 58.750
+
+**Both hypotheses confirmed, cleanly separated:**
+1. The confound was real — keeping the Harmony bypass recovers ~17 points (75.875 vs
+   58.750) regardless of turn count. `SPLIT_BY_LATENCY`/`FRAME_TEMPLATE` is by far the
+   dominant lever; losing it costs ~28% no matter what else is going on.
+2. Multi-turn chaining is now confirmed as a genuine, smaller net negative
+   (-6.6%) even when properly combined with the Harmony bypass — not just an
+   artifact of the earlier confound. **The multi-turn line of inquiry is closed.**
+   Don't build N=2/4/5 variants combined with the Harmony bypass expecting a
+   different result — the mechanism itself costs real score on the actual grader,
+   plausibly via the compounding-replay-risk theory (each turn is another chance for
+   non-determinism to drop a call during the fresh replay) rather than the
+   `BURST_K`-specific parsing bug (which shouldn't apply to separate turns).
+
+**7 consecutive real-Kaggle regressions now** (V3, V6, V7, v10, v9[refuted locally],
+v8b, v11) for anything beyond plain single-turn K=1 with the Harmony bypass. That
+specific combination (`v1_original.py` as-is) remains the best real result, with a
+real variance band of roughly 81-89 observed so far (2 real data points).
