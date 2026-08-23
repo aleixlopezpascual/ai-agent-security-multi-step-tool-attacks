@@ -1,0 +1,29 @@
+versions/v16_slow_multipost_n4.py
+  s_86c46ba8e31ab2::t_5ed407a8d9b75c 29-211,213-486
+  s_86c46ba8e31ab2::t_9a2409acbbe9db 212
+  s_86c46ba8e31ab2::t_4a466d7da469ad 1-28
+versions/v15_forced_split_control.py
+  ai_agent 1-459
+conductor/autonomous-improvement-log.md
+  s_86c46ba8e31ab2::t_4ac0ca6e5d8f76 639-705
+results/results.jsonl
+  s_86c46ba8e31ab2::t_906821fe63aa27 23
+notebooks/v16_slow_multipost_n4.ipynb
+  s_86c46ba8e31ab2::t_b40cec902e91c2 1-37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "d4e490984c741e3c9b14189a26272882c4450827",
+  "prompts": {},
+  "sessions": {
+    "s_86c46ba8e31ab2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b800cc5a-7fed-4dae-9025-ddc2e9c03a25",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Aleix López"
+    }
+  }
+}
