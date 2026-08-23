@@ -1,0 +1,28 @@
+versions/v12_tight_margins.py
+  s_86c46ba8e31ab2::t_b993c382e68145 488-493
+  s_86c46ba8e31ab2::t_d939c9c243a305 1-30
+  s_86c46ba8e31ab2::t_51fd75218b9243 31-487
+versions/README.md
+  s_86c46ba8e31ab2::t_c19623804ebeb5 269
+  s_86c46ba8e31ab2::t_048c91a066f350 243-268
+notebooks/ai-agent-security-v15.ipynb
+  s_86c46ba8e31ab2::t_0e385a83fb8ede 15
+conductor/autonomous-improvement-log.md
+  s_86c46ba8e31ab2::t_c19623804ebeb5 507-553
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "5610a8e0e13f741bd5d7e14a1c15061e1e27ef11",
+  "prompts": {},
+  "sessions": {
+    "s_86c46ba8e31ab2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b800cc5a-7fed-4dae-9025-ddc2e9c03a25",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Aleix López"
+    }
+  }
+}
