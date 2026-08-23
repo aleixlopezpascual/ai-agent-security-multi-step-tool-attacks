@@ -54,6 +54,43 @@ designs. See `conductor/autonomous-improvement-log.md` for the live autonomous-i
 session log (submission-by-submission), the fully-CLI-automated push/submit process, full
 forum-research writeup, and current status.
 
+**Follow-up dig (2026-08-24): the Aug-5 bug explanation above is real but leaves a gap —
+it does NOT actually explain `v1_original.py`'s OWN 88.740→81.225 gap**, since K=1 designs
+are explicitly excluded from that bug's mechanism (no "subsequent tool call in one
+message" ever happens at K=1). Found a better-fitting, independently-corroborated
+mechanism by re-reading `REPLAY_SAFE_SIZING`'s own fill loop
+(`versions/v1_original.py` ~L142-165) plus two forum threads:
+
+- The fill loop is **latency-adaptive, not fixed-count**: it accumulates each kept
+  candidate's *measured* elapsed time into a `replay_cost` ledger and stops once
+  projected cost would exceed `REPLAY_SAFE_FRAC * replay_budget` (or a wall-clock
+  deadline) — so the final candidate count for byte-identical code depends on the REAL,
+  OBSERVED per-candidate latency during that specific run, not a constant.
+- Multiple independent forum reports (topic 711457, `hiyodori411`, 2026-06-21: "the
+  throughput we are observing does not match what is expected from a T4 GPU in a Kaggle
+  Notebook... replaying just 600-800 findings consumes nearly the entire 9,000-second
+  budget"; topic 712642, organizers, 2026-06-23 FAQ confirms each of attack-generation /
+  public-replay / private-replay has its own separate 9,000s cap and a 15h *global* job
+  ceiling) corroborate that this competition's actual scoring backend has GPU
+  throughput that is slower and more variable than a standalone interactive Kaggle T4
+  notebook — consistent with genuinely shared/contended infrastructure, not a code bug.
+
+**Conclusion**: identical K=1 code can legitimately return a different-sized candidate
+set — and therefore a different final score — purely from backend GPU-load variance at
+generation time, with no evaluator bug or generic "LLM stochasticity" required as the
+primary driver (though residual sampling non-determinism in candidate *content*, not just
+count, is a secondary contributor — no fixed model seed is used, per the standing
+non-determinism caveat). **This matters for reading `v12_tight_margins`'s 88.290**: v12 is
+subject to the SAME backend-load-driven fill-size variance as the 88.740/81.225 anchor
+runs, on top of whatever effect its `REPLAY_SAFE_FRAC` 0.98→0.99 change had. The
+`k1-ceiling-decision` memory's predicted effect size for that change (+0.4-0.9 points) is
+likely smaller than this noise source, which is WHY 88.290 lands inconclusively inside the
+band rather than clearly above or below it — not evidence the margin change did nothing,
+just that a single submission can't isolate its effect from backend-load noise at this
+magnitude. A real answer would need several repeated submissions of the exact same code
+to characterize the noise floor, which is not a good use of the scarce 5/day quota given
+the current standing mandate to explore breadth over pinning down this specific variance.
+
 | File | Description | Local (Gemma) | Local (GPT-OSS) | Local mean | Kaggle public (mean) | Status |
 |---|---|---|---|---|---|---|
 | `v1_original.py` | BURST_K=1 ground-truth original | **180.0** @8750s/gym (2000/2000 cap, 105min — 2026-08-21) | **180.0** @8750s/gym (2000/2000 cap, 3.85h — 2026-08-21) | **180.0** | **88.740 (2026-08-17) / 81.225 (re-run 2026-08-21, IDENTICAL code — real ~8.5% run-to-run variance)** | **Calibration anchor — re-pushed live 2026-08-21, do not delete** |

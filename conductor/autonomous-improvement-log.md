@@ -855,3 +855,35 @@ confirms "Submissions today: 5, Remaining today: 0" -- nothing can be submitted 
 of any new lever's merit. No new memory files since last cycle's own writes (k1-ceiling-
 decision/MEMORY.md at 00:58 are mine). Nothing to act on; pausing, letting the cron
 continue until either a sweep result resolves or tomorrow's quota resets.
+
+## Deep dig on v12's 88.290 (user request: "dig about the results we got recently")
+
+Re-examined the standing explanation for the 88.740/81.225 identical-code variance and
+found a real gap: the documented Aug-5 Gemma parsing-bug fix explicitly does NOT apply to
+K=1 designs (our own doc says so), but `v1_original.py` IS K=1 -- so that explanation
+never actually accounted for V1's own variance. Traced a better-fitting mechanism instead:
+
+- `REPLAY_SAFE_SIZING`'s fill loop (`versions/v1_original.py` ~L142-165) is
+  latency-adaptive, not fixed-count -- it stops once the *measured* per-candidate replay
+  cost ledger would exceed `REPLAY_SAFE_FRAC * replay_budget`. Identical code can
+  therefore return a different-sized candidate set purely from real-time backend latency
+  during that specific run.
+- Forum research (topic 711457, `hiyodori411`, 2026-06-21) independently reports this
+  competition's actual scoring backend GPU throughput doesn't match a standalone Kaggle
+  T4 notebook's expected speed ("replaying just 600-800 findings consumes nearly the
+  entire 9,000-second budget") -- consistent with shared/contended backend infrastructure,
+  not a code bug. Organizer FAQ (topic 712642) confirms separate 9,000s budgets per phase
+  plus a 15h global ceiling, consistent with this being a real, variable, shared-resource
+  system rather than a simple fixed-timing model.
+
+**Conclusion, and what it means for v12**: v12_tight_margins' 88.290 is subject to this
+SAME backend-load-driven fill-size variance as the 88.740/81.225 anchor runs, on top of
+whatever real effect its `REPLAY_SAFE_FRAC` 0.99 change had. The predicted effect size for
+that change (+0.4-0.9 points per the `k1-ceiling-decision` sizing estimate) is likely
+smaller than this noise source -- which is consistent with 88.290 landing inconclusively
+inside the variance band rather than clearly above or below it. This isn't evidence the
+margin change did nothing; it's a limitation on how confidently ANY single submission
+(including the in-flight N=2/3/4/8 sweep) can be read. Documented in full in
+`versions/README.md` and a new shared memory entry
+(`k1-variance-mechanism-backend-throughput-2026-08-24`) so the parallel session sees it
+too before drawing strong conclusions from the sweep results once they resolve.
