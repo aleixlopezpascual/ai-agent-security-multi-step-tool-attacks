@@ -724,3 +724,11 @@ resolve a real open question (v12: does the Aug-5 partial-credit fix cover fill-
 wall-clock overruns; v16: does the corrected SLOW_MULTIPOST_N finding transfer to real
 Kaggle). Spending more quota on a new speculative lever before either resolves would waste
 information value -- pausing here, not taking action, letting the cron continue.
+
+## Cron check-in (2026-08-23, later, still no new information)
+
+`v12_tight_margins` (55711937) now ~14h pending, `v16_slow_multipost_n4` (55725150) now
+~4h pending -- both still `SubmissionStatus.PENDING`, unusually slow even for this
+evaluator but not yet alarming. Memory dir unchanged since last check (no new files, no
+new mtimes past my own prior writes). No competing local processes. Nothing to act on --
+pausing again per the same reasoning as the prior check-in.
