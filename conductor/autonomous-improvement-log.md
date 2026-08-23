@@ -732,3 +732,29 @@ information value -- pausing here, not taking action, letting the cron continue.
 evaluator but not yet alarming. Memory dir unchanged since last check (no new files, no
 new mtimes past my own prior writes). No competing local processes. Nothing to act on --
 pausing again per the same reasoning as the prior check-in.
+
+## Cron check-in (2026-08-23 23:41): still both PENDING, found a useful calibration datum
+
+Third consecutive check-in with zero new memory files/results. Both `v12_tight_margins`
+(now ~13h40m pending) and `v16_slow_multipost_n4` (~2h50m pending) unchanged. Verified via
+`kaggle kernels status` that BOTH underlying kernels (`aleixlopez/ai-agent-security-v15`
+for v12, `aleixlopez/v16-slow-multipost-n4` for v16) show `KernelWorkerStatus.COMPLETE` --
+i.e. the cheap dev-mode kernel run finished fine; `SubmissionStatus.PENDING` reflects only
+the separate, asynchronous full-budget replay+scoring pipeline, not a stuck/broken kernel.
+
+Checked forums for an active outage: no current-competition complaints in the last few
+days. Found one relevant historical reference (topic 712828, 2026-06-23, "[FIXED]
+Submission Scoring Delays/Errors Due to GPU Capacity Constraints"): during a past T4
+capacity incident, organizers cited a **15-hour maximum runtime limit**, after which a
+submission that never started executing fails outright (not silently). This is 2 months
+old and may not reflect current limits, but it's the only concrete number available, and
+v12 (~13h40m) is now approaching that ballpark. Also worth noting: at 8750s/model x2
+models plus replay, a fully normal (non-backlogged) run could easily take many hours on
+its own, so long PENDING alone isn't necessarily a bad sign -- treating this as "watch
+closely, don't panic" rather than "something is broken."
+
+**Action for next cycle**: if v12 flips to a hard failure/error status (rather than
+COMPLETE with a score) around the ~15h mark, that's a data point worth recording (possible
+capacity-related failure, not necessarily a verdict on the REPLAY_SAFE_FRAC lever itself)
+-- don't conflate a queue-capacity failure with a "the margin change caused an overrun"
+result if it happens. No action taken this cycle; still pausing.
