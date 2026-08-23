@@ -587,3 +587,27 @@ parallel session has already analyzed and decided on it** -- this is a real risk
 specific to multi-worktree/multi-session work on the same shared memory.
 
 v12_tight_margins.py (submission 55711937) still PENDING.
+
+## v13_same_turn_deputy.py — parallel work while v12 pends, closes stacking permanently
+
+While v12_tight_margins.py (submission 55711937) remained PENDING, tested the one gap left
+open by prior CONFUSED_DEPUTY research: `v9_confused_deputy.py` used 2 SEPARATE
+`env.interact()` turns; the "same-turn" variant (both tool calls in ONE message, using
+v1's already-unused `max_tool_hops=8` headroom) was flagged as "deprioritized, likely hits
+the Gemma parsing bug" but never actually built or tested.
+
+Built `versions/v13_same_turn_deputy.py`, smoke-tested head-to-head against v1_original.py
+at 180s on both models. **Result: regresses badly on BOTH models, worse than even v9.**
+Gemma: 2.68 raw/sec vs v1's 5.60 (-52%). GPT-OSS: 0.26 raw/sec vs ~4.62 (-94%,
+catastrophic). Per-candidate raw was actually 26 (Gemma called email.send TWICE, once per
+recipient) -- the value hypothesis was right, but latency killed it: planning + emitting 2
+tool calls in one turn costs far more generation time than the extra raw recovers. Same
+Multi-Tool Latency Trap pattern as every BURST_K>1 variant, just via a second predicate
+type. **EXFIL+CONFUSED_DEPUTY stacking is now closed in BOTH forms (2-turn and same-turn),
+permanently.** No submission made -- local result was decisive enough not to warrant one,
+per this candidate's own docstring policy (research-only, requires explicit approval).
+
+Checked submission #5 (v12_tight_margins) again: still PENDING. No new local experiments
+queued this cycle -- the remaining unexplored options (BURST_K root-cause re-examination,
+first-principles guardrail review) need more thought before building anything, not more
+throughput-lever guessing.
