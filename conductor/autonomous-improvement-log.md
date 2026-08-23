@@ -703,3 +703,9 @@ consistent direction, mechanistically distinct from every previously-refuted lev
 lowest-incremental-risk candidate found this session. Proceeding to submit per the
 standing mandate ("continue until a submission beats 88.740 by a real margin"), using one
 of today's remaining submission slots.
+
+**Submitted**: pushed as a new kernel `aleixlopez/v16-slow-multipost-n4` (kernel-metadata.json
+auto-derives id from the attack filename; ran COMPLETE on first status check), submission
+`55725150` at 2026-08-23 20:52:51, status PENDING. 3 submissions remaining today after this
+one. `v12_tight_margins` (55711937, submitted 10:01:30 same day) is STILL PENDING ~11h later
+-- unusually long even for this evaluator; keep checking both each cycle.

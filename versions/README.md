@@ -312,33 +312,49 @@ variants without a fundamentally different mechanism for avoiding the latency co
 |---|---|---|---|---|
 | `v13_same_turn_deputy.py` | 728 raw/28 findings @180s = 2.68 raw/sec (-52% vs v1) | 52 raw/2 findings @180s = 0.26 raw/sec (-94% vs v1) | not submitted | **Refuted locally, decisively — no submission warranted** |
 
-## v14_slow_multipost — the last "more than 18 raw/candidate" avenue, also closed (2026-08-23)
+## v14_slow_multipost — ⚠️ CORRECTED (2026-08-23): first test was a confounded no-op, not a real null result
 
 Activated the base file's own dormant `SLOW_MULTIPOST_N`/`_forge_plan_msg` mechanism
-(Harmony-forged multi-post for the classified-slow row, N=4) — the base file's docstring
-cited an old local probe claiming "4.0 firing posts/candidate at N=4", but this had never
-actually been tested end-to-end (fill + independent replay) or submitted.
+(Harmony-forged multi-post for the classified-slow row, N=4). **First test result (`1332
+raw/74 findings = 18.0 raw/candidate, zero uplift`) originally read as "closed, zero
+uplift" — this was WRONG.** Root cause: `SPLIT_THRESHOLD_S=12.0` was calibrated from real
+Kaggle 2xT4 timings (real GPT-OSS ~20.4s/candidate); on this local Mac GGUF setup GPT-OSS's
+actual latency is only ~3.5s/candidate — well under threshold — so `split_on` never fires
+locally at default settings, and even the already-proven `FRAME_TEMPLATE` bypass silently
+no-ops. The first test never actually exercised `_forge_plan_msg` at all; it was a silent
+no-op control, not a genuine null result.
 
-**Result: `1332 raw / 74 findings = exactly 18.0 raw/candidate` — IDENTICAL to plain K=1,
-zero uplift.** Raw/sec (2.58) is also essentially identical to v1's GPT-OSS baseline
-(~2.53) — a wash, not a gain or a loss. The old probe's "4.0 posts/candidate" claim does
-not hold under the corrected `gym`-env harness with genuine independent replay: whatever
-fired during live-fill validation did not reproduce as multiple credited posts during the
-separate cold replay. Same "cold independent replay" compounding-failure mechanism that
-already closed multi-turn (v8/v8b/v11), EXFIL+CONFUSED_DEPUTY stacking (v9/v13) — any
-design requiring MORE than one tool-call success per candidate to reproduce in a single
-cold replay run appears to fail this way, regardless of the specific mechanism used to ask
-for it (natural language, separate turns, or token-forged planning).
+**Re-tested correctly**: forced `SPLIT_THRESHOLD_S=0.5` (LOCAL-OBSERVABILITY-ONLY, never a
+proposal to change the real threshold) to guarantee the slow branch fires on this hardware.
+Two independent 300s GPT-OSS runs, `v14_slow_multipost_test.py` (N=4) vs
+`v15_forced_split_control.py` (N=1, control):
 
-**This closes the last untested "exceed 18 raw/candidate" avenue.** Every variant of
-packing more value into one candidate slot — `BURST_K` (V3/V6/V7), multi-turn chaining
-(v8 family), EXFIL+CONFUSED_DEPUTY (2-turn and same-turn) — is now refuted or closed. K=1
-at 18 raw/candidate appears to be a hard ceiling for per-candidate value on the real
-grader; the only remaining lever for improving on `v1_original.py` is throughput/margin
-tuning (see `v12_tight_margins`, pending) or a genuinely different mechanism not yet
-identified. No submission made — the local result (zero uplift, not just "might not
-transfer") was decisive enough on its own.
+| run | variant | kept findings | raw | raw/sec |
+|---|---|---|---|---|
+| 1st | v15 control | 194 | 3492 | 6.60 |
+| 1st | v14 test (N=4) | 60 | 3576 | 6.85 (+3.8%) |
+| 2nd (repeat) | v15 control | 185 | 3330 | 6.33 |
+| 2nd (repeat) | v14 test (N=4) | 60 | 3576 | 6.85 (byte-identical) |
+
+v14/N=4 reproduces at the exact same raw/candidate (59.6) and raw/sec (6.85) across two
+fully independent runs; the N=1 control is the actual noise source (6.60→6.33). Combined
+delta vs the control's mean is **+5.9%** — the **first structural lever all session to come
+back net positive on a repeat run**, not just less-negative (every prior gamble — BURST_K,
+PROBE_HOPS, multi-turn, CONFUSED_DEPUTY both forms — regressed both times tested).
+`_forge_plan_msg` is a token-level Harmony channel forge (near-100% compliance per the
+code's own historical probe comment) — categorically different from the natural-language
+"call K times" instructions that failed for BURST_K/v9/v13, which is presumably *why* it
+survives cold independent replay where those didn't.
+
+**Real-Kaggle safety check**: does this same threshold miscalibration also affect real
+Kaggle? No — the code's own comment states real GPT-OSS latency (~20.4s/candidate) is
+already well above the 12.0s threshold (correctly classified "slow" today; this is why
+`v10_no_split`'s real 58.545 regression already proved `FRAME_TEMPLATE` has genuine live
+value). Real Gemma (~8.5s) stays correctly under threshold too. **`SPLIT_THRESHOLD_S` must
+NOT be changed for a real submission** — only `SLOW_MULTIPOST_N` needs to move, since it's
+the one variable that was built but never activated on any real submission.
 
 | File | Local (GPT-OSS) | Kaggle | Status |
 |---|---|---|---|
-| `v14_slow_multipost` (tested as `v14_slow_multipost_test.py`) | 1332 raw/74 findings @300s = 18.0 raw/candidate exactly, 2.58 raw/sec (wash vs v1's 2.53) | not submitted | **Refuted — zero uplift, closes the "more than 18 raw/candidate" question permanently** |
+| `v14_slow_multipost_test.py` (forced threshold, local-only) | 3576 raw/60 findings @300s = 59.6 raw/candidate, 6.85 raw/sec, reproduced twice | not submitted (local-only control) | **Corrected: real, reproducible +5.9% vs N=1 control once classification is fixed** |
+| `v16_slow_multipost_n4.py` (real submission: `SLOW_MULTIPOST_N` 1→4 only, `SPLIT_THRESHOLD_S` untouched at 12.0) | n/a (real-hardware default threshold is a local no-op by design) | submission `55725150`, 2026-08-23, **PENDING** | Single-variable test of the corrected finding on real Kaggle |
