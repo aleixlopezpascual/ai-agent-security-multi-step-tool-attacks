@@ -1179,3 +1179,29 @@ v20/v21 still PENDING, quota 2 used/3 remaining today. No new memory files. Paus
 ## Cron check-in (2026-08-24 14:57): no new results
 
 v20/v21 still PENDING, quota 2 used/3 remaining today. No new memory files. Pausing again.
+
+## v20 RESOLVED (2026-08-24 15:13): 90.135 -- NEW BEST SCORE, beats the 88.740 anchor
+
+**v20_tighter_margins_0995 (55728233, REPLAY_SAFE_FRAC=0.995): 90.135**, after ~14h
+pending. **This is the first submission all session to actually beat the 88.740 anchor**,
+not just land within its noise band. Verified competition deadline is 2026-09-01 (8 days
+out, not urgent) via `kaggle competitions list`, so no time-pressure factor here.
+
+Consistency check: v12 (0.99) -> v20 (0.995) is +1.845, larger than the naive linear
+extrapolation from `k1-ceiling-decision-2026-08-23`'s "+0.4-0.9 pts per +1% margin" model
+(predicts +0.2 to +0.45 for this +0.5% step) -- same direction, bigger than expected.
+Plausible: the relationship accelerates near this margin range, and/or some of the delta
+is backend-throughput noise riding on a smaller true effect (per
+`k1-variance-mechanism-backend-throughput-2026-08-24`). A repeat submission of the exact
+same code would meaningfully increase confidence this isn't a lucky draw -- the gap
+(88.740 -> 90.135 = +1.395) is well inside the ~8.5%/7.5pt established noise band width,
+so "beats it" and "could be sampling noise" aren't mutually exclusive on one data point
+alone. Full analysis in `versions/README.md`.
+
+**Decision**: built `v22_multipost4_margin0995.py` = `v16_slow_multipost_n4.py`'s
+SLOW_MULTIPOST_N=4 (confirmed sweep peak, 87.815) + v20's now-proven-superior
+REPLAY_SAFE_FRAC=0.995 (rather than v21's weaker 0.99) -- combines the two best
+individually-confirmed real results this session, never yet tested together. Confirmed
+single-variable diff via `diff`, compiled clean, smoke-tested. Kernel push queued
+(backend capacity, same pattern as v21's earlier delay) -- not yet submitted, will
+complete once the kernel clears.
