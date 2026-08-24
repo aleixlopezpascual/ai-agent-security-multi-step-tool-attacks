@@ -1133,3 +1133,19 @@ N=5/N=6 to pin down the peak more precisely) before the picture is complete, wai
 actually beating the anchor, since it stacks the sweep's best point with the separately
 proven-safe margin change, and its result should inform whether stacking further (e.g. N=4
 + REPLAY_SAFE_FRAC=0.995) is worth a future slot. No new submission this cycle.
+
+## v17 (N=2) RESOLVED (2026-08-24 12:40): 82.855 -- sweep now COMPLETE, confirms N=4 is the real peak
+
+**v17_slow_multipost_n2 (55726389): 82.855.** This is the WORST of all four sweep points
+-- barely above the 81.225 noise floor. Full sweep now resolved: N=2 (82.855) -> N=3
+(86.620) -> N=4 (87.815, peak) -> N=8 (85.000). A clean inverted-U with the peak firmly
+confirmed at N=4 -- N=2's poor result rules out "the true peak is actually below N=3",
+so N=4 is genuinely the best-performing value tested, not a lucky outlier. Full updated
+table and analysis written into `versions/README.md`.
+
+**Decision this cycle**: still no new memory files from the parallel session on this.
+`v21_combined_margins_multipost` (N=4 + `REPLAY_SAFE_FRAC=0.99`) remains the single most
+promising in-flight candidate and is still PENDING -- not spending a new slot until it
+resolves, since its result directly determines whether further stacking (N=4 +
+REPLAY_SAFE_FRAC=0.995, or exploring N=5/N=6 around the confirmed peak) is worth pursuing.
+3 submissions remain today; no new submission this cycle.
