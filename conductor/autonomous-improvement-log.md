@@ -1223,3 +1223,11 @@ No change: v20 remains COMPLETE at 90.135 (new best), v21 still PENDING, v22's k
 push still stuck QUEUED (now ~40+ min, longer still). No new memory files. No time
 pressure (deadline 2026-09-01), so continuing to wait rather than force anything.
 Quota 2 used/3 remaining today.
+
+## Cron check-in (2026-08-24 16:13): v22 kernel still QUEUED (~1h)
+
+No change: v20 remains COMPLETE at 90.135, v21 still PENDING, v22's kernel push still
+QUEUED. `kaggle kernels list -m` confirms push time was ~13:16 UTC (15:16 CEST) --
+about 1h ago now, notably longer than any prior push this session, but still no ERROR
+status. No new memory files. No time pressure (deadline 2026-09-01). Continuing to wait.
+Quota 2 used/3 remaining today.
