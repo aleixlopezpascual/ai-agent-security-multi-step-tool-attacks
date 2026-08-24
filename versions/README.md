@@ -15,6 +15,8 @@ CLI-verified history (best first):
 | 88.290 | v12_tight_margins — `FILL_BUDGET_FRAC`/`REPLAY_SAFE_FRAC` 0.95/0.98→0.99/0.99 | 2026-08-23/24 (~12.5h pending) | Within the 81.225-88.740 variance band, near the top. Resolves the standing open question: no catastrophic fill-phase-overrun void occurred at 0.99. |
 | 87.815 | v16_slow_multipost_n4 — `SLOW_MULTIPOST_N` 1→4 | 2026-08-23/24 (~13.8h pending) | **Second consecutive non-regressing structural change.** Real Kaggle confirms the locally-repeated +5.9% raw/sec finding transfers — does NOT regress like every earlier structural attempt. |
 | 87.075 | "v22 public notebook" | 2026-08-19 | A copied/adapted public kernel, not our own lineage. |
+| 86.620 | v18_slow_multipost_n3 — `SLOW_MULTIPOST_N` 1→3 | 2026-08-23/24 | SLOW_MULTIPOST_N sweep midpoint; below N=4's 87.815. |
+| 85.000 | v19_slow_multipost_n8 — `SLOW_MULTIPOST_N` 1→8 | 2026-08-23/24 | SLOW_MULTIPOST_N sweep far endpoint; drops below N=3/N=4 — see inverted-U analysis below. |
 | 81.225 | V1 — SAME code as 88.740, re-submitted | 2026-08-21 | **Real run-to-run variance for IDENTICAL code (~8.5%).** |
 | 58.545 | v10_no_split — `SPLIT_BY_LATENCY=False` | 2026-08-21 | Local smoke test said +3% on GPT-OSS; REAL result was -28% vs the 81.225 re-run. |
 | 54.960 | (unnamed) | 2026-08-20 | |
@@ -467,3 +469,24 @@ Confirmed single-variable via `diff`, compiled clean, smoke-tested the emit path
 Submitted as **55728233**, PENDING. Per `k1-variance-mechanism-backend-throughput-2026-08-24`,
 a single submission can't cleanly isolate this small an effect from backend-throughput
 noise — treat the resolved score as evidence, not proof, either way.
+
+## SLOW_MULTIPOST_N sweep results (2026-08-24): N=3, N=4, N=8 resolved — inverted-U peaking near N=4
+
+| N | File | Kaggle score | vs anchor (88.740) | vs floor (81.225) |
+|---|---|---|---|---|
+| 3 | `v18_slow_multipost_n3.py` | 86.620 | -2.120 | +5.395 |
+| **4** | **`v16_slow_multipost_n4.py`** | **87.815 (best of the sweep)** | -0.925 | +6.590 |
+| 8 | `v19_slow_multipost_n8.py` | 85.000 | -3.740 | +3.775 |
+| 2 | `v17_slow_multipost_n2.py` | PENDING | — | — |
+
+Shape: N=3→N=4 rises (+1.195), N=4→N=8 falls (-2.815) — consistent with an inverted-U
+peaking near N=4, similar in *shape* (not mechanism) to the earlier GPT-OSS multi-turn
+amortization curve (`v8_multiturn.py` family, which peaked at N_TURNS=3 then reversed).
+Plausible read: a moderate amount of forged multi-post value-packing per candidate helps
+throughput net of its extra replay cost, but too much (N=8) starts costing more in
+replay/generation time than it recovers in raw. **None of N=3/4/8 individually beats the
+88.740 anchor** — N=4 (87.815) comes closest, comfortably inside the established
+81.225-88.740 variance band. `v17` (N=2) still PENDING — needed to know if the true peak
+is at N=2, N=3, or N=4; `v21_combined_margins_multipost.py` (N=4 + `REPLAY_SAFE_FRAC=0.99`,
+PENDING) is the current best shot at actually beating the anchor, since it stacks the
+sweep's best point with the separately-proven-safe margin tightening.

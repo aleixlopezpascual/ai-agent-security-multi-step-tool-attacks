@@ -1112,3 +1112,24 @@ Same state as last cycle (v12/v16 resolved; v17/v18/v19/v20/v21 all still PENDIN
 
 Same state as last cycle (v12/v16 resolved; v17/v18/v19/v20/v21 all still PENDING, quota
 2 used/3 remaining today). No new memory files. Pausing again.
+
+## v18 (N=3) and v19 (N=8) RESOLVED (2026-08-24 12:13): sweep shows an inverted-U peaking near N=4
+
+**v18_slow_multipost_n3 (55726522): 86.620. v19_slow_multipost_n8 (55726763): 85.000.**
+Combined with v16's 87.815 (N=4), the SLOW_MULTIPOST_N sweep now has three real data
+points: N=3 (86.620) -> N=4 (87.815, peak) -> N=8 (85.000, drops off). Consistent with an
+inverted-U shape, similar in shape (not mechanism) to the earlier GPT-OSS multi-turn
+amortization curve (which peaked at N_TURNS=3 then reversed). **None of N=3/4/8
+individually beats the 88.740 anchor** -- N=4 remains the best of the sweep, comfortably
+inside the 81.225-88.740 variance band. `v17` (N=2) is the last unresolved sweep point --
+needed to know if the true peak is at N=2, N=3, or N=4. Full table and analysis written
+into `versions/README.md`.
+
+**Decision this cycle**: no new memory files from the parallel session on this update yet.
+Rather than spend one of today's 3 remaining slots on a further sweep refinement (e.g.
+N=5/N=6 to pin down the peak more precisely) before the picture is complete, waiting for
+`v17` (N=2, PENDING) and especially `v21_combined_margins_multipost` (N=4 +
+`REPLAY_SAFE_FRAC=0.99`, PENDING) to resolve first -- v21 is the current best shot at
+actually beating the anchor, since it stacks the sweep's best point with the separately
+proven-safe margin change, and its result should inform whether stacking further (e.g. N=4
++ REPLAY_SAFE_FRAC=0.995) is worth a future slot. No new submission this cycle.
