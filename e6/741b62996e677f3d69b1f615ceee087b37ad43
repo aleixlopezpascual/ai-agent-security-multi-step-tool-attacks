@@ -1,0 +1,29 @@
+conductor/autonomous-improvement-log.md
+  s_86c46ba8e31ab2::t_71fb909c7a3d55 1045-1070
+  s_86c46ba8e31ab2::t_c22ebf0abb265a 1071-1084
+versions/v21_combined_margins_multipost.py
+  s_86c46ba8e31ab2::t_147d69214cbd62 22-27,30-504
+  s_86c46ba8e31ab2::t_256e454fce7974 1-21,28-29
+  s_86c46ba8e31ab2::t_034a9c541aa648 505-506
+versions/README.md
+  s_86c46ba8e31ab2::t_e6419d790c3980 15-16
+  s_86c46ba8e31ab2::t_0ac2b997b42ec3 26-50
+notebooks/v21_combined_margins_multipost.ipynb
+  s_86c46ba8e31ab2::t_9bb266c580b022 1-37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "e6741b62996e677f3d69b1f615ceee087b37ad43",
+  "prompts": {},
+  "sessions": {
+    "s_86c46ba8e31ab2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b800cc5a-7fed-4dae-9025-ddc2e9c03a25",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Aleix López"
+    }
+  }
+}
