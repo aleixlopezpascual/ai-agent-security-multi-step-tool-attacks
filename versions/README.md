@@ -437,3 +437,22 @@ resolved in the meantime: **88.290, COMPLETE** (see submission history table abo
 first structural change to land within the normal variance band rather than regress.
 Next session/cycle: check whether any of the four SLOW_MULTIPOST_N submissions have
 resolved before proposing tomorrow's plan.
+
+## v20_tighter_margins_0995.py — quota reset 2026-08-24, one further REPLAY_SAFE_FRAC increment
+
+Kaggle's daily quota reset (`submission-limits`: "Submissions today: 0, Remaining today:
+5") while all four SLOW_MULTIPOST_N sweep submissions were still PENDING and no new lever
+had surfaced. Rather than pause with an unused fresh quota, verified the fill-loop
+mechanics precisely (`versions/v1_original.py` L376: `wall_deadline = run_start +
+replay_safe_frac * budget` — confirms `FILL_BUDGET_FRAC` is genuinely dead code under
+`REPLAY_SAFE_SIZING=True`) and built `versions/v20_tighter_margins_0995.py` =
+`v12_tight_margins.py` (already real-confirmed safe at 88.290, no void) with exactly one
+further change: `REPLAY_SAFE_FRAC` 0.99 → 0.995. This directly answers the follow-up
+question `k1-ceiling-decision-2026-08-23`'s own resolution note explicitly left open:
+"NOT evidence pushing the margin further is equally safe — needs its own test." One
+small, bounded increment (halfway to the theoretical 1.0 ceiling), not a blind jump.
+
+Confirmed single-variable via `diff`, compiled clean, smoke-tested the emit path.
+Submitted as **55728233**, PENDING. Per `k1-variance-mechanism-backend-throughput-2026-08-24`,
+a single submission can't cleanly isolate this small an effect from backend-throughput
+noise — treat the resolved score as evidence, not proof, either way.

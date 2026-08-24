@@ -897,3 +897,28 @@ pausing.
 ## Cron check-in (2026-08-24 01:57): no new results, quota still 0/5
 
 Same state as last cycle. Pausing again.
+
+## Cron check-in (2026-08-24 02:13): quota RESET (fresh 5/5), submitted v20_tighter_margins_0995
+
+`submission-limits` shows Kaggle's daily quota reset: "Submissions today: 0, Remaining
+today: 5" -- new day's clock rolled over. All four SLOW_MULTIPOST_N sweep submissions
+(v16/v17/v18/v19) still PENDING, no new memory files from the parallel session.
+
+**Decision**: rather than pause with a fresh, unused quota, or blindly extend the
+still-unresolved SLOW_MULTIPOST_N sweep further, verified the exact fill-loop mechanics
+first (`versions/v1_original.py` L376: `wall_deadline = run_start + replay_safe_frac *
+budget` -- confirms `FILL_BUDGET_FRAC` is genuinely dead code under
+`REPLAY_SAFE_SIZING=True`, only `REPLAY_SAFE_FRAC` matters). Built
+`versions/v20_tighter_margins_0995.py` = `v12_tight_margins.py` (already proven safe at
+88.290, no void) with exactly one further change: `REPLAY_SAFE_FRAC` 0.99 -> 0.995 --
+directly answering the open follow-up flagged in `k1-ceiling-decision-2026-08-23`'s own
+resolution note ("NOT evidence pushing the margin further is equally safe -- needs its
+own test"). One small, bounded increment (halfway to the theoretical 1.0 ceiling, not
+jumping straight there), not a blind guess.
+
+Confirmed single-variable via `diff` (only docstring + the one value differ), compiled
+clean, smoke-tested the emit path (5 candidates, no crash). Pushed as kernel
+`aleixlopez/v20-tighter-margins-0995` (ran COMPLETE), submitted as **55728233**, PENDING.
+4 submissions remaining today. Documented the noise-floor caveat
+(`k1-variance-mechanism-backend-throughput-2026-08-24`) directly in the file's own
+docstring so this isn't over-read as proof either way once it resolves.
