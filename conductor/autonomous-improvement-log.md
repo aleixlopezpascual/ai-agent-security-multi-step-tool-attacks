@@ -1205,3 +1205,14 @@ individually-confirmed real results this session, never yet tested together. Con
 single-variable diff via `diff`, compiled clean, smoke-tested. Kernel push queued
 (backend capacity, same pattern as v21's earlier delay) -- not yet submitted, will
 complete once the kernel clears.
+
+## Cron check-in (2026-08-24 15:40): v22 kernel still QUEUED (~22+ min), unusually long but not alarming
+
+`aleixlopez/v22-multipost4-margin0995` has been `KernelWorkerStatus.QUEUED` for over 22
+minutes now -- notably longer than any prior kernel push this session (v21's queue delay
+cleared within ~1 minute). Not yet submitted to the competition (submit requires COMPLETE
+first). No new memory files from the parallel session. v20 remains COMPLETE at 90.135
+(new best); v21 still PENDING. Quota 2 used/3 remaining today, unchanged. Not forcing
+further action -- this is consistent with documented backend GPU capacity variance
+(forum topic 712828), and the kernel-push step (cheap dev-mode run) has no deadline
+pressure of its own. Will check again next cycle and submit as soon as it clears.
