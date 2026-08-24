@@ -1082,3 +1082,12 @@ submitted to the competition** (submission requires the kernel to reach COMPLETE
 next cycle should check `kaggle kernels status aleixlopez/v21-combined-margins-multipost`
 and, once COMPLETE, run `kaggle competitions submit -k aleixlopez/v21-combined-margins-multipost
 -f submission.csv -v 1 -m "..."` to actually use one of today's 4 remaining slots.
+
+**Update**: the kernel cleared the queue shortly after (QUEUED -> RUNNING -> COMPLETE within
+~1 more minute of polling) -- confirms it was transient backend capacity, not stuck.
+Submitted as **55738097**, PENDING. 3 submissions remain today.
+
+**Today's submission tally**: v12 (COMPLETE, 88.290), v16 (COMPLETE, 87.815), v17/v18/v19
+(N=2/3/8 sweep, still PENDING), v20 (REPLAY_SAFE_FRAC=0.995, PENDING), v21 (combined
+margins+multipost, PENDING). 2 used of today's fresh 5, 3 remaining -- pausing here rather
+than forcing a 3rd guess before any of v17/v18/v19/v20/v21 resolve to inform the next one.
