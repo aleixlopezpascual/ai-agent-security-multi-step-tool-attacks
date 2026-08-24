@@ -1216,3 +1216,10 @@ first). No new memory files from the parallel session. v20 remains COMPLETE at 9
 further action -- this is consistent with documented backend GPU capacity variance
 (forum topic 712828), and the kernel-push step (cheap dev-mode run) has no deadline
 pressure of its own. Will check again next cycle and submit as soon as it clears.
+
+## Cron check-in (2026-08-24 15:57): v22 kernel still QUEUED (~40+ min)
+
+No change: v20 remains COMPLETE at 90.135 (new best), v21 still PENDING, v22's kernel
+push still stuck QUEUED (now ~40+ min, longer still). No new memory files. No time
+pressure (deadline 2026-09-01), so continuing to wait rather than force anything.
+Quota 2 used/3 remaining today.
