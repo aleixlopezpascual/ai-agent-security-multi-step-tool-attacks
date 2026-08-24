@@ -1,0 +1,19 @@
+docs/reports/competitive_landscape_briefing.md
+  s_eea02572ccd569::t_216a5a6e64b477 1-84
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "2d86c8301d825fa1dc36f95f5fdf25ac56e24377",
+  "prompts": {},
+  "sessions": {
+    "s_eea02572ccd569": {
+      "agent_id": {
+        "tool": "gemini",
+        "id": "34453b45-4dfa-4463-ab89-1f50a10bd47b",
+        "model": "gemini-3.5-flash"
+      },
+      "human_author": "Aleix López"
+    }
+  }
+}
