@@ -1042,3 +1042,43 @@ Same state as last cycle (v12 resolved 88.290; v16/v17/v18/v19/v20 all still PEN
 quota 1 used/4 remaining; v16 now ~13.4h pending, getting close to the ~15h historical
 watch-point -- worth close attention over the next couple cycles). No new memory files.
 Pausing again.
+
+## v16_slow_multipost_n4 RESOLVED (2026-08-24 10:40): 87.815 -- second consecutive non-regression
+
+**v16 (55725150, SLOW_MULTIPOST_N=4) resolved at 87.815, COMPLETE**, after ~13.8h
+pending. This is genuinely good news: 87.815 is within 1 point of the 88.740 anchor,
+well above the 81.225 baseline-noise floor, and very close to v12's 88.290. **This is the
+SECOND consecutive structural change to NOT regress** (after v12) -- the prior "6-for-6
+regression" pattern is now broken twice in a row, not a one-off. It also confirms the
+locally-repeated (+5.9% raw/sec, reproduced twice) SLOW_MULTIPOST_N finding transfers to
+real Kaggle, unlike every earlier positive local signal this session (v10's +3%, v8b's
++27%) which both regressed for real. Updated `versions/README.md`'s submission history
+table and pattern-update note with the full analysis and the mechanistic distinction
+(Harmony-forge near-100%-compliance mechanisms transfer; natural-language multi-ask
+compliance mechanisms don't).
+
+v17/v18/v19 (N=2/3/8) still PENDING -- will further calibrate where the real optimum on
+this axis sits. No new memory files from the parallel session yet on this result.
+
+**Decision on today's remaining 4 slots**: rather than wait for the full sweep (unknown
+timing, v16 alone took ~13.8h) or guess a new unrelated lever, the best-reasoned next step
+is combining the TWO independently-real-confirmed-non-regressive axes:
+`REPLAY_SAFE_FRAC=0.99` (v12, proven safe) + `SLOW_MULTIPOST_N=4` (v16, proven safe/positive).
+Checked the fill-loop safety mechanism (`REPLAY_SAFE_SIZING`'s adaptive ledger uses
+OBSERVED per-candidate latency, generic to whatever design produces it) -- no
+mechanism-specific reason combining these should introduce a NEW risk beyond what each
+already tests independently. Building `v21_combined_margins_multipost.py` next.
+
+Built `versions/v21_combined_margins_multipost.py` = `v16_slow_multipost_n4.py` with
+exactly one further change (`REPLAY_SAFE_FRAC` 0.98 -> 0.99, matching v12's proven-safe
+value; confirmed via `diff` -- only docstring + that one value differ). Compiled clean,
+smoke-tested the emit path (5 candidates, no crash), packaged, pushed as kernel
+`aleixlopez/v21-combined-margins-multipost`. **This kernel push itself got stuck in
+`KernelWorkerStatus.QUEUED` for several minutes** (unusual -- prior dev-mode pushes this
+session completed in 1-3 status checks) -- consistent with the documented backend GPU
+capacity variance (topic 712828), not an error in the code. Not forcing further polling
+this cycle; the kernel version exists and will clear the queue on its own. **Not yet
+submitted to the competition** (submission requires the kernel to reach COMPLETE first) --
+next cycle should check `kaggle kernels status aleixlopez/v21-combined-margins-multipost`
+and, once COMPLETE, run `kaggle competitions submit -k aleixlopez/v21-combined-margins-multipost
+-f submission.csv -v 1 -m "..."` to actually use one of today's 4 remaining slots.
