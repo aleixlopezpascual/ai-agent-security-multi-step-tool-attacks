@@ -1237,3 +1237,28 @@ Quota 2 used/3 remaining today.
 No change: v20 remains COMPLETE at 90.135, v21 still PENDING, v22's kernel push still
 QUEUED. No new memory files. No time pressure. Continuing to wait. Quota 2 used/3
 remaining today.
+
+## User flagged "are u sure it is running? i dont see it" -- investigated, likely personal GPU quota exhaustion
+
+Checked more carefully rather than re-attributing to generic backend variance:
+`kaggle kernels status` confirms v20's and v21's OWN kernel pushes are both `COMPLETE`
+(as expected -- proving the push mechanism itself works and isn't globally broken right
+now), while v22's push (re-tried fresh, `kaggle kernels push -p .` created a NEW kernel
+version 2) stayed `QUEUED` for 2+ more minutes on the fresh attempt too. This is NOT the
+same symptom as "generic backend congestion" -- other kernels from THIS account completed
+fine today, only new GPU-enabled pushes after this one are stuck.
+
+Web research on this exact symptom (Kaggle product-feedback forum threads) confirms a
+known cause: **personal weekly GPU quota exhaustion causes new GPU-enabled kernel
+sessions to queue indefinitely** (distinct from the competition's own submission-scoring
+backend, which is separate infrastructure). We've pushed 9+ GPU-enabled kernel versions
+today alone (v16 through v22 x2), each requesting a T4 -- very plausible this hit the
+personal weekly ceiling. Sources: kaggle.com/product-feedback/197917,
+kaggle.com/discussions/product-feedback/136878, kaggle.com/general/108481.
+
+**Cannot verify quota status via CLI** -- flagged to the user directly, since checking
+the GPU-quota indicator in the Kaggle notebook editor UI requires their login session.
+Important distinction: this would only block NEW kernel-editor dev-mode pushes (needed
+to validate/prepare NEW candidate submissions like v22), NOT the real competition
+submission-scoring backend that already produced v20's 90.135 and is processing v21 --
+those are unaffected even if this theory is correct.
