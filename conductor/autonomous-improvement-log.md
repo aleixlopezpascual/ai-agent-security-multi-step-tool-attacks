@@ -1091,3 +1091,9 @@ Submitted as **55738097**, PENDING. 3 submissions remain today.
 (N=2/3/8 sweep, still PENDING), v20 (REPLAY_SAFE_FRAC=0.995, PENDING), v21 (combined
 margins+multipost, PENDING). 2 used of today's fresh 5, 3 remaining -- pausing here rather
 than forcing a 3rd guess before any of v17/v18/v19/v20/v21 resolve to inform the next one.
+
+## Cron check-in (2026-08-24 10:57): no new results
+
+v12/v16 remain resolved (88.290/87.815); v17/v18/v19/v20/v21 all still PENDING. Quota
+2 used/3 remaining today. No new memory files from the parallel session. Pausing --
+nothing new to act on until one of the in-flight submissions resolves.
