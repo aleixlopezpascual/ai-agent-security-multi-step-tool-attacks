@@ -531,13 +531,14 @@ these are the two best individually-confirmed real results this session, never y
 together. `v21` (N=4 + 0.99) remains separately in flight and will still be informative
 about whether stacking helps at all once it resolves.
 
-**Status (2026-08-24 ~15:28)**: `v22_multipost4_margin0995.py` built, confirmed
+**Status (2026-08-24 ~16:50)**: `v22_multipost4_margin0995.py` built, confirmed
 single-variable diff against `v16_slow_multipost_n4.py` (only `REPLAY_SAFE_FRAC`
-0.98→0.995 differs), compiled clean, smoke-tested, packaged, and pushed as kernel
-`aleixlopez/v22-multipost4-margin0995`. **Kernel push itself has been stuck in
-`KernelWorkerStatus.QUEUED` for 8+ minutes** — longer than v21's earlier queue delay
-(which cleared within ~1 minute) but consistent with the same documented backend-capacity
-variance (forum topic 712828), not a code issue. Not yet submitted to the competition —
-still need `kaggle competitions submit -k aleixlopez/v22-multipost4-margin0995 -f
-submission.csv -v 1 -m "..."` once the kernel reaches `COMPLETE`. `v21` also still
-PENDING. Quota: 2 used/3 remaining today.
+0.98→0.995 differs), compiled clean, smoke-tested, packaged, and pushed as a kernel.
+`kaggle kernels status` appeared to show the push stuck `QUEUED` for over an hour — a
+second CLI push ("Version 2") was tried while investigating, which turned out to be a
+red herring: **the user submitted the ORIGINAL Version 1 directly from the Kaggle
+website, confirming it had already completed normally** — `kaggle kernels status`
+reports the LATEST pushed version's status, so re-pushing Version 2 mid-investigation
+made all subsequent CLI polls show Version 2's own fresh queue state, not Version 1's
+real (already-fine) one. **Submitted as `55746035`, PENDING.** `v21` also still PENDING. Confirmed via
+`submission-limits`: 3 used/2 remaining today.

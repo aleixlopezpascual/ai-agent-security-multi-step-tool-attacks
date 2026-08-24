@@ -1262,3 +1262,25 @@ Important distinction: this would only block NEW kernel-editor dev-mode pushes (
 to validate/prepare NEW candidate submissions like v22), NOT the real competition
 submission-scoring backend that already produced v20's 90.135 and is processing v21 --
 those are unaffected even if this theory is correct.
+
+## CORRECTION: user submitted v22 Version 1 directly from the Kaggle website -- 55746035, PENDING
+
+The user submitted v22's kernel **Version 1** (my ORIGINAL push, before I re-pushed a
+Version 2 while investigating the "stuck" status) directly from kaggle.com. Confirmed via
+`kaggle competitions submissions`: submission **55746035**, submitted 2026-08-24 14:50
+UTC, PENDING (no description since submitted via the UI, not our CLI message).
+
+**Likely real explanation for the earlier confusion**: `kaggle kernels status <ref>`
+appears to report the status of the LATEST pushed version under that kernel slug, not a
+specific version. Once I re-pushed Version 2 while diagnosing the "stuck" Version 1, all
+subsequent `kaggle kernels status` polls were showing Version 2's own fresh QUEUED state
+-- NOT Version 1's actual (likely already-COMPLETE) state. Version 1 probably finished
+normally a while ago; the user correctly saw it as available/submittable in the Kaggle
+UI, while my repeated CLI polling was misleadingly checking Version 2 the whole time.
+
+**Lesson for future cycles**: `kaggle kernels status` does not let you check a specific
+historical version -- if investigating a suspected-stuck push, do NOT re-push (it
+resets what `status` reports) until first confirming via the Kaggle web UI whether an
+earlier version actually already completed. The personal-GPU-quota hypothesis
+(`gpu-quota-stuck-kernel-push-2026-08-24` memory) may still be correct for whatever
+Version 2 is now doing, but it was NOT the explanation for Version 1's real status.
