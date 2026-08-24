@@ -530,3 +530,14 @@ margin, not v21's weaker 0.99) with `SLOW_MULTIPOST_N=4` (v16's confirmed sweep 
 these are the two best individually-confirmed real results this session, never yet tested
 together. `v21` (N=4 + 0.99) remains separately in flight and will still be informative
 about whether stacking helps at all once it resolves.
+
+**Status (2026-08-24 ~15:28)**: `v22_multipost4_margin0995.py` built, confirmed
+single-variable diff against `v16_slow_multipost_n4.py` (only `REPLAY_SAFE_FRAC`
+0.98→0.995 differs), compiled clean, smoke-tested, packaged, and pushed as kernel
+`aleixlopez/v22-multipost4-margin0995`. **Kernel push itself has been stuck in
+`KernelWorkerStatus.QUEUED` for 8+ minutes** — longer than v21's earlier queue delay
+(which cleared within ~1 minute) but consistent with the same documented backend-capacity
+variance (forum topic 712828), not a code issue. Not yet submitted to the competition —
+still need `kaggle competitions submit -k aleixlopez/v22-multipost4-margin0995 -f
+submission.csv -v 1 -m "..."` once the kernel reaches `COMPLETE`. `v21` also still
+PENDING. Quota: 2 used/3 remaining today.
