@@ -1149,3 +1149,8 @@ promising in-flight candidate and is still PENDING -- not spending a new slot un
 resolves, since its result directly determines whether further stacking (N=4 +
 REPLAY_SAFE_FRAC=0.995, or exploring N=5/N=6 around the confirmed peak) is worth pursuing.
 3 submissions remain today; no new submission this cycle.
+
+## Cron check-in (2026-08-24 12:57): no new results
+
+Sweep complete and documented last cycle; v20/v21 still PENDING, quota 2 used/3 remaining
+today. No new memory files. Pausing again.
