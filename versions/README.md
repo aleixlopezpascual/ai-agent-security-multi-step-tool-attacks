@@ -1,5 +1,9 @@
 # Attack Version Catalog
 
+> **⚠️ Picking this up in a new session? Read `conductor/HANDOFF-2026-08-24.md` first** —
+> condensed current state (current best real score, pending submissions, key findings,
+> next steps). This file is the full version-by-version catalog and technical detail.
+
 Each file here is a standalone `class AttackAlgorithm` runnable with
 `evaluate_local.py --attack versions/<file>.py` (see `../docs/guides/VERSIONING_WORKFLOW.md`).
 

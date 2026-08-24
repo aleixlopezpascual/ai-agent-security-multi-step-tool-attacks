@@ -1,9 +1,17 @@
 # Autonomous Improvement Log (2026-08-21, unattended session)
 
+> **⚠️ START HERE**: read `conductor/HANDOFF-2026-08-24.md` first — condensed current
+> state, pending submissions, key findings, and next steps. This file below is the full
+> chronological detail; the handoff doc is the fast-orientation summary.
+
 Mandate from user: create a version that scores better than our current best on the
 real Kaggle public leaderboard (currently confirmed **88.740**, from `v1_original.py`
 submitted 2026-08-17). Continue submitting/iterating autonomously for hours until a
 better public score is achieved.
+
+**UPDATE 2026-08-24: the anchor has moved. Current best real score is 90.135
+(`v20_tighter_margins_0995.py`), which beats 88.740. See `conductor/HANDOFF-2026-08-24.md`
+for full current state.**
 
 ## Ground truth discovered before starting (important — corrects prior docs)
 
