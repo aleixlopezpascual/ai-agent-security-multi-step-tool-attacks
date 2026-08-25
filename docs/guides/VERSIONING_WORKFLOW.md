@@ -14,9 +14,9 @@ and packer operate on.
 
 ```
 versions/
-  v1_original.py    # BURST_K=1 ground-truth anchor — scored 88.74 on Kaggle (Gemma)
-  v6_adaptive.py     # Model-Adaptive Sizing, BURST_K=2 — local Gemma 37.85
-  v7_k1_live.py       # current live submission (extracted from notebooks/ai-agent-security-v15.ipynb)
+  v1_original.py               # BURST_K=1 ground-truth baseline — scored 88.740 on Kaggle (Gemma)
+  v20_tighter_margins_0995.py  # REPLAY_SAFE_FRAC 0.995 — best real score (90.135)
+  v23_tighter_margins_0997.py  # REPLAY_SAFE_FRAC 0.997 — latest margin tightening (PENDING)
 ```
 
 See `versions/README.md` for the up-to-date index and any known scores.
@@ -54,7 +54,7 @@ See `versions/README.md` for the up-to-date index and any known scores.
   starting point, e.g. `cp versions/v7_k1_live.py versions/v8_experiment.py`).
 - **A public Kaggle notebook:** extract its `AttackAlgorithm` automatically:
   ```bash
-  .venv/bin/python extract_attack.py path/to/public_kernel.ipynb --out versions/public_name.py
+  python3 extract_attack.py path/to/public_kernel.ipynb --out versions/public_name.py
   ```
   Handles the three conventions seen in practice: a wrapped `attack_code = '''...'''`
   (or similarly-named) string embed, a `%%writefile .../attack.py` magic cell, and a cell
@@ -64,10 +64,10 @@ See `versions/README.md` for the up-to-date index and any known scores.
 
 ```bash
 # Fast smoke test — confirms it runs and finds something (NOT leaderboard-comparable)
-.venv/bin/python evaluate_local.py --attack versions/NAME.py --model gemma --budget 300
+python3 evaluate_local.py --attack versions/NAME.py --model gemma --budget 300
 
 # Faithful single-model run at the real Kaggle budget
-.venv/bin/python evaluate_local.py --attack versions/NAME.py --model gemma --budget 8750
+python3 evaluate_local.py --attack versions/NAME.py --model gemma --budget 8750
 
 # Faithful full run, both models
 ./simulate_kaggle.sh versions/NAME.py
@@ -87,7 +87,7 @@ trustworthy than any single absolute number.
 ### 3. Package for submission
 
 ```bash
-.venv/bin/python package_submission.py --attack versions/NAME.py --sync-metadata
+python3 package_submission.py --attack versions/NAME.py --sync-metadata
 ```
 Writes `notebooks/NAME.ipynb` using the proven 3-cell scaffold (dataset-path setup → embed
 + write `attack.py` → serve on rerun / write placeholder `submission.csv` otherwise) and,
