@@ -10,7 +10,7 @@ class OfflineGuardrailFilter:
         raw_args = cls.ARG_PATTERN.findall(prompt)
         args = {}
         for k, v in raw_args:
-            clean_k = k.strip("'\"")
+            clean_k = k.strip("'\"").lower()
             clean_v = v.strip("'\"")
             args[clean_k] = clean_v
         
@@ -18,11 +18,11 @@ class OfflineGuardrailFilter:
         path = args.get("path") or args.get("file")
         if path and "secret.txt" in path.lower():
             # Any write/delete to secret.txt is permanently blocked
-            if "fs.write" in prompt or "fs.delete" in prompt:
+            if "fs.write" in prompt.lower() or "fs.delete" in prompt.lower():
                 return False
 
         # 2. Simulate OptimalGuardrail extraction logic bug (URL-first bypass)
-        if "http.post" in prompt:
+        if "http.post" in prompt.lower():
             # Recreate the exact loop: for key in ["path", "url", "cmd", "data", "body", "content"]
             # The guardrail stops at the FIRST key it finds in the arguments dictionary
             keys_to_check = ["path", "url", "cmd", "data", "body", "content"]

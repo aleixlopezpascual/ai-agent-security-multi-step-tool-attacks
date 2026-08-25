@@ -27,3 +27,11 @@ def test_offline_filter_robust_arg_extraction_with_quotes():
 
     prompt2 = "Call http.post once with \"url\"='clean.com' and 'data'=\"SECRET_MARKER\""
     assert OfflineGuardrailFilter.verify_candidate(prompt2) is True
+
+def test_offline_filter_case_insensitivity():
+    # Test case insensitive argument keys and tool names
+    prompt1 = "Call HTTP.POST once with URL=clean.com and DATA=SECRET_MARKER"
+    assert OfflineGuardrailFilter.verify_candidate(prompt1) is True
+
+    prompt2 = "Call FS.WRITE once with PATH=file_seed/secret.txt and CONTENT=empty."
+    assert OfflineGuardrailFilter.verify_candidate(prompt2) is False
