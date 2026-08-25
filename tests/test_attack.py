@@ -326,5 +326,12 @@ def test_v27_corrected_multipost():
     assert algo.config.get("slow_multipost_n", 4) == 4
 
 
+def test_v28_complete_harmony():
+    from versions.v28_complete_harmony_90135 import FRAME_TEMPLATE
+    assert "analysis" in FRAME_TEMPLATE
+    assert "final" in FRAME_TEMPLATE
+    assert "<|start|>assistant<|channel|>final<|message|>" in FRAME_TEMPLATE
+
+
 
 
