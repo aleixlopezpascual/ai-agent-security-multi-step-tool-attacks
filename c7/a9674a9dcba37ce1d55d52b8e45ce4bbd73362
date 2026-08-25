@@ -1,0 +1,23 @@
+versions/v27_corrected_multipost_90135.py
+  s_83be79401fa07d::t_185a10f2f2192f 128
+docs/superpowers/plans/2026-08-25-v27-corrected-multipost.md
+  s_83be79401fa07d::t_5adac5182e7ee0 1-114
+tests/test_attack.py
+  s_83be79401fa07d::t_787fb0e06f7d4f 322-328
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "c7a9674a9dcba37ce1d55d52b8e45ce4bbd73362",
+  "prompts": {},
+  "sessions": {
+    "s_83be79401fa07d": {
+      "agent_id": {
+        "tool": "gemini",
+        "id": "956aaa4c-d3d6-4f5d-9339-25095381ebd1",
+        "model": "gemini-3.5-flash"
+      },
+      "human_author": "Aleix López"
+    }
+  }
+}
