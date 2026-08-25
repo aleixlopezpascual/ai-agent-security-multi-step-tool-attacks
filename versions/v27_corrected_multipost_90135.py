@@ -125,7 +125,7 @@ REPLAY_COST_COEF = 1.0        # measured elapsed x this == estimated hops=8 repl
 # (gemma is not Harmony). N=1 (default) == today's single-post FRAME_TEMPLATE,
 # BYTE-IDENTICAL. Gain is modest (~1.1x throughput: 4x posts cost ~3.6x replay,
 # each post is a full reasoning generation) -- see memory multipost-forge-*.
-SLOW_MULTIPOST_N = 1          # http.post endpoints planned per slow-row candidate
+SLOW_MULTIPOST_N = 4          # http.post endpoints planned per slow-row candidate
 # Estimated ratio of the notebook's overall replay wall to run()'s per-model fill
 # budget. 1.0 (today) == assume they are equal (the safe default REPLAY_SAFE_SIZING
 # has always used). >1 bets the replay stage has headroom beyond the fill budget --

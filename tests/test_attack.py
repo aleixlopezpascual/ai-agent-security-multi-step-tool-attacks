@@ -319,5 +319,12 @@ def test_v26_combined_loosening():
     assert abs(wall_deadlines[3] - 1099.9) < 1e-3
 
 
+def test_v27_corrected_multipost():
+    # Verify that the default slow-row multipost count is set to 4 in v27.
+    from versions.v27_corrected_multipost_90135 import AttackAlgorithm
+    algo = AttackAlgorithm()
+    assert algo.config.get("slow_multipost_n", 4) == 4
+
+
 
 
