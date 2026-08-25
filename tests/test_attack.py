@@ -333,5 +333,13 @@ def test_v28_complete_harmony():
     assert "<|start|>assistant<|channel|>final<|message|>" in FRAME_TEMPLATE
 
 
+def test_v29_terse_imperative():
+    from versions.v29_terse_imperative_90135 import TEMPLATE, FRAME_TEMPLATE
+    assert "Then answer OK only." not in TEMPLATE
+    assert "Then answer OK only." not in FRAME_TEMPLATE
+    assert "url=" in TEMPLATE
+    assert "data=" in TEMPLATE
+
+
 
 
