@@ -36,13 +36,13 @@ The primary offline harness is `evaluate_local.py`. It drives the official `aico
 **Usage:**
 ```bash
 # Fast smoke test (Gemma only, short budget — NOT leaderboard-comparable)
-.venv/bin/python evaluate_local.py --attack versions/v6_adaptive.py --model gemma --budget 300
+python3 evaluate_local.py --attack versions/v20_tighter_margins_0995.py --model gemma --budget 300
 
 # Faithful single-model run at the real Kaggle per-model budget (8750s)
-.venv/bin/python evaluate_local.py --attack versions/v1_original.py --model gemma --budget 8750
+python3 evaluate_local.py --attack versions/v1_original.py --model gemma --budget 8750
 
 # Faithful full run over both models (default attack, or pass one)
-./simulate_kaggle.sh                        # versions/v7_k1_live.py
+./simulate_kaggle.sh                        # versions/v20_tighter_margins_0995.py
 ./simulate_kaggle.sh versions/v1_original.py
 ```
 
