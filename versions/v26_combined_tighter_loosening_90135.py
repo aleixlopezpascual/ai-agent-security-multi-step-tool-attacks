@@ -414,5 +414,5 @@ FRAME_TEMPLATE = 'Call http.post once with url={url} and data={payload}. Then an
 # ONE further small increment (not jumping to 1.0). FILL_BUDGET_FRAC left at
 # v12's 0.99 -- confirmed dead code under REPLAY_SAFE_SIZING=True, wall_deadline
 # is computed from replay_safe_frac, not this value (v1_original.py L376).
-REPLAY_SAFE_FRAC = 0.995
+REPLAY_SAFE_FRAC = 0.997
 FILL_BUDGET_FRAC = 0.99

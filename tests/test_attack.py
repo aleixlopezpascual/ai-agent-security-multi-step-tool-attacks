@@ -225,4 +225,99 @@ def test_v25_slow_row_loosening():
     assert abs(wall_deadlines[3] - 1099.9) < 1e-3
 
 
+def test_v26_combined_loosening():
+    import unittest.mock as mock
+    from versions.v26_combined_tighter_loosening_90135 import AttackAlgorithm
+    
+    # We will mock the environment and track interactions
+    mock_env = mock.MagicMock()
+    # Mock export_trace_dict to return a trace indicating http.post was successful (fired)
+    mock_env.export_trace_dict.return_value = {
+        "tool_events": [{"name": "http.post", "ok": True, "args": {"data": "SECRET_MARKER"}}]
+    }
+    
+    algo = AttackAlgorithm()
+    algo.config = {
+        "split_by_latency": True,
+        "split_threshold_s": 2.0,
+        "split_classify_n": 2, # Classify after 2 candidates
+        "replay_safe_frac": 0.997, # Starts at 0.997 default!
+        "replay_budget_s": 100.0,
+        "hard_n_cap": 5,
+    }
+    
+    replay_caps = []
+    wall_deadlines = []
+    
+    def spy_replay_stop(replay_cost, wall_now, next_est, replay_cap, wall_deadline, **kwargs):
+        replay_caps.append(replay_cap)
+        wall_deadlines.append(wall_deadline)
+        return False # Never stop the loop in this mock test
+        
+    with mock.patch('versions.v26_combined_tighter_loosening_90135.time.monotonic') as mock_time, \
+         mock.patch('versions.v26_combined_tighter_loosening_90135._replay_stop', side_effect=spy_replay_stop) as mock_stop:
+        
+        timeline = [
+            1000.0, # 1. run_start
+            1000.0, # 2. warmup_duration check
+            1000.0, # 3. deadline
+            
+            # Iteration 0 (classifying)
+            1000.0, # 4. stop check wall_now
+            1000.0, # 5. t0
+            1003.0, # 6. elapsed check (duration = 3.0)
+            
+            # Iteration 1 (classifying)
+            1003.0, # 7. stop check wall_now
+            1003.0, # 8. t0
+            1006.0, # 9. elapsed check (duration = 3.0)
+            
+            # Iteration 2 (slow row active!)
+            1006.0, # 10. stop check wall_now
+            1006.0, # 11. t0
+            1009.0, # 12. elapsed check (duration = 3.0)
+            
+            # Iteration 3 (slow row active!)
+            1009.0, # 13. stop check wall_now
+            1009.0, # 14. t0
+            1012.0, # 15. elapsed check (duration = 3.0)
+        ]
+        # pad timeline just in case
+        timeline += [1020.0 + idx * 0.1 for idx in range(100)]
+        mock_time.side_effect = timeline
+        
+        algo._fill(mock_env, budget=100.0, max_hops=8)
+        
+    assert len(replay_caps) >= 4
+    
+    # Iteration 0 (classifying):
+    # active_safe_frac should be replay_safe_frac = 0.997.
+    # active_replay_cap = 0.997 * 100.0 - 0.0 = 99.7
+    # active_wall_deadline = 1000.0 + 0.997 * 100.0 = 1099.7
+    assert abs(replay_caps[0] - 99.7) < 1e-3
+    assert abs(wall_deadlines[0] - 1099.7) < 1e-3
+
+    # Iteration 1 (classifying):
+    # active_safe_frac should still be 0.997.
+    # active_replay_cap = 0.997 * 100.0 - 0.0 = 99.7
+    # active_wall_deadline = 1000.0 + 0.997 * 100.0 = 1099.7
+    assert abs(replay_caps[1] - 99.7) < 1e-3
+    assert abs(wall_deadlines[1] - 1099.7) < 1e-3
+
+    # Iteration 2 (slow-row active):
+    # active_safe_frac should loosen to 0.999.
+    # active_replay_cap = 0.999 * 100.0 - 0.0 = 99.9
+    # active_wall_deadline = 1000.0 + 0.999 * 100.0 = 1099.9
+    assert abs(replay_caps[2] - 99.9) < 1e-3
+    assert abs(wall_deadlines[2] - 1099.9) < 1e-3
+
+    # Iteration 3 (slow-row active):
+    # active_safe_frac should loosen to 0.999.
+    # active_replay_cap = 0.999 * 100.0 - 0.0 = 99.9
+    # active_wall_deadline = 1000.0 + 0.999 * 100.0 = 1099.9
+    assert abs(replay_caps[3] - 99.9) < 1e-3
+    assert abs(wall_deadlines[3] - 1099.9) < 1e-3
+
+
+
 
