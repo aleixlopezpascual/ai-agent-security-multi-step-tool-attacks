@@ -1,0 +1,39 @@
+AGENTS.md
+  s_83be79401fa07d::t_fd1350c0be83d0 25
+COMPETITION_ANALYSIS.md
+  s_83be79401fa07d::t_d8fa7b54b37915 22
+  s_83be79401fa07d::t_f4a5a520d06b57 97-100
+tests/conftest.py
+  s_83be79401fa07d::t_9cd78266550ed8 42-44
+docs/reports/EXPERIMENTS.md
+  s_83be79401fa07d::t_612e89ac95a873 7-34,86-87,93-94,97,100-101,110-111,121-122,138-184
+versions/v23_tighter_margins_0997.py
+  s_83be79401fa07d::t_27b544950e5112 15
+  s_83be79401fa07d::t_de63176fdb6620 1-14
+  s_83be79401fa07d::t_48fafb892cc1d5 501-505
+versions/README.md
+  s_83be79401fa07d::t_e83fbd642d1316 545-552
+  s_83be79401fa07d::t_def4d79099afdb 18-19,27
+  s_83be79401fa07d::t_3ba7fbc8addec0 20
+  s_83be79401fa07d::t_ecab92e3c46e68 21,23-24
+  s_83be79401fa07d::t_c654eb36966e3b 542-544
+conductor/autonomous-improvement-log.md
+  s_83be79401fa07d::t_2015d881403a91 1295-1300,1303-1311
+  s_83be79401fa07d::t_ed33f0adf28b01 1301-1302
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "1d2f928418598bd9d7f564f8a3ce5f9fa05b1bae",
+  "prompts": {},
+  "sessions": {
+    "s_83be79401fa07d": {
+      "agent_id": {
+        "tool": "gemini",
+        "id": "956aaa4c-d3d6-4f5d-9339-25095381ebd1",
+        "model": "gemini-3.5-flash"
+      },
+      "human_author": "Aleix López"
+    }
+  }
+}
