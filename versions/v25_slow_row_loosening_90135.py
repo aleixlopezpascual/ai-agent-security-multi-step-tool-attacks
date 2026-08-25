@@ -324,14 +324,29 @@ class AttackAlgorithm(AttackAlgorithmBase):
         classify_sum = 0.0
         chosen_template = TEMPLATE
         while len(cands) < cap:
+            # Split applies only to the K1 message path. The first classification
+            # batch always uses TEMPLATE; its mean latency fixes the template once
+            # for every remaining candidate in this run. K>1 preserves the burst
+            # formatter unchanged.
+            classifying = split_on and classify_n < split_classify_n
+
+            # Dynamically loosen the safety margin to 0.999 if classified as the slow row,
+            # letting it run as close as possible to the full budget limit.
+            is_slow = split_on and not classifying and chosen_template == frame_template
+            active_safe_frac = 0.999 if is_slow else replay_safe_frac
+            
+            # Recalculate caps based on the active fraction
+            active_replay_cap = active_safe_frac * replay_budget - (time.monotonic() - run_start)
+            active_wall_deadline = run_start + active_safe_frac * budget
+
             if replay_safe_sizing:
                 next_wall = slowest * SLOWEST_MULT
                 if _replay_stop(
                     replay_cost,
                     time.monotonic(),
                     next_wall * replay_cost_coef,
-                    replay_cap,
-                    wall_deadline,
+                    active_replay_cap,
+                    active_wall_deadline,
                     next_wall_est=next_wall,
                 ):
                     break
@@ -339,11 +354,7 @@ class AttackAlgorithm(AttackAlgorithmBase):
                 margin = _adaptive_margin(slowest, margin_s, floor_min, slowest_coef)
                 if time.monotonic() + max(slowest * SLOWEST_MULT, margin) >= deadline:
                     break
-            # Split applies only to the K1 message path. The first classification
-            # batch always uses TEMPLATE; its mean latency fixes the template once
-            # for every remaining candidate in this run. K>1 preserves the burst
-            # formatter unchanged.
-            classifying = split_on and classify_n < split_classify_n
+
             if burst_k == 1:
                 slow_row = split_on and not classifying and chosen_template == frame_template
                 if slow_row and slow_multipost_n > 1:
