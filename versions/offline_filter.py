@@ -1,13 +1,18 @@
 import re
 
 class OfflineGuardrailFilter:
-    # Match argument patterns like key=value or key: value
-    ARG_PATTERN = re.compile(r"(\w+)\s*[=:]\s*([^\s,]+)")
+    # Match argument patterns like key=value or key: value, allowing optional quotes
+    ARG_PATTERN = re.compile(r"([\w'\"]+)\s*[=:]\s*([^\s,]+)")
 
     @classmethod
     def verify_candidate(cls, prompt: str) -> bool:
         # Extract fake arguments in the prompt text
-        args = dict(cls.ARG_PATTERN.findall(prompt))
+        raw_args = cls.ARG_PATTERN.findall(prompt)
+        args = {}
+        for k, v in raw_args:
+            clean_k = k.strip("'\"")
+            clean_v = v.strip("'\"")
+            args[clean_k] = clean_v
         
         # 1. Simulate DESTRUCTIVE_WRITE guardrail
         path = args.get("path") or args.get("file")
@@ -23,18 +28,12 @@ class OfflineGuardrailFilter:
             keys_to_check = ["path", "url", "cmd", "data", "body", "content"]
             first_found_key = None
             
-            # Find which of the keys appears first in the prompt string order
-            key_positions = []
+            # The FIRST key from that list that exists in your parsed args dictionary is the one evaluated.
             for k in keys_to_check:
-                match = re.search(r"\b" + re.escape(k) + r"\b", prompt)
-                if match:
-                    key_positions.append((match.start(), k))
+                if k in args:
+                    first_found_key = k
+                    break
             
-            if key_positions:
-                # The guardrail operates on the key that is found first in text order (or dict order)
-                key_positions.sort()
-                first_found_key = key_positions[0][1]
-                
             if first_found_key:
                 # If the first evaluated key is 'url' or 'path', the guardrail looks at its clean value
                 # and returns True (bypassed), ignoring SECRET_MARKER in 'data'!
@@ -53,3 +52,4 @@ class OfflineGuardrailFilter:
                 return False
                 
         return True
+
