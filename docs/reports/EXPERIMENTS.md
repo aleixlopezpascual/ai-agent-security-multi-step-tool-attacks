@@ -10,6 +10,8 @@ The historical experiments in `docs/reports/` originally contained several stale
 
 | Score | Version | Date | Notes |
 |---|---|---|---|
+| PENDING | v27_corrected_multipost_90135 — SLOW_MULTIPOST_N=4 + loosening | 2026-08-25 | Re-evaluating N=4 slow multipost with corrected dynamic 0.999 loosening timing ledger. |
+| PENDING | v26_combined_tighter_loosening_90135 — 0.997 Gemma + 0.999 slow loosening | 2026-08-25 | Combines 0.997 tight Gemma margin with corrected dynamic 0.999 slow-row loosening. |
 | PENDING | v25_slow_row_loosening_90135 — Dynamic slow-row loosening | 2026-08-25 | Dynamic slow-row loosening to 0.999 to maximize GPT-OSS throughput under partial-credit safety, while keeping 0.995 Gemma safety. |
 | 14.22* | v24_offline_filter_90135 — `v20` + `OfflineGuardrailFilter` | 2026-08-25 | Local calibration run on Gemma (budget 300s): scored 14.22 with 158 findings, proving zero false-negatives and perfect stability. |
 | 88.920 | v23_tighter_margins_0997 — `REPLAY_SAFE_FRAC` 0.995→0.997 | 2026-08-24 | One further small margin increment to squeeze more candidates, fully completing with no overruns. |
@@ -203,5 +205,18 @@ The historical experiments in `docs/reports/` originally contained several stale
 *   **Learnings:**
     1. **Dynamic Safe-Fraction Verification:** Verifies that Gemma runs safely and finishes cleanly, producing `169` findings. This confirms that the fast model's tight `0.995` margin remains completely uncompromised, guaranteeing zero regressions on our strongest scoring row.
     2. **Score Leap Potential:** By letting the slow row (GPT-OSS) bypass its conservative early-stopping cap and utilizing the full 150-minute budget safely, its candidate count is mathematically modeled to scale from just 3 candidates to a range of 441 to 900 candidates (thanks to token minimization bypass), unlocking an overall leaderboard mean score of **`110.0` to `130.0` points**!
+
+---
+
+### 🧪 Experiment 20: Combined Extreme Tighter Gemma Margin & Dynamic Slow-Row Loosening (v26_combined_tighter_loosening_90135)
+*   **Pipeline:** Combining `v23`'s safe `0.997` margin on Gemma with `v25`'s dynamic `0.999` loosening on the slow GPT-OSS row under the corrected timing ledger.
+*   **Result:** ⏳ **PENDING (Submitted 2026-08-25, 55774399).**
+
+---
+
+### 🧪 Experiment 21: Corrected Slow-Row Multiposting (v27_corrected_multipost_90135)
+*   **Pipeline:** Combining `SLOW_MULTIPOST_N = 4` (our sweep peak) with our corrected `v25` dynamic `0.999` budget-loosening ledger, enabling the slow row to run the full budget and generate a highly dense candidate queue under multiposting.
+*   **Result:** ⏳ **PENDING (Submitted 2026-08-25, 55774400).**
+
 
 
