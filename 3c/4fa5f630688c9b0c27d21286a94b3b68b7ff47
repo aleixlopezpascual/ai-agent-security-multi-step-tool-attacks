@@ -1,0 +1,23 @@
+versions/v25_slow_row_loosening_90135.py
+  s_83be79401fa07d::t_d36a32ab11b64c 327-332,357
+  s_83be79401fa07d::t_63bcc52c04c73a 333-341,348-349
+tests/test_attack.py
+  s_83be79401fa07d::t_8e562f5d3ae284 141-168,171-173,176-179,182-185,187-191,193-197,206-234
+  s_83be79401fa07d::t_81443fb1621e7f 106-140,169-170,174-175,180-181,186,192,198-205,235-236
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "3c4fa5f630688c9b0c27d21286a94b3b68b7ff47",
+  "prompts": {},
+  "sessions": {
+    "s_83be79401fa07d": {
+      "agent_id": {
+        "tool": "gemini",
+        "id": "956aaa4c-d3d6-4f5d-9339-25095381ebd1",
+        "model": "gemini-3.5-flash"
+      },
+      "human_author": "Aleix López"
+    }
+  }
+}
