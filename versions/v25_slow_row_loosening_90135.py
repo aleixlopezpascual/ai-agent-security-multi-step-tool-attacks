@@ -310,12 +310,13 @@ class AttackAlgorithm(AttackAlgorithmBase):
         except Exception:
             return []
 
+        warmup_duration = time.monotonic() - run_start
         deadline = time.monotonic() + budget * frac
         # Replay-safe sizing bounds (opt-in): the KEPT set's accumulated replay cost
         # must fit the fresh replay budget minus the measured warm-up (so the replay's
         # own model-load has room), and the fill's own wall-clock must fit run()'s
         # budget (anchored at run_start, folding warm-up in). Unused when off.
-        replay_cap = replay_safe_frac * replay_budget - (time.monotonic() - run_start)
+        replay_cap = replay_safe_frac * replay_budget - warmup_duration
         wall_deadline = run_start + replay_safe_frac * budget
         replay_cost = 0.0
         cands: list[AttackCandidate] = []
@@ -336,7 +337,7 @@ class AttackAlgorithm(AttackAlgorithmBase):
             active_safe_frac = 0.999 if is_slow else replay_safe_frac
             
             # Recalculate caps based on the active fraction
-            active_replay_cap = active_safe_frac * replay_budget - (time.monotonic() - run_start)
+            active_replay_cap = active_safe_frac * replay_budget - warmup_duration
             active_wall_deadline = run_start + active_safe_frac * budget
 
             if replay_safe_sizing:

@@ -140,61 +140,53 @@ def test_v25_slow_row_loosening():
         # Timeline:
         # Pre-loop startup (3 calls):
         # 1. run_start: 1000.0
-        # 2. deadline: 1000.0
-        # 3. replay_cap check: 1000.0
+        # 2. warmup_duration check: 1000.0 (warmup_duration = 0.0)
+        # 3. deadline: 1000.0
         #
         # Iteration 0 (classifying):
-        # 4. active_replay_cap check: 1000.0 (time since start: 0.0)
-        # 5. stop check wall_now: 1000.0
-        # 6. t0: 1000.0
-        # 7. elapsed check: 1003.0 (elapsed: 3.0s)
+        # 4. stop check wall_now: 1000.0
+        # 5. t0: 1000.0
+        # 6. elapsed check: 1003.0 (elapsed: 3.0s)
         #
         # Iteration 1 (classifying):
-        # 8. active_replay_cap check: 1003.0 (time since start: 3.0)
-        # 9. stop check wall_now: 1003.0
-        # 10. t0: 1003.0
-        # 11. elapsed check: 1006.0 (elapsed: 3.0s) -> classification triggers, slow row active!
+        # 7. stop check wall_now: 1003.0
+        # 8. t0: 1003.0
+        # 9. elapsed check: 1006.0 (elapsed: 3.0s) -> classification triggers, slow row active!
         #
         # Iteration 2 (slow-row active!):
-        # 12. active_replay_cap check: 1006.0 (time since start: 6.0)
-        # 13. stop check wall_now: 1006.0
-        # 14. t0: 1006.0
-        # 15. elapsed check: 1009.0 (elapsed: 3.0s)
+        # 10. stop check wall_now: 1006.0
+        # 11. t0: 1006.0
+        # 12. elapsed check: 1009.0 (elapsed: 3.0s)
         #
         # Iteration 3 (slow-row active!):
-        # 16. active_replay_cap check: 1009.0 (time since start: 9.0)
-        # 17. stop check wall_now: 1009.0
-        # 18. t0: 1009.0
-        # 19. elapsed check: 1012.0 (elapsed: 3.0s)
+        # 13. stop check wall_now: 1009.0
+        # 14. t0: 1009.0
+        # 15. elapsed check: 1012.0 (elapsed: 3.0s)
         
         timeline = [
             1000.0, # 1. run_start
-            1000.0, # 2. deadline
-            1000.0, # 3. replay_cap
+            1000.0, # 2. warmup_duration check
+            1000.0, # 3. deadline
             
             # Iteration 0 (classifying)
-            1000.0, # 4. active_replay_cap
-            1000.0, # 5. stop check wall_now
-            1000.0, # 6. t0
-            1003.0, # 7. elapsed check (duration = 3.0)
+            1000.0, # 4. stop check wall_now
+            1000.0, # 5. t0
+            1003.0, # 6. elapsed check (duration = 3.0)
             
             # Iteration 1 (classifying)
-            1003.0, # 8. active_replay_cap
-            1003.0, # 9. stop check wall_now
-            1003.0, # 10. t0
-            1006.0, # 11. elapsed check (duration = 3.0)
+            1003.0, # 7. stop check wall_now
+            1003.0, # 8. t0
+            1006.0, # 9. elapsed check (duration = 3.0)
             
             # Iteration 2 (slow row active!)
-            1006.0, # 12. active_replay_cap
-            1006.0, # 13. stop check wall_now
-            1006.0, # 14. t0
-            1009.0, # 15. elapsed check (duration = 3.0)
+            1006.0, # 10. stop check wall_now
+            1006.0, # 11. t0
+            1009.0, # 12. elapsed check (duration = 3.0)
             
             # Iteration 3 (slow row active!)
-            1009.0, # 16. active_replay_cap
-            1009.0, # 17. stop check wall_now
-            1009.0, # 18. t0
-            1012.0, # 19. elapsed check (duration = 3.0)
+            1009.0, # 13. stop check wall_now
+            1009.0, # 14. t0
+            1012.0, # 15. elapsed check (duration = 3.0)
         ]
         # pad timeline just in case
         timeline += [1020.0 + idx * 0.1 for idx in range(100)]
@@ -213,23 +205,23 @@ def test_v25_slow_row_loosening():
 
     # Iteration 1 (classifying):
     # active_safe_frac should still be 0.995.
-    # active_replay_cap = 0.995 * 100.0 - (1003.0 - 1000.0) = 99.5 - 3.0 = 96.5
+    # active_replay_cap = 0.995 * 100.0 - 0.0 = 99.5
     # active_wall_deadline = 1000.0 + 0.995 * 100.0 = 1099.5
-    assert abs(replay_caps[1] - 96.5) < 1e-3
+    assert abs(replay_caps[1] - 99.5) < 1e-3
     assert abs(wall_deadlines[1] - 1099.5) < 1e-3
 
     # Iteration 2 (slow-row active):
     # active_safe_frac should loosen to 0.999.
-    # active_replay_cap = 0.999 * 100.0 - (1006.0 - 1000.0) = 99.9 - 6.0 = 93.9
+    # active_replay_cap = 0.999 * 100.0 - 0.0 = 99.9
     # active_wall_deadline = 1000.0 + 0.999 * 100.0 = 1099.9
-    assert abs(replay_caps[2] - 93.9) < 1e-3
+    assert abs(replay_caps[2] - 99.9) < 1e-3
     assert abs(wall_deadlines[2] - 1099.9) < 1e-3
 
     # Iteration 3 (slow-row active):
     # active_safe_frac should loosen to 0.999.
-    # active_replay_cap = 0.999 * 100.0 - (1009.0 - 1000.0) = 99.9 - 9.0 = 90.9
+    # active_replay_cap = 0.999 * 100.0 - 0.0 = 99.9
     # active_wall_deadline = 1000.0 + 0.999 * 100.0 = 1099.9
-    assert abs(replay_caps[3] - 90.9) < 1e-3
+    assert abs(replay_caps[3] - 99.9) < 1e-3
     assert abs(wall_deadlines[3] - 1099.9) < 1e-3
 
 
