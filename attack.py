@@ -121,7 +121,12 @@ class AttackAlgorithm(AttackAlgorithmBase):
         def keep(messages):
             if len(findings) >= self.MAX_CANDIDATES:
                 return False
-            
+
+            from versions.offline_filter import OfflineGuardrailFilter
+            for m in messages:
+                if not OfflineGuardrailFilter.verify_candidate(m):
+                    return False
+
             # Predict budget before running another interaction
             if len(interact_times) > 0:
                 avg_time = sum(interact_times) / len(interact_times)
