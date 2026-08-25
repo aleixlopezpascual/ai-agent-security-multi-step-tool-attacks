@@ -15,6 +15,7 @@ CLI-verified history (best first):
 
 | Score | Version | Date | Notes |
 |---|---|---|---|
+| 14.22* | v24_offline_filter_90135 — `v20` + `OfflineGuardrailFilter` | 2026-08-25 | Local calibration run on Gemma (budget 300s): scored 14.22 with 158 findings, proving zero false-negatives and perfect stability. |
 | PENDING | v23_tighter_margins_0997 — `REPLAY_SAFE_FRAC` 0.995→0.997 | 2026-08-24 | One further small margin increment to squeeze more candidates, utilizing our final daily slot today. |
 | PENDING | v20_repeat_control — `v20_tighter_margins_0995` control rerun | 2026-08-24 | Direct duplicate of v20 to characterize run-to-run noise on the best candidate. |
 | 86.255 | v22_multipost4_margin0995 — N=4 + 0.995 margin | 2026-08-24 | Combines sweep peak (N=4) with proven best margin (0.995). Landed at exact same score as v21 due to slow candidate multi-post cost. |
