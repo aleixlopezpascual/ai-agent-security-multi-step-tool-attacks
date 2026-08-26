@@ -22,9 +22,13 @@ pytest tests/test_offline_filter.py -v
 ### Local Model Evaluation
 The repository includes tools for faithful Kaggle simulation using GGUF models (GPT-OSS 20B and Gemma 4 26B). These evaluations are computationally expensive (~2-10 hours per run).
 
+**⚠️ BEST PRACTICE: Always run local eval before submitting new versions to Kaggle.**
+This catches logic errors, prompt failures, and regressions early. For rapid iteration, use shorter budgets (e.g., `--budget 300` for 5-min smoke tests).
+
 **⚠️ Important Setup Notes:**
 - The `.venv` symlink may point to a different session's environment—dependencies must be installed globally or in a local virtualenv
-- Required packages: `pydantic`, `llama-cpp-python`, `grpcio-tools`. Install with: `python3 -m pip install pydantic llama-cpp-python grpcio-tools`
+- Required packages: `pydantic`, `llama-cpp-python`, `grpcio-tools`, `gymnasium`. Install with: `python3 -m pip install pydantic llama-cpp-python grpcio-tools gymnasium`
+- On macOS: `grpcio-tools` wheel must be compiled for macOS. If you get a platform mismatch error, install directly from PyPI: `pip3 install grpcio grpcio-tools --upgrade`
 - The local eval requires pre-downloaded models (see `download_models.sh`) and the competition SDK in `competition_data/`
 - If setup issues persist, the simplest validation is to run unit tests (`pytest`) before submitting
 
