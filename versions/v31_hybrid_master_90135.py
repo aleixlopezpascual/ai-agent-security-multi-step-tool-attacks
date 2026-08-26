@@ -86,7 +86,7 @@ SPLIT_CLASSIFY_N = 1           # candidates sampled (plain TEMPLATE) before fixi
 # MARGIN_S/SPLIT_BY_LATENCY. Keep K <= the grader's max_tool_hops (4-8); K=4 fits
 # even a 4-hop cap. See [[frontier-technique-research-2026-07-12]] for the EV
 # caveats -- this is an empirical test, not a proven climb.
-BURST_K = 1
+BURST_K = 2
 # Replay-safe sizing (2026-07-18): the scored gateway replays every RETURNED
 # candidate at forced max_tool_hops=8 inside its OWN fresh per-model budget; an
 # overrun voids the WHOLE submission. Instead of the flat MARGIN_S/FILL_BUDGET_FRAC
