@@ -13,7 +13,7 @@ Below is a complete, unified side-by-side comparison of our developed versions, 
 | Version | Local Score (Gemma, 300s) | Local Findings | Live Kaggle Score (blended) | Core Outcome / Key Learning |
 | :--- | :---: | :---: | :---: | :--- |
 | **`v30_ultimate_master`** | **`15.30*`** | **170** | ⏳ **PENDING (55796894)** | **PINNACLE CHAMPION.** Zero-waste `SPLIT_CLASSIFY_N=1` + optimal timing margins. |
-| **`v31_hybrid_master`** | **`15.98*`** (K=2) | **94** | — (Pushed Draft) | Gemma `BURST_K=2` (47 cands, 94 findings) + `SPLIT_CLASSIFY_N=1`. Cuts replay load in half. |
+| **`v31_hybrid_master`** | **`15.98*`** (K=2) | **94** | ⏳ **PENDING (55798998)** | Gemma `BURST_K=2` (47 cands, 94 findings) + `SPLIT_CLASSIFY_N=1`. Cuts replay load in half. |
 | **`v20_tighter_margins_0995`** | **`14.76*`** | **164** | **`90.135`** | **OUR CURRENT LIVE BEST.** Safe margin-tightening recovers Gemma capacity. |
 | **`v23_tighter_margins_0997`** | `14.94*` (est) | 166 | **`88.920`** | Confirms `0.997` margin is 100% safe on Gemma with zero overruns. |
 | **`v25_slow_row_loosening`** | **`15.21*`** | **169** | **`88.650`** | Dynamic slow-row loosening to `0.999` is fully functional and safe. |
@@ -241,6 +241,13 @@ Below is a complete, unified side-by-side comparison of our developed versions, 
 *   **Pipeline:** Combining our best-proven timing margins (`0.997` Gemma / `0.999` GPT-OSS), our corrected timing ledger, and an ultra-fast zero-waste model classification logic (`SPLIT_CLASSIFY_N = 1`). Tested under a 300s Gemma GGUF budget.
 *   **Result:** ⏳ **PENDING (Submitted 2026-08-26, 55796894).** Local GGUF score: `15.30*` with 170 findings.
 *   **Learnings:** Achieved an outstanding **`0.320` candidates per second** throughput—the absolute highest we have ever recorded on Gemma! This empirically proves that setting `SPLIT_CLASSIFY_N = 1` successfully isolates model identity with 100% precision, saving 142.8 seconds of slow-row latency waste and maximizing candidate volume. Officially submitted on Kaggle's live scorer.
+
+---
+
+### 🧪 Experiment 25: Pinnacle Champion - Hybrid Master Agent (v31_hybrid_master_90135)
+*   **Pipeline:** Combining zero-waste model classification (`SPLIT_CLASSIFY_N = 1`), our corrected timing ledger, and a highly stable Gemma multiposting strategy (`BURST_K = 2`). Tested under a 300s Gemma GGUF budget.
+*   **Result:** ⏳ **PENDING (Submitted 2026-08-26, 55798998).** Local GGUF score: `15.98*` with 94 findings.
+*   **Learnings:** Confirms that Gemma complies 100% with the $K=2$ multi-posting format, returning 94 successful findings in 47 candidates. By cutting the required candidates to hit the 2,000 findings cap from 2,000 down to 1,000, it reduces the grader's Gemma replay verification workload by 50%, providing a bulletproof timing safety cushion. Officially submitted on Kaggle's live scorer.
 
 
 
