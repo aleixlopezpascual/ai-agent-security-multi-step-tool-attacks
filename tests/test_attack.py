@@ -341,5 +341,7 @@ def test_v29_terse_imperative():
     assert "data=" in TEMPLATE
 
 
-
-
+def test_v30_ultimate_master():
+    from versions.v30_ultimate_master_90135 import SPLIT_CLASSIFY_N, REPLAY_SAFE_FRAC
+    assert SPLIT_CLASSIFY_N == 1
+    assert REPLAY_SAFE_FRAC == 0.997
