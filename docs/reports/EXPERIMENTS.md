@@ -12,7 +12,7 @@ Below is a complete, unified side-by-side comparison of our developed versions, 
 
 | Version | Local Score (Gemma, 300s) | Local Findings | Live Kaggle Score (blended) | Core Outcome / Key Learning |
 | :--- | :---: | :---: | :---: | :--- |
-| **`v30_ultimate_master`** | **`15.30*`** | **170** | — (Pushed Draft) | **PINNACLE CHAMPION.** Zero-waste `SPLIT_CLASSIFY_N=1` + optimal timing margins. |
+| **`v30_ultimate_master`** | **`15.30*`** | **170** | ⏳ **PENDING (55796894)** | **PINNACLE CHAMPION.** Zero-waste `SPLIT_CLASSIFY_N=1` + optimal timing margins. |
 | **`v20_tighter_margins_0995`** | **`14.76*`** | **164** | **`90.135`** | **OUR CURRENT LIVE BEST.** Safe margin-tightening recovers Gemma capacity. |
 | **`v23_tighter_margins_0997`** | `14.94*` (est) | 166 | **`88.920`** | Confirms `0.997` margin is 100% safe on Gemma with zero overruns. |
 | **`v25_slow_row_loosening`** | **`15.21*`** | **169** | **`88.650`** | Dynamic slow-row loosening to `0.999` is fully functional and safe. |
@@ -238,8 +238,8 @@ Below is a complete, unified side-by-side comparison of our developed versions, 
 
 ### 🧪 Experiment 24: Pinnacle Champion - Ultimate Master Agent (v30_ultimate_master_90135)
 *   **Pipeline:** Combining our best-proven timing margins (`0.997` Gemma / `0.999` GPT-OSS), our corrected timing ledger, and an ultra-fast zero-waste model classification logic (`SPLIT_CLASSIFY_N = 1`). Tested under a 300s Gemma GGUF budget.
-*   **Result:** ✅ **COMPLETE — 15.30* local GGUF score with 170 findings (2026-08-25).**
-*   **Learnings:** Achieved an outstanding **`0.320` candidates per second** throughput—the absolute highest we have ever recorded on Gemma! This empirically proves that setting `SPLIT_CLASSIFY_N = 1` successfully isolates model identity with 100% precision, saving 142.8 seconds of slow-row latency waste and maximizing candidate volume. Pushed as a private draft and queued for submission as soon as Kaggle daily slots reset.
+*   **Result:** ⏳ **PENDING (Submitted 2026-08-26, 55796894).** Local GGUF score: `15.30*` with 170 findings.
+*   **Learnings:** Achieved an outstanding **`0.320` candidates per second** throughput—the absolute highest we have ever recorded on Gemma! This empirically proves that setting `SPLIT_CLASSIFY_N = 1` successfully isolates model identity with 100% precision, saving 142.8 seconds of slow-row latency waste and maximizing candidate volume. Officially submitted on Kaggle's live scorer.
 
 
 

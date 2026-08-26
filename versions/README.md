@@ -15,7 +15,7 @@ Below is a complete, unified side-by-side comparison of our developed versions, 
 
 | Version | Local Score (Gemma, 300s) | Local Findings | Live Kaggle Score (blended) | Core Outcome / Key Learning |
 | :--- | :---: | :---: | :---: | :--- |
-| **`v30_ultimate_master`** | **`15.30*`** | **170** | — (Pushed Draft) | **PINNACLE CHAMPION.** Zero-waste `SPLIT_CLASSIFY_N=1` + optimal timing margins. |
+| **`v30_ultimate_master`** | **`15.30*`** | **170** | ⏳ **PENDING (55796894)** | **PINNACLE CHAMPION.** Zero-waste `SPLIT_CLASSIFY_N=1` + optimal timing margins. |
 | **`v20_tighter_margins_0995`** | **`14.76*`** | **164** | **`90.135`** | **OUR CURRENT LIVE BEST.** Safe margin-tightening recovers Gemma capacity. |
 | **`v23_tighter_margins_0997`** | `14.94*` (est) | 166 | **`88.920`** | Confirms `0.997` margin is 100% safe on Gemma with zero overruns. |
 | **`v25_slow_row_loosening`** | **`15.21*`** | **169** | **`88.650`** | Dynamic slow-row loosening to `0.999` is fully functional and safe. |
