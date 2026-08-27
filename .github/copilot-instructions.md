@@ -24,6 +24,7 @@ The repository includes tools for faithful Kaggle simulation using GGUF models (
 
 **⚠️ BEST PRACTICE: Always run local eval before submitting new versions to Kaggle.**
 This catches logic errors, prompt failures, and regressions. **Always compare new version against v20 baseline at the same budget.**
+**Also update the experiment docs after each meaningful finding** so `conductor/HANDOFF-2026-08-27.md`, `versions/README.md`, and `docs/reports/EXPERIMENTS.md` stay in sync with the current scores and learnings.
 
 **⚠️ macOS Memory Constraints (CRITICAL):**
 - GPT-OSS model: 11GB GGUF. Gemma model: 16GB GGUF. Mac has 34GB RAM.

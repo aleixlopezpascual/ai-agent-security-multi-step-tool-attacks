@@ -12,30 +12,32 @@ Below is a complete, unified side-by-side comparison of our developed versions, 
 
 | Version | Local Score (Gemma, 300s) | Local Findings | Live Kaggle Score (blended) | Core Outcome / Key Learning |
 | :--- | :---: | :---: | :---: | :--- |
-| **`v30_ultimate_master`** | **`15.30*`** | **170** | ⏳ **PENDING (55796894)** | **PINNACLE CHAMPION.** Zero-waste `SPLIT_CLASSIFY_N=1` + optimal timing margins. |
-| **`v31_hybrid_master`** | **`15.98*`** (K=2) | **94** | ⏳ **PENDING (55798998)** | Gemma `BURST_K=2` (47 cands, 94 findings) + `SPLIT_CLASSIFY_N=1`. Cuts replay load in half. |
+| **`v38_multi_predicate_dw`** | **`11.07*`** | **123** | ⏳ **PENDING (55814423)** | Multi-predicate `http.post + fs.delete` experiment. Main open bet; local fire-rate drop vs v20 baseline. |
+| **`v39_triple_predicate_email`** | **`10.71*`** | **119** | ⏳ **PENDING (submitted 2026-08-27)** | Follow-up adding `email.send`; local fire-rate drops further vs v38/v20 baseline. |
+| **`v30_ultimate_master`** | **`15.30*`** | **170** | **`90.135`** | Matched v20 exactly. Zero-waste `SPLIT_CLASSIFY_N=1` adds no uplift on real Kaggle. |
 | **`v20_tighter_margins_0995`** | **`14.76*`** | **164** | **`90.135`** | **OUR CURRENT LIVE BEST.** Safe margin-tightening recovers Gemma capacity. |
-| **`v23_tighter_margins_0997`** | `14.94*` (est) | 166 | **`88.920`** | Confirms `0.997` margin is 100% safe on Gemma with zero overruns. |
-| **`v25_slow_row_loosening`** | **`15.21*`** | **169** | **`88.650`** | Dynamic slow-row loosening to `0.999` is fully functional and safe. |
-| **`v1_original`** (Baseline) | **`15.12*`** | **168** | **`88.740`** | Our baseline ground-truth benchmark anchor. |
-| **`v27_corrected_multipost`** | **`15.39*`** | **171** | **`88.290`** | **Peak Overall Throughput.** Corrected dynamic ledger running `SLOW_MULTIPOST_N=4`. |
-| **`v20_repeat_control`** | `14.76*` | 164 | **`88.110`** | Duplicate repeat run of `v20`. **Verifies our ~2.0 point live noise band.** |
-| **`v22_multipost4_margin0995`** | — | — | **`86.255`** | Stalled by our now-corrected timing double-counting bug. |
-| **`v21_combined_margins_multipost`**| — | — | **`86.255`** | Stalled by our now-corrected timing double-counting bug. |
-| **`v26_combined_margins`** | **`14.94*`** | **166** | **`85.140`** | Gemma pushed to 0.997 margin + v25 ledger. Lands within standard noise. |
-| **`v28_complete_harmony`** | **`14.40*`** | **160** | **`79.560`** | Mock-CoT reasoning jailbreak template. Slightly unstable on some seeds. |
-| **`v29_terse_imperative`** | **`10.35*`** | **115** | **`58.510`** | **Major Regression.** Missing 'Then answer OK only' triggers model rambling. |
-| **`v24_offline_filter_90135`** | **`14.22*`** | **158** | — (Local Only) | Pure local validation run, proving our offline pre-filter has zero false-negatives. |
+| **`v23_tighter_margins_0997`** | `14.94*` (est) | 166 | **`88.920`** | Tightening to 0.997 is safe, but still below v20. |
+| **`v1_original`** (Baseline) | **`15.12*`** | **168** | **`88.740`** | Baseline ground-truth anchor. |
+| **`v25_slow_row_loosening`** | **`15.21*`** | **169** | **`88.650`** | Dynamic slow-row loosening to `0.999` is safe but not enough. |
+| **`v27_corrected_multipost`** | **`15.39*`** | **171** | **`88.290`** | Peak overall throughput, but still below v20. |
 | **`v12_tight_margins`** | — | — | **`88.290`** | Within the 81.225-88.740 variance band, near the top. |
+| **`v20_repeat_control`** | `14.76*` | 164 | **`88.110`** | Duplicate repeat run of `v20`. Confirms ~2-point live noise band. |
 | **`v16_slow_multipost_n4`** | — | — | **`87.815`** | Real Kaggle confirms the locally-repeated +5.9% raw/sec finding transfers. |
-| **`v19_slow_multipost_n8`** | — | — | **`85.000`** | SLOW_MULTIPOST_N sweep far endpoint; drops below N=3/N=4. |
 | **`v18_slow_multipost_n3`** | — | — | **`86.620`** | SLOW_MULTIPOST_N sweep midpoint; below N=4's 87.815. |
+| **`v22_multipost4_margin0995`** | — | — | **`86.255`** | Combined tuning, but still below the v20/v30 peak. |
+| **`v21_combined_margins_multipost`**| — | — | **`86.255`** | Combined tuning, but still below the v20/v30 peak. |
+| **`v26_combined_margins`** | **`14.94*`** | **166** | **`85.140`** | Gemma pushed to 0.997 margin + v25 ledger. Still noise-band territory. |
+| **`v19_slow_multipost_n8`** | — | — | **`85.000`** | SLOW_MULTIPOST_N sweep far endpoint; drops below N=3/N=4. |
 | **`v17_slow_multipost_n2`** | — | — | **`82.855`** | SLOW_MULTIPOST_N sweep near endpoint; barely above the noise floor. |
-| **`v1_rerun`** | — | — | **`81.225`** | Real run-to-run variance for IDENTICAL baseline code (~8.5%). |
+| **`v28_complete_harmony`** | **`14.40*`** | **160** | **`79.560`** | Mock-CoT reasoning jailbreak template. Slightly unstable on some seeds. |
 | **`v10_no_split`** | — | — | **`58.545`** | Local said +3% on GPT-OSS; REAL result was -28% vs the 81.225 re-run. |
+| **`v29_terse_imperative`** | **`10.35*`** | **115** | **`58.510`** | **Major Regression.** Missing 'Then answer OK only' triggers model rambling. |
 | **`v3_burst3`** | — | — | **`52.055`** | BURST_K=3, semantic URLs, Harmony bypass. |
 | **`v6_adaptive_sizing`** | — | — | **`46.955`** | Model-Adaptive Sizing (cap=1500/400). |
 | **`v7_adaptive_sizing`** | — | — | **`45.000`** | Model-Adaptive Sizing (cap=1600/500). Was the LIVE kernel until reverted. |
+| **`v31_hybrid_master`** | **`15.98*`** (K=2) | **94** | **`36.425`** | Gemma `BURST_K=2` regressed hard; burst family is dead. |
+| **`v34_burst_k3_gemma`** | — (OOM) | — | **`28.155`** | Gemma `BURST_K=3` collapsed even worse; keeps burst closed. |
+| **`v24_offline_filter_90135`** | **`14.22*`** | **158** | — (Local Only) | Pure local validation run, proving our offline pre-filter has zero false-negatives. |
 
 ---
 
@@ -186,9 +188,24 @@ Below is a complete, unified side-by-side comparison of our developed versions, 
 
 ---
 
+### 🧪 Experiment 21: Aug-27 Result Checkpoint (v32/v33/v34)
+*   **Pipeline:** Kaggle live results for the latest margin / multipost / burst explorations.
+*   **Result:** ✅ **COMPLETE.**
+    *   `v32_margin_sweep_0996` → **`85.410`**
+    *   `v33_slow_multipost_0995` → **`87.970`**
+    *   `v34_burst_k3_gemma` → **`28.155`**
+*   **Learnings:**
+    1. `v32` confirms that a tiny margin bump can help a bit, but it does not bridge the leaderboard gap.
+    2. `v33` shows multipost can recover some score, but still stays below the `v20` best.
+    3. `v34` is a hard negative: `BURST_K=3` collapses badly, confirming the burst family is structurally weak.
+    4. The remaining gap likely requires a structural scoring change (multi-predicate / mixed-predicate candidates), not just more tuning of the same exfil-only family.
+
+    ---
+
 ### 🧪 Experiment 17: Extreme timing squeeze (v23_tighter_margins_0997)
 *   **Pipeline:** Direct single-variable tightening on the best `v20` structure, raising `REPLAY_SAFE_FRAC` to `0.997` to squeeze out the absolute maximum candidate density.
-*   **Result:** ⏳ **PENDING (Submitted 2026-08-24, 55754132).**
+*   **Result:** ✅ **COMPLETE — `88.920` real Kaggle score (2026-08-24).**
+*   **Learnings:** Tightening to `0.997` is safe, but it still does not beat `v20`; the extra margin squeeze is smaller than the live noise band.
 
 ---
 
@@ -239,15 +256,42 @@ Below is a complete, unified side-by-side comparison of our developed versions, 
 
 ### 🧪 Experiment 24: Pinnacle Champion - Ultimate Master Agent (v30_ultimate_master_90135)
 *   **Pipeline:** Combining our best-proven timing margins (`0.997` Gemma / `0.999` GPT-OSS), our corrected timing ledger, and an ultra-fast zero-waste model classification logic (`SPLIT_CLASSIFY_N = 1`). Tested under a 300s Gemma GGUF budget.
-*   **Result:** ⏳ **PENDING (Submitted 2026-08-26, 55796894).** Local GGUF score: `15.30*` with 170 findings.
-*   **Learnings:** Achieved an outstanding **`0.320` candidates per second** throughput—the absolute highest we have ever recorded on Gemma! This empirically proves that setting `SPLIT_CLASSIFY_N = 1` successfully isolates model identity with 100% precision, saving 142.8 seconds of slow-row latency waste and maximizing candidate volume. Officially submitted on Kaggle's live scorer.
+*   **Result:** ✅ **COMPLETE — `90.135` real Kaggle score (2026-08-26).** Local GGUF score: `15.30*` with 170 findings.
+*   **Learnings:** Matched `v20` exactly. `SPLIT_CLASSIFY_N = 1` is safe but does not improve the public score beyond the baseline, so it is not a real uplift lever.
 
 ---
 
 ### 🧪 Experiment 25: Pinnacle Champion - Hybrid Master Agent (v31_hybrid_master_90135)
 *   **Pipeline:** Combining zero-waste model classification (`SPLIT_CLASSIFY_N = 1`), our corrected timing ledger, and a highly stable Gemma multiposting strategy (`BURST_K = 2`). Tested under a 300s Gemma GGUF budget.
-*   **Result:** ⏳ **PENDING (Submitted 2026-08-26, 55798998).** Local GGUF score: `15.98*` with 94 findings.
-*   **Learnings:** Confirms that Gemma complies 100% with the $K=2$ multi-posting format, returning 94 successful findings in 47 candidates. By cutting the required candidates to hit the 2,000 findings cap from 2,000 down to 1,000, it reduces the grader's Gemma replay verification workload by 50%, providing a bulletproof timing safety cushion. Officially submitted on Kaggle's live scorer.
+*   **Result:** ✅ **COMPLETE — `36.425` real Kaggle score (2026-08-26).** Local GGUF score: `15.98*` with 94 findings.
+*   **Learnings:** The extra burst density does not compensate for the latency hit. `BURST_K = 2` is a hard regression and should remain closed.
 
+---
 
+### 🧪 Experiment 26: Aug-27 Result Checkpoint (v32/v33/v34)
+*   **Pipeline:** Kaggle live results for the latest margin / multipost / burst explorations.
+*   **Result:** ✅ **COMPLETE.**
+    *   `v32_margin_sweep_0996` → **`85.410`**
+    *   `v33_slow_multipost_0995` → **`87.970`**
+    *   `v34_burst_k3_gemma` → **`28.155`**
+*   **Learnings:**
+    1. `v32` confirms that a tiny margin bump can help a bit, but it does not bridge the leaderboard gap.
+    2. `v33` shows multipost can recover some score, but still stays below the `v20` best.
+    3. `v34` is a hard negative: `BURST_K=3` collapses badly, confirming the burst family is structurally weak.
+    4. The remaining gap likely requires a structural scoring change (multi-predicate / mixed-predicate candidates), not just more tuning of the same exfil-only family.
 
+---
+
+### 🧪 Experiment 27: Multi-Predicate Exfil + DW (v38_multi_predicate_dw)
+*   **Pipeline:** `http.post` exfiltration combined with `fs.delete` destructive-write in a single candidate, using the same live-validation fill logic as the winning exfil-only family.
+*   **Result:** ⏳ **PENDING (Submitted 2026-08-27, 55814423).**
+*   **Local checkpoint (300s, Gemma):** **`11.07` score, `123` findings**.
+*   **Learnings:** This is the main structural hypothesis now, but local throughput is clearly lower than the v20-lineage baseline; any win depends on added predicate raw score compensating for the reduced fire rate.
+
+---
+
+### 🧪 Experiment 28: Triple-Predicate Follow-Up (v39_triple_predicate_email)
+*   **Pipeline:** Extends the v38 multi-predicate candidate with `email.send` as a third action, so each candidate can potentially score EXFIL + DESTRUCTIVE_WRITE + CONFUSED_DEPUTY-style behavior in one run.
+*   **Result:** ⏳ **PENDING (Submitted 2026-08-27, v39 kernel complete).**
+*   **Local checkpoint (300s, Gemma):** **`10.71` score, `119` findings**.
+*   **Learnings:** Triple-predicate is locally weaker than v38 on raw fire-rate; it remains a high-risk/high-upside submission that needs Kaggle resolution before committing to this direction.

@@ -18,6 +18,12 @@ Below is a complete, unified side-by-side comparison of our developed versions, 
 | **`v33_slow_multipost_0995`** | **`15.84*`** | **176** | ⏳ **PENDING (55803525)** | v20-base + `SLOW_MULTIPOST_N=4` multipost token-forge. Gemma strong; gpt_oss 300s low (v30-lineage). |
 | **`v32_margin_sweep_0996`** | **`15.84*`** | **176** | ⏳ **PENDING (55803522)** | Fine-grain margin 0.996 between v20/v23. Gemma healthy. |
 | **`v34_burst_k3_gemma`** | — (OOM) | — | ⏳ **PENDING (55803535)** | Gemma `BURST_K=3`. Risky given v31 result. |
+### 2026-08-27 result lessons
+- **v32 (85.410)**: margin 0.996 helped a bit but did not beat v20. Small margin tweaks alone are not enough.
+- **v33 (87.970)**: multipost recovered some score versus v32 but still missed v20. Multi-post is useful only as a minor lever.
+- **v34 (28.155)**: BURST_K=3 collapsed. This confirms the burst family is structurally unstable and should stay closed.
+- **Cross-cutting lesson**: the leaderboard gap is unlikely to be solved by more tuning in the current single-predicate exfil-only family. The next meaningful hypothesis is a structural scoring change (multi-predicate / mixed-predicate candidates).
+
 | **`v30_ultimate_master`** | **`15.30*`** | **170** | **`90.135`** | Matched v20 exactly. Zero-waste `SPLIT_CLASSIFY_N=1` adds no uplift on real Kaggle. |
 | **`v31_hybrid_master`** | **`15.98*`** (K=2) | **94** | **`36.425`** ❌ | **DISASTER.** Gemma `BURST_K=2` causes catastrophic regression. BURST_K confirmed dead. |
 | **`v20_tighter_margins_0995`** | **`14.76*`** | **164** | **`90.135`** | **OUR CURRENT LIVE BEST.** Safe margin-tightening recovers Gemma capacity. |
