@@ -1,0 +1,19 @@
+versions/v40_iter4_fill_budget_0045.py
+  s_83be79401fa07d::t_b6823b4bfd1a4c 220
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "276e76b5c74dee9aa15357bbeb5471f4d350ad2e",
+  "prompts": {},
+  "sessions": {
+    "s_83be79401fa07d": {
+      "agent_id": {
+        "tool": "gemini",
+        "id": "956aaa4c-d3d6-4f5d-9339-25095381ebd1",
+        "model": "gemini-3.5-flash"
+      },
+      "human_author": "Aleix López"
+    }
+  }
+}
