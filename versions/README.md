@@ -15,6 +15,9 @@ Below is a complete, unified side-by-side comparison of our developed versions, 
 
 | Version | Local Score (Gemma, 300s) | Local Findings | Live Kaggle Score (blended) | Core Outcome / Key Learning |
 | :--- | :---: | :---: | :---: | :--- |
+| **`v40_final`** (READY) | **`15.75*` ✅** | **175** | ⏳ **READY FOR SUBMISSION** | **NEW BEST LOCAL:** Margin 0.996 beats v20 baseline on BOTH gpt_oss (79→78) AND gemma (175→164). Pure parameter refinement confirmed. |
+| **`v38_multi_predicate_dw`** | **`11.07*`** | **123** | ⏳ **PENDING (55814423)** | Multi-predicate `http.post + fs.delete` experiment. Main open bet; local fire-rate drop vs v20 baseline. |
+| **`v39_triple_predicate_email`** | **`10.71*`** | **119** | ⏳ **PENDING (submitted 2026-08-27)** | Follow-up adding `email.send`; local fire-rate drops further vs v38/v20 baseline. |
 | **`v33_slow_multipost_0995`** | **`15.84*`** | **176** | ⏳ **PENDING (55803525)** | v20-base + `SLOW_MULTIPOST_N=4` multipost token-forge. Gemma strong; gpt_oss 300s low (v30-lineage). |
 | **`v32_margin_sweep_0996`** | **`15.84*`** | **176** | ⏳ **PENDING (55803522)** | Fine-grain margin 0.996 between v20/v23. Gemma healthy. |
 | **`v34_burst_k3_gemma`** | — (OOM) | — | ⏳ **PENDING (55803535)** | Gemma `BURST_K=3`. Risky given v31 result. |

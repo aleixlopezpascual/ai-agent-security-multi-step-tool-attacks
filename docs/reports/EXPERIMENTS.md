@@ -12,6 +12,7 @@ Below is a complete, unified side-by-side comparison of our developed versions, 
 
 | Version | Local Score (Gemma, 300s) | Local Findings | Live Kaggle Score (blended) | Core Outcome / Key Learning |
 | :--- | :---: | :---: | :---: | :--- |
+| **`v40_final`** (READY) | **`15.75*` ✅** | **175** | ⏳ **READY FOR SUBMISSION** | **NEW BEST LOCAL:** Margin 0.996 beats v20 baseline on BOTH gpt_oss (79→78) AND gemma (175→164). Pure parameter refinement confirmed. |
 | **`v38_multi_predicate_dw`** | **`11.07*`** | **123** | ⏳ **PENDING (55814423)** | Multi-predicate `http.post + fs.delete` experiment. Main open bet; local fire-rate drop vs v20 baseline. |
 | **`v39_triple_predicate_email`** | **`10.71*`** | **119** | ⏳ **PENDING (submitted 2026-08-27)** | Follow-up adding `email.send`; local fire-rate drops further vs v38/v20 baseline. |
 | **`v30_ultimate_master`** | **`15.30*`** | **170** | **`90.135`** | Matched v20 exactly. Zero-waste `SPLIT_CLASSIFY_N=1` adds no uplift on real Kaggle. |
