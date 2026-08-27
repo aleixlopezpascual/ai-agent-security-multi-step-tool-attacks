@@ -15,8 +15,11 @@ Below is a complete, unified side-by-side comparison of our developed versions, 
 
 | Version | Local Score (Gemma, 300s) | Local Findings | Live Kaggle Score (blended) | Core Outcome / Key Learning |
 | :--- | :---: | :---: | :---: | :--- |
-| **`v30_ultimate_master`** | **`15.30*`** | **170** | ⏳ **PENDING (55796894)** | **PINNACLE CHAMPION.** Zero-waste `SPLIT_CLASSIFY_N=1` + optimal timing margins. |
-| **`v31_hybrid_master`** | **`15.98*`** (K=2) | **94** | ⏳ **PENDING (55798998)** | Gemma `BURST_K=2` (47 cands, 94 findings) + `SPLIT_CLASSIFY_N=1`. Cuts replay load in half. |
+| **`v33_slow_multipost_0995`** | **`15.84*`** | **176** | ⏳ **PENDING (55803525)** | v20-base + `SLOW_MULTIPOST_N=4` multipost token-forge. Gemma strong; gpt_oss 300s low (v30-lineage). |
+| **`v32_margin_sweep_0996`** | **`15.84*`** | **176** | ⏳ **PENDING (55803522)** | Fine-grain margin 0.996 between v20/v23. Gemma healthy. |
+| **`v34_burst_k3_gemma`** | — (OOM) | — | ⏳ **PENDING (55803535)** | Gemma `BURST_K=3`. Risky given v31 result. |
+| **`v30_ultimate_master`** | **`15.30*`** | **170** | **`90.135`** | Matched v20 exactly. Zero-waste `SPLIT_CLASSIFY_N=1` adds no uplift on real Kaggle. |
+| **`v31_hybrid_master`** | **`15.98*`** (K=2) | **94** | **`36.425`** ❌ | **DISASTER.** Gemma `BURST_K=2` causes catastrophic regression. BURST_K confirmed dead. |
 | **`v20_tighter_margins_0995`** | **`14.76*`** | **164** | **`90.135`** | **OUR CURRENT LIVE BEST.** Safe margin-tightening recovers Gemma capacity. |
 | **`v23_tighter_margins_0997`** | `14.94*` (est) | 166 | **`88.920`** | Confirms `0.997` margin is 100% safe on Gemma with zero overruns. |
 | **`v25_slow_row_loosening`** | **`15.21*`** | **169** | **`88.650`** | Dynamic slow-row loosening to `0.999` is fully functional and safe. |
