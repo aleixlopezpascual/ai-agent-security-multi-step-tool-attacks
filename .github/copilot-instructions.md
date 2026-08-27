@@ -20,34 +20,51 @@ pytest tests/test_offline_filter.py -v
 ```
 
 ### Local Model Evaluation
-The repository includes tools for faithful Kaggle simulation using GGUF models (GPT-OSS 20B and Gemma 4 26B). These evaluations are computationally expensive (~2-10 hours per run).
+The repository includes tools for faithful Kaggle simulation using GGUF models (GPT-OSS 20B and Gemma 4 26B).
 
 **⚠️ BEST PRACTICE: Always run local eval before submitting new versions to Kaggle.**
-This catches logic errors, prompt failures, and regressions early. For rapid iteration, use shorter budgets (e.g., `--budget 300` for 5-min smoke tests).
+This catches logic errors, prompt failures, and regressions. **Always compare new version against v20 baseline at the same budget.**
+
+**⚠️ macOS Memory Constraints (CRITICAL):**
+- GPT-OSS model: 11GB GGUF. Gemma model: 16GB GGUF. Mac has 34GB RAM.
+- **Full budget (8750s) causes `llama_decode returned -3` OOM crash on macOS** — do NOT use `--budget 8750` locally.
+- **Use `--budget 300` (5 min) for local validation.** This is fast, reliable, and sufficient for regression detection.
+- At 300s budget: expect ~78 findings for gpt_oss and ~164-171 findings for gemma on a healthy version.
+- If a new version scores significantly below baseline at 300s, it has a regression — do not submit.
+- Gemma also OOMs during the *replay* phase even at 300s sometimes — if Gemma crashes, check gpt_oss only.
+
+**Local Eval Workflow (MANDATORY before every submission):**
+```bash
+# 1. Run new version at 300s budget
+python3 evaluate_local.py --attack versions/vXX_new.py --model gpt_oss --budget 300
+python3 evaluate_local.py --attack versions/vXX_new.py --model gemma --budget 300
+
+# 2. Run the correct baseline for comparison (IMPORTANT: match the base version)
+#    - If new version derives from v20 → compare against v20
+#    - If new version derives from v30/v31 → compare against v30/v31 (different SPLIT_CLASSIFY_N)
+python3 evaluate_local.py --attack versions/v20_tighter_margins_0995.py --model gpt_oss --budget 300  # baseline: ~78 findings
+
+# 3. Compare findings counts vs baseline at same budget
+#    PASS: new >= 80% of baseline findings
+#    FAIL: new < 80% of baseline → regression, investigate before submitting
+```
+
+**⚠️ SPLIT_CLASSIFY_N impacts gpt_oss 300s scores significantly:**
+- v20-lineage (SPLIT_CLASSIFY_N=8): ~78 gpt_oss findings at 300s  ← use v20 as baseline
+- v30-lineage (SPLIT_CLASSIFY_N=1): ~11 gpt_oss findings at 300s  ← use v30 as baseline
+- Gemma scores (~164-176 findings) are NOT affected by SPLIT_CLASSIFY_N — always compare against v20 for gemma
+- When building new versions, track which lineage they derive from to pick the right comparison baseline
 
 **⚠️ Important Setup Notes:**
-- The `.venv` symlink may point to a different session's environment—dependencies must be installed globally or in a local virtualenv
-- Required packages: `pydantic`, `llama-cpp-python`, `grpcio-tools`, `gymnasium`. Install with: `python3 -m pip install pydantic llama-cpp-python grpcio-tools gymnasium`
-- On macOS: `grpcio-tools` wheel must be compiled for macOS. If you get a platform mismatch error, install directly from PyPI: `pip3 install grpcio grpcio-tools --upgrade`
-- The local eval requires pre-downloaded models (see `download_models.sh`) and the competition SDK in `competition_data/`
-- If setup issues persist, the simplest validation is to run unit tests (`pytest`) before submitting
+- The `.venv` symlink may point to a different session's environment—install dependencies globally
+- Required packages: `pydantic`, `llama-cpp-python`, `grpcio-tools`, `gymnasium`
+- On macOS: install from PyPI, not the bundled wheel: `pip3 install grpcio grpcio-tools gymnasium --upgrade`
+- If `grpcio-tools` fails with platform mismatch, run: `pip3 install grpcio grpcio-tools --upgrade --force-reinstall`
 
 ```bash
-# Download models and dependencies (one-time setup; requires ~300GB disk)
-./download_models.sh
-
-# Set up local evaluation environment
-./setup_local_eval.sh
-
-# Evaluate attack.py against both models (default: evaluate v20_tighter_margins_0995.py)
-./simulate_kaggle.sh
-
-# Evaluate a specific attack version
-./simulate_kaggle.sh versions/v20_tighter_margins_0995.py
-
-# Direct Python evaluation with custom budget
-python3 evaluate_local.py --attack attack.py --model both --budget 8750
-# Single model: --model gpt_oss or --model gemma
+# Direct Python evaluation (use --budget 300, not 8750)
+python3 evaluate_local.py --attack versions/vXX.py --model gpt_oss --budget 300
+python3 evaluate_local.py --attack versions/vXX.py --model gemma --budget 300
 ```
 
 Results are appended to `results/results.jsonl`.
