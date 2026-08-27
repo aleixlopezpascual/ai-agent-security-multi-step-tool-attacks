@@ -45,7 +45,7 @@ def test_transition_recent_sources_rotation():
     action = {"name": "web.search", "args": {"query": "test"}}
     next_state = transition(state, action)
     assert next_state is not None
-    assert next_state.recent_sources == ["b", "c", "d", "e", "tool"]
+    assert next_state.recent_sources == ["b", "c", "d", "e", "web"]
 
 def test_solver_finds_max_score_path():
     actions = [
@@ -61,8 +61,8 @@ def test_solver_finds_max_score_path():
 
 def test_evaluate_state_score_exfil_and_email():
     from versions.otv_solver import evaluate_state_score
-    state = VirtualState()
-    score_other = evaluate_state_score(state, [{"name": "web.search"}])
+    state = VirtualState(hops=1)
+    score_other = evaluate_state_score(state)
     assert score_other == 2.0
 
 def test_compile_prompt():
