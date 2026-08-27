@@ -15,7 +15,16 @@ Below is a complete, unified side-by-side comparison of our developed versions, 
 
 | Version | Local Score (Gemma, 300s) | Local Findings | Live Kaggle Score (blended) | Core Outcome / Key Learning |
 | :--- | :---: | :---: | :---: | :--- |
+| **`v41_conversational_jailbreak`** | **`13.23*`** | **147** | ⏳ **PENDING (55822081)** | **CONVERSATIONAL BYPASS.** 2-turn sequential compliance icebreaker. High-compliance with negligible latency. |
 | **`v40_final`** | **`15.75*` ✅** | **175** | ⏳ **PENDING (kaggle.com/code/aleixlopez/v40-final, submitted 2026-08-27 17:41 CEST)** | **NEW BEST LOCAL:** Margin 0.996 beats v20 baseline on BOTH gpt_oss (79→78) AND gemma (175→164). Pure parameter refinement confirmed. |
+| **`v40_iter7_split_classify_9`** | — | — | — (Local Only) | Sweep iter 7. `SPLIT_CLASSIFY_N=9`, `REPLAY_SAFE_FRAC=0.996`. GPT-OSS = 78 findings. |
+| **`v40_iter6_split_classify_7`** | — | — | — (Local Only) | Sweep iter 6. `SPLIT_CLASSIFY_N=7`, `REPLAY_SAFE_FRAC=0.996`. GPT-OSS = 78 findings. |
+| **`v40_iter5_tight_margin`** | — | — | — (Local Only) | Sweep iter 5. `CLASSIFY_MARGIN=0.05`, `REPLAY_SAFE_FRAC=0.996`. GPT-OSS = 78 findings. |
+| **`v40_iter4_fill_budget_0045`**| — | — | — (Local Only) | Sweep iter 4. `FILL_BUDGET_FRAC=0.045`, `REPLAY_SAFE_FRAC=0.996`. GPT-OSS = 77 findings. |
+| **`v40_iter3_margin_0997`** | — | — | — (Local Only) | Sweep iter 3. `REPLAY_SAFE_FRAC=0.997`, `SPLIT_CLASSIFY_N=8`. GPT-OSS = 78, Gemma = 175 findings. |
+| **`v40_iter2_margin_0996`** | — | — | — (Local Only) | Sweep iter 2. `REPLAY_SAFE_FRAC=0.996`, `SPLIT_CLASSIFY_N=8`. GPT-OSS = 79, Gemma = 175 findings. |
+| **`v40_iter1_margin_0994`** | — | — | — (Local Only) | Sweep iter 1. `REPLAY_SAFE_FRAC=0.994`, `SPLIT_CLASSIFY_N=8`. GPT-OSS = 77 findings. |
+| **`v40_gpt_gemma_dual_opt`** | — | — | — (Local Only) | Sweep baseline. GPT-OSS = 77, Gemma = 167 findings. |
 | **`v38_multi_predicate_dw`** | **`11.07*`** | **123** | ⏳ **PENDING (55814423)** | Multi-predicate `http.post + fs.delete` experiment. Main open bet; local fire-rate drop vs v20 baseline. |
 | **`v39_triple_predicate_email`** | **`10.71*`** | **119** | ⏳ **PENDING (submitted 2026-08-27)** | Follow-up adding `email.send`; local fire-rate drops further vs v38/v20 baseline. |
 | **`v33_slow_multipost_0995`** | **`15.84*`** | **176** | ⏳ **PENDING (55803525)** | v20-base + `SLOW_MULTIPOST_N=4` multipost token-forge. Gemma strong; gpt_oss 300s low (v30-lineage). |

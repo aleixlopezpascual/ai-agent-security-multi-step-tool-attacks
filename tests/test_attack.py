@@ -353,3 +353,10 @@ def test_v31_hybrid_master():
     assert BURST_K == 2
     assert REPLAY_SAFE_FRAC == 0.997
 
+
+def test_v41_conversational_jailbreak():
+    from versions.v41_conversational_jailbreak import _audit_msg1, _audit_msg2
+    assert "compliance check" in _audit_msg1(0)
+    assert "http.post" in _audit_msg2(0, False)
+    assert "analysis" in _audit_msg2(0, True)
+
