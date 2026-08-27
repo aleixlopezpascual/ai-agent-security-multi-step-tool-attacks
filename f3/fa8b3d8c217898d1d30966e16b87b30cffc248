@@ -1,0 +1,28 @@
+versions/README.md
+  s_83be79401fa07d::t_5ed9294c29b094 18
+  s_83be79401fa07d::t_0011b1f10c72f0 20-27
+docs/reports/EXPERIMENTS.md
+  s_83be79401fa07d::t_e47d395a716d5c 15
+  s_83be79401fa07d::t_7cedb2018a1ba7 17-24
+tests/test_attack.py
+  s_83be79401fa07d::t_13787069fce326 356-362
+versions/v41_conversational_jailbreak.py
+  s_83be79401fa07d::t_08b01ee405d3aa 278-333
+  s_83be79401fa07d::t_84e7b74bf2a0f7 403-463
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "f3fa8b3d8c217898d1d30966e16b87b30cffc248",
+  "prompts": {},
+  "sessions": {
+    "s_83be79401fa07d": {
+      "agent_id": {
+        "tool": "gemini",
+        "id": "956aaa4c-d3d6-4f5d-9339-25095381ebd1",
+        "model": "gemini-3.5-flash"
+      },
+      "human_author": "Aleix López"
+    }
+  }
+}
