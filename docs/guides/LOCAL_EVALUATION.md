@@ -23,6 +23,14 @@ To run the real LLMs locally you need substantial hardware.
   - `gpt-oss-20b-Q4_K_M.gguf` (~11 GB)
 - **The Backend:** `llama-cpp-python` compiled with Apple Metal support (`-DGGML_METAL=on`)
 so the models are offloaded to the Mac's GPU (`n_gpu_layers=-1`, `n_ctx=8192`).
+- **Required packages:** `pydantic`, `llama-cpp-python`, `grpcio-tools`, `gymnasium`.
+- **⚠️ `grpcio-tools` macOS quirk:** the bundled wheel resolved by default is
+  manylinux-only (Linux). On macOS install from PyPI directly, not the vendored wheel:
+  `pip3 install grpcio grpcio-tools gymnasium --upgrade`. If it fails with a platform
+  mismatch, force a clean reinstall: `pip3 install grpcio grpcio-tools --upgrade --force-reinstall`.
+- **⚠️ `.venv` may point to a stale/foreign environment** in a fresh session — if imports
+  fail unexpectedly, install the required packages globally with `pip3` rather than
+  assuming `.venv` is correctly wired up.
 
 ---
 
@@ -181,6 +189,86 @@ env, both models run separately and averaged:
 See `versions/README.md` for the full write-up. Practical implication either way: once a
 local run hits the 2000 cap, its absolute score stops discriminating between versions —
 compare candidates-generated-per-second (`findings_count / evaluation_time_s`) instead.
+
+---
+
+
+
+## 7. Fast Iteration Protocol: `--budget 300` Throughput Runs (macOS)
+
+Section 5 covers the two *slow, full-budget* (8750s) workarounds for saturation. In
+practice, day-to-day iteration on this Mac uses a **third, faster method**: short
+`--budget 300` (5 min) runs, one model at a time. This is the protocol actually used to
+build and validate v32–v40, and it is not a substitute for a full-budget calibration run
+(§6) — it's a cheap regression/improvement smoke test for comparing candidate versions
+against each other before spending a full-budget run or a Kaggle submission on them.
+
+### 7.1 Why `--budget 300`, not `8750`, on this machine
+
+**⚠️ macOS memory constraint (CRITICAL):** GPT-OSS GGUF is ~11GB, Gemma GGUF is ~16GB, and
+this Mac has 34GB unified RAM. A full `--budget 8750` run crashes with
+`llama_decode returned -3` (OOM) — do **not** run `--budget 8750` locally on this machine.
+`--budget 300` is fast (~9 min wall-clock per model, ~2× budget per §2), fits comfortably
+in RAM, and is sufficient to detect regressions or improvements in relative candidate
+throughput.
+
+### 7.2 Rules
+
+1. **Always use `--budget 300`** for iteration. Never `--budget 8750` locally.
+2. **Run one model at a time.** Loading both `gpt_oss` and `gemma` together can exceed
+   34GB and crash both. Run `--model gpt_oss` and `--model gemma` as separate invocations.
+3. **Compare against the correct lineage baseline**, not an absolute target — see §7.3.
+   `SPLIT_CLASSIFY_N` materially changes the gpt_oss 300s number, so a v30-lineage variant
+   (`SPLIT_CLASSIFY_N=1`) must be compared against v30, not v20.
+4. **Pass/fail rule:** a new variant should score **≥ 80% of its lineage baseline's
+   findings** on both models before it's considered non-regressive. Anything below that
+   at 300s indicates a real problem (see the v38/v39 multi-predicate case below) — do not
+   submit to Kaggle before investigating.
+5. **Update the docs after every meaningful finding** — this file, `versions/README.md`,
+   `docs/reports/EXPERIMENTS.md`, and the current `conductor/HANDOFF-*.md` should all be
+   kept in sync with the latest local numbers, per the standing project rule in
+   `.github/copilot-instructions.md`.
+
+### 7.3 Reference baselines at 300s (findings count)
+
+| Lineage | `SPLIT_CLASSIFY_N` | GPT-OSS @ 300s | Gemma @ 300s | Reference version |
+|---|---|---|---|---|
+| v20-lineage | 8 | ~77-79 | ~164-175 | `versions/v20_tighter_margins_0995.py` |
+| v30-lineage | 1 | ~11 | ~170-176 | `versions/v30_ultimate_master_90135.py` |
+
+The v30-lineage gpt_oss number is *expected* to be far lower than v20-lineage — that's a
+structural effect of `SPLIT_CLASSIFY_N=1`, not a regression. Always match the baseline to
+the lineage under test.
+
+### 7.4 Worked example — the v40 margin sweep (2026-08-27)
+
+This is the actual iteration log from finding `v40_final` (`REPLAY_SAFE_FRAC=0.996`),
+included here as a template for how to run and interpret this protocol:
+
+```bash
+# Baseline (v20, REPLAY_SAFE_FRAC=0.995)
+python3 evaluate_local.py --attack versions/v20_tighter_margins_0995.py --model gpt_oss --budget 300   # 78 findings
+python3 evaluate_local.py --attack versions/v20_tighter_margins_0995.py --model gemma  --budget 300   # 164 findings
+
+# Iteration 1: REPLAY_SAFE_FRAC=0.994 → 77 gpt_oss (regressed, stop — no gemma run needed)
+# Iteration 2: REPLAY_SAFE_FRAC=0.996 → 79 gpt_oss, 175 gemma (both improved — WINNER)
+# Iteration 3: REPLAY_SAFE_FRAC=0.997 → 78 gpt_oss, 175 gemma (gpt_oss no longer improves)
+# Iterations 4-7: FILL_BUDGET_FRAC and SPLIT_CLASSIFY_N sweeps around the 0.996 winner,
+#                 all flat or regressed vs iteration 2.
+```
+
+**Result:** `versions/v40_final.py` (margin 0.996) became the first local variant to beat
+the v20 baseline on **both** models simultaneously (79 vs 78 gpt_oss, 175 vs 164 gemma).
+It was submitted to Kaggle as `aleixlopez/v40-final`; see `versions/README.md` and
+`docs/reports/EXPERIMENTS.md` for the live score once available.
+
+**Contrast — a case where this protocol caught a real regression:** the multi-predicate
+variants `v38_multi_predicate_dw` and `v39_triple_predicate_email` scored **123** and
+**119** gemma findings at 300s respectively — well under the 80% pass bar against the 164
+baseline. This flagged, *before* spending a Kaggle submission, that adding predicates to
+each candidate (raising per-candidate raw score) was costing more in fire-rate/latency
+than it gained in raw score per candidate — see `docs/reports/EXPERIMENTS.md` Experiments
+27-28 for the full analysis.
 
 ---
 
