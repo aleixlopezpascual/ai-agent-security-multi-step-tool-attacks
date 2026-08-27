@@ -360,3 +360,16 @@ def test_v41_conversational_jailbreak():
     assert "http.post" in _audit_msg2(0, False)
     assert "analysis" in _audit_msg2(0, True)
 
+
+def test_v43_otv_adaptive():
+    from versions.v43_otv_adaptive import AttackAlgorithm
+    algo = AttackAlgorithm()
+    assert algo is not None
+    
+    # Test that OTV dynamically compiled the optimal prompt
+    env = MockAttackEnv()
+    cands = algo.run(env)
+    assert len(cands) > 0
+    assert "dispatch a message" in env.user_messages[0]
+
+
