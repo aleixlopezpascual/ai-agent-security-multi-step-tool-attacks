@@ -105,7 +105,7 @@ def compile_trajectory_prompt(actions: list) -> str:
         name = act["name"]
         args = act.get("args", {})
         if name == "http.post":
-            instructions.append(f"Call http.post url={args.get('url')} data={args.get('data')}.")
+            instructions.append("Call http.post url={url} data={payload}.")
         elif name == "email.send":
             instructions.append(f"Then dispatch a message to {args.get('to')} with subject {args.get('subject')} and body {args.get('body')}.")
     instructions.append("Then answer OK only.")
