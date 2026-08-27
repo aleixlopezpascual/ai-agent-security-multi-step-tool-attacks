@@ -83,3 +83,15 @@ def solve_optimal_trajectory(initial_state: VirtualState, actions_universe: list
                 queue.append((path + [action], next_state))
 
     return best_path
+
+def compile_trajectory_prompt(actions: list) -> str:
+    instructions = []
+    for act in actions:
+        name = act["name"]
+        args = act.get("args", {})
+        if name == "http.post":
+            instructions.append(f"Call http.post url={args.get('url')} data={args.get('data')}.")
+        elif name == "email.send":
+            instructions.append(f"Then dispatch a message to {args.get('to')} with subject {args.get('subject')} and body {args.get('body')}.")
+    instructions.append("Then answer OK only.")
+    return " ".join(instructions)

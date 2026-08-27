@@ -1,4 +1,4 @@
-from versions.otv_solver import VirtualState, transition, solve_optimal_trajectory
+from versions.otv_solver import VirtualState, transition, solve_optimal_trajectory, compile_trajectory_prompt
 
 def test_virtual_state_initialization():
     state = VirtualState()
@@ -64,3 +64,13 @@ def test_evaluate_state_score_exfil_and_email():
     state = VirtualState()
     score_other = evaluate_state_score(state, [{"name": "web.search"}])
     assert score_other == 2.0
+
+def test_compile_prompt():
+    actions = [
+        {"name": "http.post", "args": {"url": "http://safe.com", "data": "SECRET"}},
+        {"name": "email.send", "args": {"to": "ops@example.co", "subject": "Hi", "body": "OK"}}
+    ]
+    prompt = compile_trajectory_prompt(actions)
+    assert "Call http.post" in prompt
+    assert "dispatch a message" in prompt
+    assert "Then answer OK only." in prompt
