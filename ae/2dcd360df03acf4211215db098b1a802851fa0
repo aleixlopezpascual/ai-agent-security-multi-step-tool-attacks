@@ -1,0 +1,22 @@
+tests/test_otv.py
+  s_83be79401fa07d::t_c42250cf642048 1,8-21
+  s_83be79401fa07d::t_091ac82a96c5b7 22-48
+versions/otv_solver.py
+  s_83be79401fa07d::t_9f1bffa188faa7 1,13-46
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "ae2dcd360df03acf4211215db098b1a802851fa0",
+  "prompts": {},
+  "sessions": {
+    "s_83be79401fa07d": {
+      "agent_id": {
+        "tool": "gemini",
+        "id": "956aaa4c-d3d6-4f5d-9339-25095381ebd1",
+        "model": "gemini-3.5-flash"
+      },
+      "human_author": "Aleix López"
+    }
+  }
+}
