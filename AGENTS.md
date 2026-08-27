@@ -26,7 +26,8 @@ When operating in this repository, you must act as a **Senior AI/ML Security Eng
 2. **Deterministic & Repeatable:** Avoid stochastic random brute-force. Focus on structured, trace-guided mutations.
 3. **No Code Reversions:** Do not revert functional code changes unless explicitly instructed.
 4. **Validation:** Always verify any local environment execution or test script before completing a task.
-5. **No Credentials/Secrets Leakage:** Never print, log, or commit API keys or session tokens (e.g., from `secret.txt` during runs).
+5. **Submission Safety:** Before any Kaggle submission, run local eval first with the correct baseline. Use `--budget 300` on macOS, and never rely on an unvalidated version.
+6. **No Credentials/Secrets Leakage:** Never print, log, or commit API keys or session tokens (e.g., from `secret.txt` during runs).
 
 ---
 
