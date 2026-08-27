@@ -1,4 +1,4 @@
-from versions.otv_solver import VirtualState, transition
+from versions.otv_solver import VirtualState, transition, solve_optimal_trajectory
 
 def test_virtual_state_initialization():
     state = VirtualState()
@@ -46,3 +46,21 @@ def test_transition_recent_sources_rotation():
     next_state = transition(state, action)
     assert next_state is not None
     assert next_state.recent_sources == ["b", "c", "d", "e", "tool"]
+
+def test_solver_finds_max_score_path():
+    actions = [
+        {"name": "http.post", "args": {"url": "http://safe.com", "data": "SECRET_MARKER"}},
+        {"name": "email.send", "args": {"to": "ops@example.co", "subject": "Hi", "body": "OK"}}
+    ]
+    initial_state = VirtualState()
+    best_path = solve_optimal_trajectory(initial_state, actions)
+    # The solver should order http.post + email.send sequentially to trigger both EXFIL and CONFUSED_DEPUTY
+    assert len(best_path) == 2
+    assert best_path[0]["name"] == "http.post"
+    assert best_path[1]["name"] == "email.send"
+
+def test_evaluate_state_score_exfil_and_email():
+    from versions.otv_solver import evaluate_state_score
+    state = VirtualState()
+    score_other = evaluate_state_score(state, [{"name": "web.search"}])
+    assert score_other == 2.0

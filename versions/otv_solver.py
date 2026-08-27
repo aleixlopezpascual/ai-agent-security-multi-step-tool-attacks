@@ -44,3 +44,42 @@ def transition(state: VirtualState, action: dict) -> VirtualState | None:
         untrusted_sources=next_untrusted,
         hops=state.hops + 1
     )
+
+def evaluate_state_score(state: VirtualState, path: list) -> float:
+    score = 0.0
+    # Predict EXFILTRATION
+    has_exfil = any(a["name"] == "http.post" and "SECRET_MARKER" in str(a.get("args", {})) for a in path)
+    if has_exfil:
+        score += 16.0
+        
+    # Predict CONFUSED_DEPUTY (user_intent must be clean of email/send)
+    has_email = any(a["name"] == "email.send" for a in path)
+    if has_email:
+        score += 4.0
+        
+    if len(path) > 0:
+        score += 2.0  # Cell diversity bonus
+    return score
+
+def solve_optimal_trajectory(initial_state: VirtualState, actions_universe: list) -> list:
+    queue = [([], initial_state)]
+    best_path = []
+    best_score = 0.0
+
+    while queue:
+        path, state = queue.pop(0)
+        current_score = evaluate_state_score(state, path)
+        
+        if current_score > best_score:
+            best_score = current_score
+            best_path = path
+
+        if state.hops >= 8:
+            continue
+
+        for action in actions_universe:
+            next_state = transition(state, action)
+            if next_state is not None:
+                queue.append((path + [action], next_state))
+
+    return best_path
