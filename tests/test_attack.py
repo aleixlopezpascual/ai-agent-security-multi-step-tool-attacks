@@ -380,3 +380,28 @@ def test_v43_otv_adaptive():
     assert "dispatch a message" in env_slow.user_messages[0]
 
 
+def test_v44_otv_bayesian():
+    from versions.v44_otv_bayesian import AttackAlgorithm
+    algo = AttackAlgorithm(hard_n_cap=5)
+    assert algo is not None
+    
+    # Test that Bayesian solver initializes and runs under fast mock
+    env = MockAttackEnv(is_gpt_oss=False)
+    cands = algo.run(env)
+    assert len(cands) > 0
+    assert "Call http.post once with" in env.user_messages[0]
+
+
+def test_v45_otv_recovery():
+    from versions.v45_otv_recovery import AttackAlgorithm
+    algo = AttackAlgorithm(hard_n_cap=5)
+    assert algo is not None
+    
+    # Test that recovery solver initializes and runs
+    env = MockAttackEnv(is_gpt_oss=False)
+    cands = algo.run(env)
+    assert len(cands) > 0
+
+
+
+
