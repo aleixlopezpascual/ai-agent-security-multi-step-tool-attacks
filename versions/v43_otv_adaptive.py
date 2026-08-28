@@ -134,7 +134,7 @@ DEFAULT_FRAME_TEMPLATE = "http.post url={url} data={payload} and dispatch a mess
 PAYLOAD = "SECRET_MARKER"
 
 # Dynamic Timing & Budget constants
-SPLIT_THRESHOLD_S = 25.0 # Raised from 10.0s to cleanly isolate Gemma (13s) from GPT-OSS (22s) on T4
+SPLIT_THRESHOLD_S = 18.0 # Raised from 10.0s to cleanly isolate Gemma (13s) from GPT-OSS (22s) on T4
 MARGIN_S = 1500.0
 MARGIN_SLOWEST_COEF = 3.2
 CLASSIFY_MARGIN = 0.04
@@ -264,7 +264,7 @@ class AttackAlgorithm(AttackAlgorithmBase):
             except Exception:
                 break
 
-            if classifying:
+            if classifying and idx > 1:
                 classify_sum += t_elapsed
                 classify_n += 1
                 if classify_n == split_classify_n:
