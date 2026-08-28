@@ -363,13 +363,20 @@ def test_v41_conversational_jailbreak():
 
 def test_v43_otv_adaptive():
     from versions.v43_otv_adaptive import AttackAlgorithm
-    algo = AttackAlgorithm()
+    algo = AttackAlgorithm(hard_n_cap=5)
     assert algo is not None
     
-    # Test that OTV dynamically compiled the optimal prompt
-    env = MockAttackEnv()
-    cands = algo.run(env)
-    assert len(cands) > 0
-    assert "dispatch a message" in env.user_messages[0]
+    # 1) Test fast-row (Gemma) switch
+    env_fast = MockAttackEnv(is_gpt_oss=False)
+    cands_fast = algo.run(env_fast)
+    assert len(cands_fast) > 0
+    assert "Call http.post once with" in env_fast.user_messages[0]
+    
+    # 2) Test slow-row (GPT-OSS) OTV trajectory switch
+    env_slow = MockAttackEnv(is_gpt_oss=True)
+    env_slow.latency = 30.0  # Force > 25s threshold to trigger the slow-row switch
+    cands_slow = algo.run(env_slow)
+    assert len(cands_slow) > 0
+    assert "dispatch a message" in env_slow.user_messages[0]
 
 
