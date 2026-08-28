@@ -12,24 +12,13 @@ Below is a complete, unified side-by-side comparison of our developed versions, 
 
 | Version | Local Score (Gemma, 300s) | Local Findings | Live Kaggle Score (blended) | Core Outcome / Key Learning |
 | :--- | :---: | :---: | :---: | :--- |
-| **`v43_otv_adaptive`** | **`10.15*`** | **92** | ⏳ **PENDING (Kaggle Draft)** | **FIRST ADAPTIVE AGENT.** Incorporates OTV offline solver to dynamically resolve the best path and build the tokenizer bypass. Fully immune to private-guardrail drift. |
-| **`v42_dense_predicate`** | **`3.19*`** | **29** | ⏳ **PENDING (Kaggle)** | **NEW BEST LOCAL DENSITY:** Triggers EXFIL + CONFUSED_DEPUTY (22 raw pts/trace). +22.2% score density with ZERO throughput loss on Gemma. |
-| **`v41_conversational_jailbreak`** | **`13.23*`** | **147** | ⏳ **PENDING (55822081)** | **CONVERSATIONAL BYPASS.** 2-turn sequential compliance icebreaker. High-compliance with negligible latency. |
-| **`v40_final`** | **`15.75*` ✅** | **175** | ⏳ **PENDING (kaggle.com/code/aleixlopez/v40-final, submitted 2026-08-27 17:41 CEST)** | **NEW BEST LOCAL:** Margin 0.996 beats v20 baseline on BOTH gpt_oss (79→78) AND gemma (175→164). Pure parameter refinement confirmed. |
-| **`v40_iter7_split_classify_9`** | — | — | — (Local Only) | Sweep iter 7. `SPLIT_CLASSIFY_N=9`, `REPLAY_SAFE_FRAC=0.996`. GPT-OSS = 78 findings. |
-| **`v40_iter6_split_classify_7`** | — | — | — (Local Only) | Sweep iter 6. `SPLIT_CLASSIFY_N=7`, `REPLAY_SAFE_FRAC=0.996`. GPT-OSS = 78 findings. |
-| **`v40_iter5_tight_margin`** | — | — | — (Local Only) | Sweep iter 5. `CLASSIFY_MARGIN=0.05`, `REPLAY_SAFE_FRAC=0.996`. GPT-OSS = 78 findings. |
-| **`v40_iter4_fill_budget_0045`**| — | — | — (Local Only) | Sweep iter 4. `FILL_BUDGET_FRAC=0.045`, `REPLAY_SAFE_FRAC=0.996`. GPT-OSS = 77 findings. |
-| **`v40_iter3_margin_0997`** | — | — | — (Local Only) | Sweep iter 3. `REPLAY_SAFE_FRAC=0.997`, `SPLIT_CLASSIFY_N=8`. GPT-OSS = 78, Gemma = 175 findings. |
-| **`v40_iter2_margin_0996`** | — | — | — (Local Only) | Sweep iter 2. `REPLAY_SAFE_FRAC=0.996`, `SPLIT_CLASSIFY_N=8`. GPT-OSS = 79, Gemma = 175 findings. |
-| **`v40_iter1_margin_0994`** | — | — | — (Local Only) | Sweep iter 1. `REPLAY_SAFE_FRAC=0.994`, `SPLIT_CLASSIFY_N=8`. GPT-OSS = 77 findings. |
-| **`v40_gpt_gemma_dual_opt`** | — | — | — (Local Only) | Sweep baseline. GPT-OSS = 77, Gemma = 167 findings. |
-| **`v38_multi_predicate_dw`** | **`11.07*`** | **123** | ⏳ **PENDING (55814423)** | Multi-predicate `http.post + fs.delete` experiment. Main open bet; local fire-rate drop vs v20 baseline. |
-| **`v39_triple_predicate_email`** | **`10.71*`** | **119** | ⏳ **PENDING (submitted 2026-08-27)** | Follow-up adding `email.send`; local fire-rate drops further vs v38/v20 baseline. |
-| **`v30_ultimate_master`** | **`15.30*`** | **170** | **`90.135`** | Matched v20 exactly. Zero-waste `SPLIT_CLASSIFY_N=1` adds no uplift on real Kaggle. |
+| **`v43_otv_adaptive`** | **`10.15*`** | **92** | **`8.300` / `8.410`** | **FIRST ADAPTIVE AGENT.** Gemma was misclassified as a slow row because the first-turn latency included GGUF loading times (~15s), triggering the tokenizer bypass failure on Gemma. |
 | **`v20_tighter_margins_0995`** | **`14.76*`** | **164** | **`90.135`** | **OUR CURRENT LIVE BEST.** Safe margin-tightening recovers Gemma capacity. |
+| **`v30_ultimate_master`** | **`15.30*`** | **170** | **`90.135`** | Matched v20 exactly. Zero-waste `SPLIT_CLASSIFY_N=1` adds no uplift on real Kaggle. |
 | **`v23_tighter_margins_0997`** | `14.94*` (est) | 166 | **`88.920`** | Tightening to 0.997 is safe, but still below v20. |
 | **`v1_original`** (Baseline) | **`15.12*`** | **168** | **`88.740`** | Baseline ground-truth anchor. |
+| **`v39_triple_predicate_email`** | **`10.71*`** | **119** | **`87.885`** | Triple-predicate variant underperformed local baseline but stayed near historical live variance band. |
+| **`v40_final`** | **`15.75*` ✅** | **175** | **`87.885`** | **NEW BEST LOCAL:** Margin 0.996 beats v20 baseline on BOTH gpt_oss (79→78) AND gemma (175→164). Pure parameter refinement confirmed. |
 | **`v25_slow_row_loosening`** | **`15.21*`** | **169** | **`88.650`** | Dynamic slow-row loosening to `0.999` is safe but not enough. |
 | **`v27_corrected_multipost`** | **`15.39*`** | **171** | **`88.290`** | Peak overall throughput, but still below v20. |
 | **`v12_tight_margins`** | — | — | **`88.290`** | Within the 81.225-88.740 variance band, near the top. |
@@ -45,10 +34,21 @@ Below is a complete, unified side-by-side comparison of our developed versions, 
 | **`v10_no_split`** | — | — | **`58.545`** | Local said +3% on GPT-OSS; REAL result was -28% vs the 81.225 re-run. |
 | **`v29_terse_imperative`** | **`10.35*`** | **115** | **`58.510`** | **Major Regression.** Missing 'Then answer OK only' triggers model rambling. |
 | **`v3_burst3`** | — | — | **`52.055`** | BURST_K=3, semantic URLs, Harmony bypass. |
+| **`v38_multi_predicate_dw`** | **`11.07*`** | **123** | **`52.210`** | Multi-predicate `http.post + fs.delete` underperformed heavily live; fire-rate loss dominated raw/candidate gain. |
 | **`v6_adaptive_sizing`** | — | — | **`46.955`** | Model-Adaptive Sizing (cap=1500/400). |
 | **`v7_adaptive_sizing`** | — | — | **`45.000`** | Model-Adaptive Sizing (cap=1600/500). Was the LIVE kernel until reverted. |
+| **`v41_conversational_jailbreak`** | **`13.23*`** | **147** | **`43.480`** | 2-turn sequential compliance icebreaker regressed strongly live. |
 | **`v31_hybrid_master`** | **`15.98*`** (K=2) | **94** | **`36.425`** | Gemma `BURST_K=2` regressed hard; burst family is dead. |
 | **`v34_burst_k3_gemma`** | — (OOM) | — | **`28.155`** | Gemma `BURST_K=3` collapsed even worse; keeps burst closed. |
+| **`v42_dense_predicate`** | **`3.19*`** | **29** | **`17.655`** | Dense EXFIL+CONFUSED_DEPUTY hypothesis failed live; severe collapse confirms local warning signal. |
+| **`v40_iter7_split_classify_9`** | — | — | — (Local Only) | Sweep iter 7. `SPLIT_CLASSIFY_N=9`, `REPLAY_SAFE_FRAC=0.996`. GPT-OSS = 78 findings. |
+| **`v40_iter6_split_classify_7`** | — | — | — (Local Only) | Sweep iter 6. `SPLIT_CLASSIFY_N=7`, `REPLAY_SAFE_FRAC=0.996`. GPT-OSS = 78 findings. |
+| **`v40_iter5_tight_margin`** | — | — | — (Local Only) | Sweep iter 5. `CLASSIFY_MARGIN=0.05`, `REPLAY_SAFE_FRAC=0.996`. GPT-OSS = 78 findings. |
+| **`v40_iter4_fill_budget_0045`**| — | — | — (Local Only) | Sweep iter 4. `FILL_BUDGET_FRAC=0.045`, `REPLAY_SAFE_FRAC=0.996`. GPT-OSS = 77 findings. |
+| **`v40_iter3_margin_0997`** | — | — | — (Local Only) | Sweep iter 3. `REPLAY_SAFE_FRAC=0.997`, `SPLIT_CLASSIFY_N=8`. GPT-OSS = 78, Gemma = 175 findings. |
+| **`v40_iter2_margin_0996`** | — | — | — (Local Only) | Sweep iter 2. `REPLAY_SAFE_FRAC=0.996`, `SPLIT_CLASSIFY_N=8`. GPT-OSS = 79, Gemma = 175 findings. |
+| **`v40_iter1_margin_0994`** | — | — | — (Local Only) | Sweep iter 1. `REPLAY_SAFE_FRAC=0.994`, `SPLIT_CLASSIFY_N=8`. GPT-OSS = 77 findings. |
+| **`v40_gpt_gemma_dual_opt`** | — | — | — (Local Only) | Sweep baseline. GPT-OSS = 77, Gemma = 167 findings. |
 | **`v24_offline_filter_90135`** | **`14.22*`** | **158** | — (Local Only) | Pure local validation run, proving our offline pre-filter has zero false-negatives. |
 
 ---
@@ -322,5 +322,3 @@ Below is a complete, unified side-by-side comparison of our developed versions, 
 *   **Result:** ⏳ **PENDING (Kaggle Draft - complete and packaged).**
 *   **Local checkpoint (120s, Gemma GGUF):** **`37 findings` @ 22 raw points each = 812 raw points** (equivalent to 10.15 local score and 92 findings extrapolated to 300s, with **100% cell diversity!**).
 *   **Learnings:** Robust unit test coverage (all 9 OTV tests green) verified perfect taint propagation, immutability state-replacement, and solver convergence. Placing dynamic `{url}` and `{payload}` placeholders in the compiled prompts allows us to fully preserve cell uniqueness across multi-step flows.
-
-
