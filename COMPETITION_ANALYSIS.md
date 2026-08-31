@@ -1,29 +1,46 @@
 # 🛡️ AI Agent Security: Multi-Step Tool Attacks — Competition Analysis
 
-> 🚨 **CRITICAL, TIME-SENSITIVE, HUMAN-ONLY ACTION — NOT YET CONFIRMED DONE
-> (as of 2026-08-31 21:44 UTC, ~26h before the 2026-09-01 23:59 UTC deadline):**
-> You must manually select up to 2 **Final Submissions** on kaggle.com
-> (Submissions tab → checkboxes → "Use for Final Score"). This is **not**
-> exposed via the `kaggle` CLI/API (confirmed by enumerating every
-> `kaggle competitions` subcommand — no such command exists) — it is a
-> one-time, website-only action, irreversible after the deadline.
+> ✅ **RESOLVED 2026-09-01 00:16 CEST — Final Submissions manually selected.**
+> User confirmed both picks are set on kaggle.com: **#1 = submission
+> `55796894`** (`v20`/`v30_ultimate_master`, 90.135 public) and **#2 =
+> submission `55872848`** (`v49_confused_deputy_hedge`, 19.650 public). This
+> closes the risk flagged below (Kaggle's auto-selection default, which would
+> have silently substituted a 2nd `v20`-family pick and defeated the hedge).
+> Three later `v20`-family reroll submissions (`55924851`, `55924888`,
+> `55924276`) were still `PENDING` at resolution time — if any of them later
+> resolves **above 90.135**, pick #1 can be updated to that submission ID
+> (Kaggle allows changing Final Submission selection any number of times up
+> until the deadline); pick #2 (`v49`) should stay as-is regardless, per the
+> rationale below.
 >
-> **Why this matters more than it may seem:** verified (Kaggle official docs,
-> 2026-08-31) that if you do **not** manually select, Kaggle **auto-picks your
-> 2 highest-*public*-scoring submissions** as your finals. Our whole strategy
-> is a deliberate hedge — pick #1 = best safe performer, pick #2 =
-> `v49_confused_deputy_hedge` (structurally independent, low public score by
-> design). Auto-selection would silently **drop the hedge entirely** and
-> instead pick two byte-identical/near-identical `v20`-family reroll
-> submissions that share the exact same public-guardrail-specific mechanism —
-> completely defeating the point of diversifying against private-guardrail
-> risk.
+> **Why is a submission scoring only 19.650 one of our 2 Final Submissions,
+> instead of another high-public-scoring `v20` variant?** Because Kaggle only
+> counts the *better* of your (up to) 2 selected Final Submissions, scored on
+> the **Private** Leaderboard (Section 7: winners determined "solely" by it) —
+> not a sum or average. So a low-public pick #2 can never drag pick #1 down;
+> it only ever helps. The risk it hedges isn't "will pick #2 score high," it's
+> "will pick #1's *mechanism* survive the private guardrail." `v20` works by
+> posting recognizable secret-marker data via `http.post`
+> (`EXFILTRATION`, severity 5) — a specific trick the *public* guardrail
+> happens to allow but a stricter *private* one might not. `v49` instead
+> triggers `CONFUSED_DEPUTY` (`email.send` with no user intent) — **no secret
+> data, no `http.post` at all.** Local testing simulated several "stricter
+> guardrail" hypotheses: `CONFUSED_DEPUTY` survived every one, while
+> `EXFILTRATION`-style mechanisms could plausibly die under some (see
+> Experiment 43 in `docs/reports/EXPERIMENTS.md`). Net effect: if `v20`
+> survives privately, `v49` costs nothing (never the max, simply not chosen).
+> If `v20`'s mechanism gets patched privately, `v49` is what stands between us
+> and a near-zero private score. Deliberately picking a 2nd `v20`-family
+> variant instead (which is what auto-selection would have done) would mean
+> both picks collapse together under that same scenario — the opposite of a
+> hedge.
 >
-> **Recommended picks (unchanged, still the best real data as of this
-> writing):** #1 = submission `55796894` (`v20`/`v30_ultimate_master`,
-> 90.135) — re-check `kaggle competitions submissions` first in case a later
-> `v20`-byte-identical reroll resolved higher; #2 = submission `55872848`
-> (`v49_confused_deputy_hedge`, 19.650).
+> **Original risk (now resolved, kept for record):** if Final Submissions are
+> never manually selected before the deadline, Kaggle auto-picks the 2
+> highest-*public*-scoring submissions — verified via Kaggle's official docs,
+> 2026-08-31. Not exposed via the `kaggle` CLI/API (confirmed by enumerating
+> every `kaggle competitions` subcommand — no such command exists); it was a
+> one-time-until-deadline, website-only action.
 
 ## 1. Objective and Context
 Modern AI agents are increasingly integrated with external tools (e.g., filesystems, email clients, web search, shell execution, and HTTP clients). While these tools enhance utility, they introduce severe security risks. Traditional security evaluations focus on single-turn prompts or isolated jailbreaks. However, realistic agent vulnerabilities often emerge across **multi-step attack paths**—where an agent reads untrusted content, processes it, plans a follow-up action, and subsequently executes an unsafe action (e.g., data exfiltration or unauthorized deletion).
