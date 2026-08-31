@@ -224,4 +224,4 @@ class AttackAlgorithm(AttackAlgorithmBase):
                     body = str((event.get("args") or {}).get("body", ""))
                     if PAYLOAD in body:
                         return True
-                return False
+        return False

@@ -429,6 +429,22 @@ def test_v56_multi_post_split_behavior():
     assert "each of these 4 endpoints" in cands_slow[2].user_messages[0]
 
 
+def test_v56_fired_multi_event_trace():
+    from versions.v56_confused_deputy_interleaved import AttackAlgorithm
+    import unittest.mock as mock
+    
+    mock_env = mock.MagicMock()
+    mock_env.export_trace_dict.return_value = {
+        "tool_events": [
+            {"ok": True, "name": "fs.read", "args": {"path": "clean.txt"}},
+            {"ok": True, "name": "http.post", "args": {"data": "SECRET_MARKER"}},
+        ]
+    }
+    
+    assert AttackAlgorithm._fired(mock_env) is True
+
+
+
 
 
 
