@@ -435,3 +435,48 @@ predicate's `untrusted_sources` set and the guardrail's taint set are
 included is stale/wrong), so no exploitable gap exists there either. **Fifth
 independent re-derivation, same conclusion: no further code-level lever
 exists.** Full detail in `docs/reports/EXPERIMENTS.md` Experiment 48.
+
+## 📋 Kaggle Discussion Forum Sweep (2026-08-31)
+
+Read all 19 competition-tagged discussion topics via `kaggle forums topics
+list/show` (direct SDK read, not search-engine-indexed), focusing on the 4
+posted since our last review (2026-08-25) plus one older thread surfaced by
+cross-reference. No new winning mechanism was found — the sweep mostly
+**corroborates our existing model** — but two items are worth recording:
+
+* **Real private-guardrail class name leaked** (`One hint on crafting
+  attacks`, discussion/736099 → discussion/736246, hengck23, 2026-08-24):
+  `'persistent_provenance_private': ('aicomp_private_guardrails.persistent_provenance', 'Guardrail')`.
+  The name ("persistent provenance") describes **taint-tracking that
+  survives across steps** — i.e. the same mental model our own
+  `CONFUSED_DEPUTY`-survives-strict-taint-guardrail conclusion (Experiment 43,
+  48) is built on. Treat as independent corroboration, not a new lever: two
+  replies in-thread speculate it could be "intentional" misdirection or that
+  the real guardrail is "exactly the opposite... permissive," so weight this
+  as supportive rather than conclusive.
+* **Unresolved rules ambiguity, still open as of this sweep** (`Evaluator
+  update and FAQ`, discussion/712642, "Filtered", 2026-08-27, unanswered by
+  organizers): does the **final leaderboard score average all four rows**
+  (`gpt_oss_public`, `gpt_oss_private`, `gemma_public`, `gemma_private`) or
+  **only the two private rows**? We have not seen this authoritatively
+  answered anywhere. This doesn't change our pick — `v20` (best on all rows
+  we can measure) + `v49_confused_deputy_hedge` (best private-survival bet)
+  is the right hedge under either interpretation — but it's a real open
+  question worth re-checking before final submission lock-in.
+* **Confirmed, not new:** official FAQ (discussion/714340) restates private
+  leaderboard = static replay of already-generated candidates against a
+  held-out guardrail (attack.py is *not* rerun) — matches our operating
+  model exactly, no action needed. Gemma tool-call JSON malformation
+  ("quotes in wrong spot") is reported as still unresolved post-"fix"
+  (discussion/738122, discussion/736246) — we don't rely on any
+  character-separator secret encoding that the same thread flags as broken
+  by an underscore-stripping bug, so neither issue is actionable for us.
+  Submission cap (5/day) and CPU-only-at-scoring behavior both match our
+  existing practice.
+* **Sentiment read:** multiple threads (738122, 736099) describe the
+  community expecting a large private-leaderboard shakeup, with many
+  competitors' aggressive/exotic mechanisms expected to score near-zero
+  against the hidden guardrail. This is directionally consistent with —
+  not a reason to change — our existing conservative strategy: keep `v20`
+  as the safe, high-volume anchor and `v49` as the structurally-different
+  CONFUSED_DEPUTY hedge, rather than chasing an unverified "breakthrough."
