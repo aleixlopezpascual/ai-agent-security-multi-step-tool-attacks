@@ -1,5 +1,30 @@
 # 🛡️ AI Agent Security: Multi-Step Tool Attacks — Competition Analysis
 
+> 🚨 **CRITICAL, TIME-SENSITIVE, HUMAN-ONLY ACTION — NOT YET CONFIRMED DONE
+> (as of 2026-08-31 21:44 UTC, ~26h before the 2026-09-01 23:59 UTC deadline):**
+> You must manually select up to 2 **Final Submissions** on kaggle.com
+> (Submissions tab → checkboxes → "Use for Final Score"). This is **not**
+> exposed via the `kaggle` CLI/API (confirmed by enumerating every
+> `kaggle competitions` subcommand — no such command exists) — it is a
+> one-time, website-only action, irreversible after the deadline.
+>
+> **Why this matters more than it may seem:** verified (Kaggle official docs,
+> 2026-08-31) that if you do **not** manually select, Kaggle **auto-picks your
+> 2 highest-*public*-scoring submissions** as your finals. Our whole strategy
+> is a deliberate hedge — pick #1 = best safe performer, pick #2 =
+> `v49_confused_deputy_hedge` (structurally independent, low public score by
+> design). Auto-selection would silently **drop the hedge entirely** and
+> instead pick two byte-identical/near-identical `v20`-family reroll
+> submissions that share the exact same public-guardrail-specific mechanism —
+> completely defeating the point of diversifying against private-guardrail
+> risk.
+>
+> **Recommended picks (unchanged, still the best real data as of this
+> writing):** #1 = submission `55796894` (`v20`/`v30_ultimate_master`,
+> 90.135) — re-check `kaggle competitions submissions` first in case a later
+> `v20`-byte-identical reroll resolved higher; #2 = submission `55872848`
+> (`v49_confused_deputy_hedge`, 19.650).
+
 ## 1. Objective and Context
 Modern AI agents are increasingly integrated with external tools (e.g., filesystems, email clients, web search, shell execution, and HTTP clients). While these tools enhance utility, they introduce severe security risks. Traditional security evaluations focus on single-turn prompts or isolated jailbreaks. However, realistic agent vulnerabilities often emerge across **multi-step attack paths**—where an agent reads untrusted content, processes it, plans a follow-up action, and subsequently executes an unsafe action (e.g., data exfiltration or unauthorized deletion).
 
