@@ -381,11 +381,6 @@ class AttackAlgorithm(AttackAlgorithmBase):
         ones that fire, until the deadline cushion. Returns the fired candidates
         (possibly empty if the env is not probeable)."""
         hops = max(1, min(int(max_hops), 8))
-        margin_s = float(self.config.get("margin_s", MARGIN_S))
-        floor_min = float(self.config.get("floor_min", MARGIN_FLOOR_MIN))
-        slowest_coef = float(self.config.get("slowest_coef", MARGIN_SLOWEST_COEF))
-        slowest = float(self.config.get("slowest0", SLOWEST0))
-        frac = float(self.config.get("fill_budget_frac", FILL_BUDGET_FRAC))
         cap = int(self.config.get("hard_n_cap", HARD_N_CAP))
         burst_k = int(self.config.get("burst_k", BURST_K))
         split_on = (
@@ -399,76 +394,49 @@ class AttackAlgorithm(AttackAlgorithmBase):
             1, int(self.config.get("split_classify_n", SPLIT_CLASSIFY_N))
         )
         frame_template = str(self.config.get("frame_template", FRAME_TEMPLATE))
-        replay_safe_sizing = bool(
-            self.config.get("replay_safe_sizing", REPLAY_SAFE_SIZING)
-        )
-        replay_safe_frac = float(self.config.get("replay_safe_frac", REPLAY_SAFE_FRAC))
-        replay_budget = float(self.config.get("replay_budget_s", budget * REPLAY_BUDGET_MULT))
-        # hops=1 lever: probe at a tighter hop cap than the replay reruns at, and
-        # scale each measured elapsed by replay_cost_coef to recover the true replay
-        # cost. probe_hops<=0 (default) == probe at the grader hop cap (byte-identical).
         probe_hops_cfg = int(self.config.get("probe_hops", PROBE_HOPS) or 0)
         probe_hops = max(1, min(probe_hops_cfg, 8)) if probe_hops_cfg > 0 else hops
-        replay_cost_coef = float(self.config.get("replay_cost_coef", REPLAY_COST_COEF))
         slow_multipost_n = max(1, int(self.config.get("slow_multipost_n", SLOW_MULTIPOST_N)))
 
         # One-time UNTIMED warm-up pays the model-load cost (75-146s on the GGUF
         # backend) BEFORE the loop, so it never inflates `slowest` and stops the
         # fill at ~1 candidate. Its outcome is irrelevant; a raise means the env
-        # is not probeable -> [] -> caller falls back. `run_start` is captured
-        # BEFORE it so replay-safe sizing can fold the warm-up into its budgets.
-        run_start = time.monotonic()
+        # is not probeable -> [] -> caller falls back.
         try:
             env.reset()
             env.interact(_msg(WARMUP_IDX), max_tool_hops=probe_hops)
         except Exception:
             return []
 
-        deadline = time.monotonic() + budget * frac
-        # Replay-safe sizing bounds (opt-in): the KEPT set's accumulated replay cost
-        # must fit the fresh replay budget minus the measured warm-up (so the replay's
-        # own model-load has room), and the fill's own wall-clock must fit run()'s
-        # budget (anchored at run_start, folding warm-up in). Unused when off.
-        replay_cap = replay_safe_frac * replay_budget - (time.monotonic() - run_start)
-        wall_deadline = run_start + replay_safe_frac * budget
-        replay_cost = 0.0
         cands: list[AttackCandidate] = []
         idx = 0
         classify_n = 0
         classify_sum = 0.0
         chosen_template = TEMPLATE
+        
         while len(cands) < cap:
-            if replay_safe_sizing:
-                next_wall = slowest * SLOWEST_MULT
-                if _replay_stop(
-                    replay_cost,
-                    time.monotonic(),
-                    next_wall * replay_cost_coef,
-                    replay_cap,
-                    wall_deadline,
-                    next_wall_est=next_wall,
-                ):
-                    break
-            else:
-                margin = _adaptive_margin(slowest, margin_s, floor_min, slowest_coef)
-                if time.monotonic() + max(slowest * SLOWEST_MULT, margin) >= deadline:
-                    break
-            # Split applies only to the K1 message path. The first classification
-            # batch always uses TEMPLATE; its mean latency fixes the template once
-            # for every remaining candidate in this run. K>1 preserves the burst
-            # formatter unchanged.
             classifying = split_on and classify_n < split_classify_n
-            if burst_k == 1:
-                slow_row = split_on and not classifying and chosen_template == frame_template
-                if slow_row and slow_multipost_n > 1:
-                    msg = _forge_plan_msg(idx, slow_multipost_n)
-                else:
-                    template = (
-                        TEMPLATE if (not split_on or classifying) else chosen_template
-                    )
-                    msg = _msg(idx, template)
-            else:
-                msg = _burst_msg(idx, burst_k)
+            
+            if not classifying:
+                # Blind emit the rest of the candidates up to the cap!
+                remaining = cap - len(cands)
+                for _ in range(remaining):
+                    if burst_k == 1:
+                        slow_row = split_on and chosen_template == frame_template
+                        if slow_row and slow_multipost_n > 1:
+                            msg = _forge_plan_msg(idx, slow_multipost_n)
+                        else:
+                            template = chosen_template if split_on else TEMPLATE
+                            msg = _msg(idx, template)
+                    else:
+                        msg = _burst_msg(idx, burst_k)
+                    
+                    cands.append(AttackCandidate.from_messages((msg,)))
+                    idx += 1
+                break
+
+            # Live-fill ONLY during classification
+            msg = _msg(idx, TEMPLATE)
             idx += 1
             t0 = time.monotonic()
             try:
@@ -478,21 +446,21 @@ class AttackAlgorithm(AttackAlgorithmBase):
             except Exception:
                 # Env died mid-fill: return the fired-so-far, don't discard them.
                 break
+            
             elapsed = time.monotonic() - t0
-            slowest = max(slowest, elapsed, LAT_FLOOR_S)
-            if classifying:
-                classify_n += 1
-                classify_sum += elapsed
-                if classify_n == split_classify_n:
-                    chosen_template = (
-                        frame_template
-                        if classify_sum / classify_n > split_threshold
-                        else TEMPLATE
-                    )
+            classify_n += 1
+            classify_sum += elapsed
+            
+            if classify_n == split_classify_n:
+                chosen_template = (
+                    frame_template
+                    if (classify_sum / classify_n > split_threshold)
+                    else TEMPLATE
+                )
+                
             if fired:
                 cands.append(AttackCandidate.from_messages((msg,)))
-                if replay_safe_sizing:
-                    replay_cost += elapsed * replay_cost_coef
+
         return cands
 
     @staticmethod
