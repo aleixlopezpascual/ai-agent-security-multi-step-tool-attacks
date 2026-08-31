@@ -27,11 +27,12 @@ When operating in this repository, you must act as a **Senior AI/ML Security Eng
 3. **No Code Reversions:** Do not revert functional code changes unless explicitly instructed.
 4. **Validation:** Always verify any local environment execution or test script before completing a task.
 5. **Submission Safety:** Before any Kaggle submission, run local eval first with the correct baseline. Use `--budget 300` on macOS, and never rely on an unvalidated version.
-6. **No Credentials/Secrets Leakage:** Never print, log, or commit API keys or session tokens (e.g., from `secret.txt` during runs).
+6. **Dual-Model Local Evaluation (mandatory):** Every new version/candidate must be locally evaluated against **BOTH `gpt_oss` AND `Gemma`** — never just one. Testing only one model produces incomparable, gap-ridden data (this previously forced multiple rounds of restructuring `docs/reports/EXPERIMENTS.md`). Record both models' findings counts (and `Local Score` when computable for both, per that file's blending policy) in `docs/reports/EXPERIMENTS.md`'s submission history table at the time the version is created — do not leave a model's column blank if it was feasible to run.
+7. **No Credentials/Secrets Leakage:** Never print, log, or commit API keys or session tokens (e.g., from `secret.txt` during runs).
 
 ---
 
 ## 🔄 Multi-Agent Collaboration Workflow
 1. **Syncing State:** Always read `conductor/` track plans to understand the current phase of the implementation.
-2. **Documentation & Memory:** Keep `COMPETITION_ANALYSIS.md` updated as we discover new behaviors or target model weaknesses.
+2. **Documentation & Memory:** Keep `COMPETITION_ANALYSIS.md` updated as we discover new behaviors or target model weaknesses. Every new version's dual-model (`gpt_oss` + `Gemma`) local findings must be logged in `docs/reports/EXPERIMENTS.md` as part of creating that version, not as an afterthought.
 3. **Task Completion:** When finishing a task, update the corresponding `conductor/tracks.md` and any relevant metadata.

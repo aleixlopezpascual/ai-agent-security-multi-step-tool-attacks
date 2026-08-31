@@ -1,4 +1,33 @@
-"""v20 (2026-08-24): v12_tight_margins.py's exact proven code with ONE further
+"""v47 (2026-08-29): v20_tighter_margins_0995.py's exact proven code (90.135
+live, current best) with ONE further single-variable change: `SPLIT_THRESHOLD_S`
+12.0 -> 13.5. SECONDARY/lower-priority experiment vs. v46 (`SLOWEST_MULT`
+1.35->1.20) -- built and ready, but only to be locally gated/submitted if time
+and quota allow after v46's result is known.
+
+Why this lever, and why this direction specifically (2026-08-29): the
+classifier's own in-file comment records the ground truth this threshold is
+tuned against -- gpt_oss ~20.4s/candidate, gemma ~8.5s/candidate -- and states
+explicitly that the two misclassification directions are NOT symmetric risk:
+misclassifying gpt_oss as fast forgoes the whole run's bypass (catastrophic --
+the same failure mode that killed v43's runtime latency classifier, 90.135 ->
+8.3 live); misclassifying gemma as slow only costs it one unneeded prefix
+(minor). The current value (12.0) is deliberately biased toward gemma's
+estimate (+3.5 above it) to leave a large cushion below gpt_oss's (-8.4 below
+it). This experiment ONLY moves the threshold AWAY from gemma (up, toward the
+midpoint), narrowing gemma's minor-cost misclassification window, while still
+preserving a large (6.9s) cushion below gpt_oss's estimate -- nowhere near
+reintroducing the v43 catastrophic-direction risk. This is deliberately the
+lower-priority, higher-caution experiment of the two built today: `SLOWEST_MULT`
+(v46) tunes a purely mechanical fill-loop safety margin with no model-identity
+guesswork involved, whereas this lever still relies on the same class of
+runtime-latency-based classification that v43 already proved can misfire under
+Kaggle backend variance -- so it is gated on v46 first, and on the standing
+5-run local stability rule, before ever being submitted.
+
+--- original v20 docstring below, describing the code this file is otherwise
+byte-identical to ---
+
+v20 (2026-08-24): v12_tight_margins.py's exact proven code with ONE further
 change: `REPLAY_SAFE_FRAC` 0.99 -> 0.995 (`FILL_BUDGET_FRAC` left at 0.99,
 unchanged from v12 -- confirmed dead code under `REPLAY_SAFE_SIZING=True`,
 since `_fill`'s `wall_deadline` is computed from `replay_safe_frac * budget`,
@@ -184,13 +213,17 @@ HARD_N_CAP = 2000             # absolute ceiling (== SDK MAX_REPLAY_FINDINGS)
 # SPLIT_BY_LATENCY via the same source-substitution mechanism as MARGIN_S/
 # FILL_BUDGET_FRAC/MARGIN_FLOOR_MIN (see tools/prepare_live_fill_variants.py).
 SPLIT_BY_LATENCY = True       # 07-11 per-model split-messages rung: fill_r097_ea_b
-SPLIT_THRESHOLD_S = 12.0       # classify "slow" (gpt_oss) above this mean latency;
-                                # real-submission-derived: gpt_oss ~20.4s/cand,
-                                # gemma ~8.5s/cand at the 07-06 module defaults --
-                                # deliberately closer to gemma's estimate (see spec
-                                # SS3: misclassifying gpt_oss as fast forgoes the
-                                # whole experiment; misclassifying gemma as slow
-                                # just costs it an unneeded prefix)
+SPLIT_THRESHOLD_S = 13.5       # v47 (2026-08-29): 12.0 -> 13.5, single-variable
+                                # move AWAY from gemma's side only (see module
+                                # docstring); still -6.9s below gpt_oss's ~20.4s
+                                # estimate. classify "slow" (gpt_oss) above this
+                                # mean latency; real-submission-derived: gpt_oss
+                                # ~20.4s/cand, gemma ~8.5s/cand at the 07-06
+                                # module defaults -- deliberately closer to
+                                # gemma's estimate (see spec SS3: misclassifying
+                                # gpt_oss as fast forgoes the whole experiment;
+                                # misclassifying gemma as slow just costs it an
+                                # unneeded prefix)
 SPLIT_CLASSIFY_N = 8           # candidates sampled (plain TEMPLATE) before fixing
                                 # the template choice for the rest of the run
 # Hop-saturation burst (2026-07-13): one candidate whose single message drives

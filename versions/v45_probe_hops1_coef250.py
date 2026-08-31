@@ -229,8 +229,15 @@ REPLAY_SAFE_FRAC = 0.97       # 07-18 replay-safe sizing rung: fill_r097_ea_b
 # it (uncalibrated it would under-count and risk a replay-budget-overrun void).
 # Both default to today's behavior BYTE-IDENTICALLY (probe at the grader hop cap,
 # no scaling); a generated variant flips them via the source-substitution mechanism.
-PROBE_HOPS = 0                # 0 == probe at the grader's max_tool_hops (today's 8)
-REPLAY_COST_COEF = 1.0        # measured elapsed x this == estimated hops=8 replay cost
+# --- v45 variant override (2026-08-29): same hops=1 fill lever as v44, but
+# with a MORE CONSERVATIVE REPLAY_COST_COEF=2.5 (above the documented 1.5-2x
+# true-cost range) as a safer sibling in case v44's 1.75 under-charges the
+# real hops=8 replay cost on Kaggle's actual T4 backend (never live-tested
+# before today). Charging more per candidate against the replay cap makes the
+# loop stop earlier/produce fewer bonus candidates, but keeps a wider safety
+# margin against a replay-budget-overrun void.
+PROBE_HOPS = 1                # was 0 (probe at grader's max_tool_hops==8)
+REPLAY_COST_COEF = 2.5        # was 1.0; conservative calibration for the hops=1 lever
 # Token-forged multi-post on the Harmony slow (gpt_oss) row (2026-07-21): forging
 # the reasoning model's analysis channel to COMMIT to posting the marker to N
 # enumerated endpoints makes it fire http.post once per endpoint across hops --

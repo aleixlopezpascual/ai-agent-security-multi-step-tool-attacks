@@ -68,9 +68,9 @@ To bypass the saturation barrier and reduce fuzzer latency, we designed and impl
 Our static filter replicates the exact state-transition mechanics of the production guardrail:
 1. **Quote-Stripping Robust Argument Parser:** Uses a compiled RegExp pattern `([\w'\"]+)\s*[=:]\s*([^\s,]+)` to extract key-value pairs from prompt instructions. It strips surrounding single/double quotes (`'` or `"`) from both keys and values, rendering extraction extremely robust.
 2. **List-Priority Key Check:** Simulates the exact dict-iteration vulnerability of Kaggle's public `OptimalGuardrail`. It checks parsed arguments strictly in the predefined key order:
-   ```python
+```python
    keys_to_check = ["path", "url", "cmd", "data", "body", "content"]
-   ```
+```
    The first key from that list that exists in the parsed arguments dictionary is evaluated, **regardless of the physical text order in the prompt string**.
 3. **URL-First Bypass:** If the evaluated key is `"url"` or `"path"`, the filter verifies that its value is clean (does not contain `secret.txt` or the secret marker), and if clean, returns `True` (bypassed), simulating the guardrail's logic bug where the actual exfiltrated `data` payload is ignored.
 4. **Destructive Write Prevention:** Simulates `DESTRUCTIVE_WRITE` guardrails, instantly blocking any writes or deletes targeting `secret.txt` paths.
@@ -115,7 +115,7 @@ To verify pipeline correctness and calibrate our local metrics with the known Ka
 ---
 
 ## 🗺️ 4. Future Strategic Roadmap: Breaking the 180.0 Ceiling
-
+can u
 Now that our deterministic `OfflineGuardrailFilter` has been built, tested, and fully validated with zero regressions, we can leverage this architectural milestone to target the elite Gold Medal score tiers ($300.0+$ points) by bypassing **The Multi-Post Latency Trap**:
 
 ```

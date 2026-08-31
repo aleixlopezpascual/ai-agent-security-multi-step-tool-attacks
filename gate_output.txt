@@ -1,0 +1,13 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+llama_kv_cache_iswa: using full-size SWA cache (ref: https://github.com/ggml-org/llama.cpp/pull/13194#issuecomment-2868343055)
+Loading gpt_oss GGUF model into memory...
+Downloading GPT-OSS GGUF: unsloth/gpt-oss-20b-GGUF/gpt-oss-20b-Q4_K_M.gguf
+Model downloaded to: /Users/aleix.lopez/.cache/huggingface/hub/models--unsloth--gpt-oss-20b-GGUF/snapshots/d449b42d93e1c2c7bda5312f5c25c8fb91dfa9b4/gpt-oss-20b-Q4_K_M.gguf
+
+--- Run 1/5 for gpt_oss ---
+Run 1 complete: 57 findings, 1026.0 raw score, 474.50s wall time
+
+--- Run 2/5 for gpt_oss ---
+Run 2 complete: 56 findings, 1008.0 raw score, 472.21s wall time
+
+--- Run 3/5 for gpt_oss ---

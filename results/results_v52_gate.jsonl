@@ -1,0 +1,1 @@
+{"utc": "2026-08-31T00:39:58Z", "attack": "versions/v52_ultimate_dense.py", "budget_s": 300, "seed": 123, "env": "gym", "model": "gpt_oss", "score_normalized_0_to_1000": 8.58, "score_raw": 1716.0, "findings_count": 78, "unique_cells": 78, "unique_canonical_cells": 78, "evaluation_time_s": 567.3516561985016, "wall_time_s": 567.4961500167847}

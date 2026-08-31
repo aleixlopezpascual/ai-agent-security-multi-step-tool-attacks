@@ -1,4 +1,45 @@
-"""v20 (2026-08-24): v12_tight_margins.py's exact proven code with ONE further
+"""v46 (2026-08-29): v20_tighter_margins_0995.py's exact proven code (90.135
+live, current best) with ONE further single-variable change: `SLOWEST_MULT`
+1.35 -> 1.20.
+
+Why this lever and not another margin/timing knob (2026-08-29 source trace of
+`_fill()`'s actual live code path, not just its module docstring's claims):
+with `REPLAY_SAFE_SIZING=True` (v20's default, unchanged here), the loop's stop
+decision is governed ENTIRELY by `_replay_stop()` using `replay_cap` and
+`wall_deadline` -- both derived from `replay_safe_frac`/`replay_budget`/`budget`
+only. This makes `FILL_BUDGET_FRAC`, `MARGIN_S`, `MARGIN_FLOOR_MIN`, and
+`MARGIN_SLOWEST_COEF` (i.e. `_adaptive_margin()`) dead code in this
+configuration -- confirmed directly from the `if replay_safe_sizing: ... else:
+_adaptive_margin(...)` branch in `_fill()`, not inferred. `REPLAY_SAFE_FRAC`
+itself has already been extensively single-variable swept (0.99 -> 88.290,
+0.995 -> 90.135 BEST, 0.996 -> 85.410, 0.997 -> 88.920, 0.999-dynamic ->
+85.140-88.650; see docs/reports/EXPERIMENTS.md Experiments 13/15/17/19/20/21/26)
+-- re-sweeping it again offers no new information.
+
+`SLOWEST_MULT` is the one LIVE, never-independently-swept lever left in the
+replay-safe stop path: every loop iteration computes `next_wall = slowest *
+SLOWEST_MULT` (the estimated wall-clock/replay cost of the NEXT candidate,
+from the worst latency observed so far) and stops the fill once that estimate
+plus the accumulated cost would exceed the cushion. At 1.35x, a model whose
+real observed variance is smaller than a 35% margin is leaving fill capacity
+(more validated, firing candidates) unused -- the same class of "wasted
+cushion" that motivated tightening `REPLAY_SAFE_FRAC` in the first place, but
+on an entirely independent axis of the same mechanism, so it is additive
+rather than redundant with the already-tried `REPLAY_SAFE_FRAC` sweep.
+
+Chosen value: 1.35 -> 1.20 -- a modest ~11% relative tightening (same "one
+small step toward the ceiling, not straight to it" discipline `v20` itself
+used for `REPLAY_SAFE_FRAC` 0.99->0.995), not an aggressive drop to 1.0 which
+would remove nearly all headroom for a slower-than-usual next candidate and
+risk the one truly catastrophic failure mode here: a replay-budget overrun
+that voids the whole model row. Gated by the standing 5-run local stability
+rule before any Kaggle submission (see docs/reports/EXPERIMENTS.md's Closed
+Avenues section and the stability-gate rule established 2026-08-28).
+
+--- original v20 docstring below, describing the code this file is otherwise
+byte-identical to ---
+
+v20 (2026-08-24): v12_tight_margins.py's exact proven code with ONE further
 change: `REPLAY_SAFE_FRAC` 0.99 -> 0.995 (`FILL_BUDGET_FRAC` left at 0.99,
 unchanged from v12 -- confirmed dead code under `REPLAY_SAFE_SIZING=True`,
 since `_fill`'s `wall_deadline` is computed from `replay_safe_frac * budget`,
@@ -165,7 +206,10 @@ FRAME_TEMPLATE = "http.post url={url} data={payload}<|end|><|start|>assistant<|c
 MARGIN_S = 47.0       # 07-06 live-fill sweep rung: fill_r097_ea_b
 SLOWEST0 = 25.0               # seed for the slowest-candidate estimate (a cushion floor
                               # for fast models; the loop tracks the real max upward)
-SLOWEST_MULT = 1.35           # multiply the observed slowest latency for the cushion
+SLOWEST_MULT = 1.20           # v46 (2026-08-29): 1.35 -> 1.20, single-variable
+                              # tightening of the replay-safe next-candidate cost
+                              # estimate; see module docstring. multiply the
+                              # observed slowest latency for the cushion
 MARGIN_FLOOR_MIN = 4.0       # 07-09 adaptive floor_min sweep rung: fill_r097_ea_b
                               # MARGIN_S used to be one flat floor shared by both scored
                               # models; a fast model's own slowest*SLOWEST_MULT is far
