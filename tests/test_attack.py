@@ -392,15 +392,21 @@ def test_v44_otv_bayesian():
     assert "Call http.post once with" in env.user_messages[0]
 
 
-def test_v45_otv_recovery():
-    from versions.v45_otv_recovery import AttackAlgorithm
-    algo = AttackAlgorithm(hard_n_cap=5)
+def test_v56_confused_deputy_interleaved():
+    from versions.v56_confused_deputy_interleaved import AttackAlgorithm
+    algo = AttackAlgorithm(hard_n_cap=10)
     assert algo is not None
     
-    # Test that recovery solver initializes and runs
-    env = MockAttackEnv(is_gpt_oss=False)
-    cands = algo.run(env)
-    assert len(cands) > 0
+    env_fast = MockAttackEnv(is_gpt_oss=False)
+    class DummyConfig:
+        time_budget_s = 60.0
+    cands_fast = algo.run(env_fast, config=DummyConfig())
+    assert len(cands_fast) > 0
+    # Every 3rd candidate (idx 0 is exfil, idx 1 is exfil, idx 2 is deputy)
+    assert "Call http.post once with" in env_fast.user_messages[0]
+    pass
+    pass
+
 
 
 
