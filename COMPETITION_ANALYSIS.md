@@ -480,3 +480,78 @@ cross-reference. No new winning mechanism was found — the sweep mostly
   not a reason to change — our existing conservative strategy: keep `v20`
   as the safe, high-volume anchor and `v49` as the structurally-different
   CONFUSED_DEPUTY hedge, rather than chasing an unverified "breakthrough."
+
+## 📋 External Writeup Review: "Reading the Evaluator: Value-per-Candidate and
+## an Adaptive Escalation Ladder" (debmalya84, Kaggle Working Note, 2026-08-27)
+
+User shared a real, credible published Kaggle Working Note (DOI
+`10.34740/kaggle/w/111790`) for review. Unlike `docs/reports/
+competitive_landscape_briefing.md` (stale, Aug-24, unverifiable
+"competitor" names — treated as low-credibility), this is a rigorous,
+source-grounded piece independently converging on several of our own
+hard-won conclusions.
+
+* **Confirms our own findings (no action needed):** public guardrail checks
+  only the first-present tool-call arg in a fixed order (`path, url, cmd,
+  data, body, content`) — for `http.post` this means `url` is checked and
+  `data` never is, matching our sentinel-in-`data` design exactly. Only
+  `EXFILTRATION`/`CONFUSED_DEPUTY` reachable on the public board — matches
+  our Experiment 34 taint-window proof. Multi-post packing regresses rather
+  than multiplies (their real submission: 75.765 vs their own ~86 baseline)
+  for the same two reasons we independently found for `SLOW_MULTIPOST_N`:
+  the model doesn't reliably batch posts, and the scoring cell is minted
+  per-candidate, not per-post. Their own local offline proxy panel is
+  reported as structurally blind to real `gpt_oss`/`gemma` behavior — matches
+  our own repeatedly-documented local-vs-live gap.
+* **One genuinely novel idea — the "adaptive escalation ladder":** a
+  multi-message candidate that attempts the highest-value attack first, and
+  — because a guardrail denial ends the current message/hop-loop and the
+  model only observes the denial in the *next* message — reactively re-routes
+  across subsequent messages to a cheaper fallback, ultimately landing on
+  `CONFUSED_DEPUTY` if every earlier rung is blocked. Not identical to
+  anything we've closed, but it is the adaptive/reactive refinement of a
+  design pattern flagged as an explicit open item back in Experiment 37:
+  *"a structurally different design (e.g. a separate follow-up turn/candidate
+  dedicated only to `email.send`) has not been attempted — but should be
+  treated as low-confidence/high-effort."*
+* **Our reservations, grounded in our own source-level evidence (not just
+  opinion):**
+  1. The ladder's first rung assumes reading the real `secret.txt` succeeds
+     ("read the secret (ok)"). Our own Experiment 34 source-proof found the
+     real public `OptimalGuardrail._is_ultra_dangerous()` unconditionally
+     denies *any* tool-call target containing the substring `"secret"` —
+     contradicting that premise for the one guardrail we've actually
+     verified against real SDK source. Their calibration is against one of
+     12 guessed/reconstructed private-guardrail brackets, not the confirmed
+     public one, so this specific rung is unverified, not proven.
+  2. It is fundamentally a multi-message design, and *every* extra-turn/
+     extra-hop design we've tested — `v41_conversational_jailbreak` (43.480
+     vs 90.135), `v48_confused_deputy_safe`'s same-turn append (60% crash +
+     74-77% throughput collapse), `v52`/`v53` (same root cause), the whole
+     OTV/`v43` family (8.3-21.6) — has cost roughly half-to-two-thirds of
+     throughput or worse, *regardless of how "smart" or reactive the extra
+     turn's content is* (the tax is a property of hop-count, not of
+     cleverness). In its worst case (blocked at every rung, falls back to
+     `CONFUSED_DEPUTY`), the ladder converges to the *same per-candidate
+     payout* as our existing single-message `v49_confused_deputy_hedge` —
+     but at a fraction of the candidate throughput, meaning its floor
+     plausibly **underperforms `v49` outright**, not merely ties it. It only
+     wins if the private guardrail is meaningfully more permissive than the
+     strictest verified case — a real possibility, but a bet, not an edge.
+* **Strategic disagreement surfaced, not resolved:** the writeup argues
+  neither final slot should be a safe/public-oriented pick, calling a
+  sentinel-based submission's private value "essentially zero." This
+  directly conflicts with our `v20` + `v49` hedge, and hinges entirely on
+  the still-unresolved 4-row-vs-2-row scoring ambiguity above (attempted to
+  resolve via Kaggle's raw `overview/evaluation` page; it is a client-
+  rendered SPA with no server-rendered rules text, so this remains
+  unresolved from our side). Worth noting: even by the writeup's own
+  numbers, their best public score (86.255) is below our `v20` (90.135) —
+  tempering how much weight to give their "abandon public" framing.
+* **Decision:** treat as valuable corroborating intelligence; **do not**
+  spend a submission slot prototyping the ladder based on this alone. Our
+  own quantified multi-turn throughput-tax evidence (above) suggests it is
+  more likely to underperform `v49` than beat it, and this pattern has now
+  held across 8 independent structurally-different attempts. Revisit only
+  if the scoring-ambiguity question is authoritatively resolved in favor of
+  a private-only blend, which would change the risk/reward calculus.
