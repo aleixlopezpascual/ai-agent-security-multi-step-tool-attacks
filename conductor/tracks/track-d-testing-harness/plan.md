@@ -197,3 +197,37 @@ Expected output: Both tests pass, showing clean execution profiles with budget-s
 git add tests/conftest.py tests/test_attack.py
 git commit -m "test: add mock SDK testing and budget profiling suite"
 ```
+
+---
+
+## 2026-09-01 Retention Telemetry Extension (Completed)
+
+Goal: split generation retention from replay validation per model, and measure
+whether current performance limits come from replay drop or candidate
+throughput/model imbalance.
+
+- [x] Added generation telemetry wrapper (`retention_metrics.py`) and
+      integrated it into `evaluate_local.py` without changing `attack.py`.
+- [x] Added retention-focused tests:
+      `tests/test_evaluate_local_telemetry.py`,
+      `tests/test_summarize_candidate_retention.py`,
+      `tests/test_scoring_math.py`.
+- [x] Added summary CLI:
+      `tools/summarize_candidate_retention.py`.
+- [x] Collected dual-model measurements for baseline and dense variant at 300s
+      (`results/results_v20_retention.jsonl`,
+      `results/results_v22_retention.jsonl`,
+      `results/retention_summary.json`).
+
+Observed outcome:
+- Replay survival was 100% in this sample (`replay_dropped=0`), so replay-stage
+  loss was not the observed bottleneck.
+- Model imbalance remained large (`v20` Gemma/GPT retained-candidate ratio
+  ~2.25x).
+- Dense slow-row multipost (`v22`) did not show a blended uplift vs baseline in
+  this sample.
+
+Current limitation:
+- Sample size is still small (n=2 runs/model/attack), so CIs are directional
+  and should be tightened with larger repeats before making final-strength
+  claims.

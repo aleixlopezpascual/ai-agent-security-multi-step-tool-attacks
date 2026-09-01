@@ -42,6 +42,21 @@
 > every `kaggle competitions` subcommand — no such command exists); it was a
 > one-time-until-deadline, website-only action.
 
+> **Update 2026-09-01 (Experiment 55) — per-model retained-candidate split measured directly (generation vs replay):**
+> We instrumented `evaluate_local.py` (without changing `attack.py`) to record
+> pre-replay retained candidates (`len(AttackAlgorithm.run(...))`) and
+> post-replay validated findings separately for each model.
+>
+> **Status of the statement "K=1 single-post live-fill, throughput/replay-bound; ceiling is candidate density + model imbalance, not path":**
+> 1. **Confirmed:** `attack.py` is still a K=1 single-post live-fill design (`BURST_K=1`, `SLOW_MULTIPOST_N=1`) with replay-safe sizing.
+> 2. **Partially confirmed:** this sample is throughput-bound but not replay-drop-bound — replay survival was 100% in all measured runs (`replay_dropped=0`).
+> 3. **Confirmed:** strong model imbalance remains: `v20` retained-candidate ratio Gemma/GPT-OSS is **2.250** (95% CI [2.213, 2.288]) at 300s/seed=123.
+> 4. **Not supported (currently):** switching to a denser slow-row multipost variant (`v22`, `SLOW_MULTIPOST_N=4`) did not beat baseline in blended score in this sample (`v22 - v20 = -0.6075`, 95% CI [-1.3050, 0.0675]).
+>
+> Net: the "path" is not the blocker on current evidence; throughput and model
+> split are the dominant constraints, and replay-stage loss is not currently
+> where points are leaking.
+
 ## 1. Objective and Context
 Modern AI agents are increasingly integrated with external tools (e.g., filesystems, email clients, web search, shell execution, and HTTP clients). While these tools enhance utility, they introduce severe security risks. Traditional security evaluations focus on single-turn prompts or isolated jailbreaks. However, realistic agent vulnerabilities often emerge across **multi-step attack paths**—where an agent reads untrusted content, processes it, plans a follow-up action, and subsequently executes an unsafe action (e.g., data exfiltration or unauthorized deletion).
 

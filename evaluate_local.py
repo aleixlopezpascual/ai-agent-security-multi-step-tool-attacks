@@ -1,6 +1,8 @@
 import os, sys, json, time, importlib.util, argparse
 from pathlib import Path
 
+from retention_metrics import derive_retention_metrics, instrument_attack_class
+
 # Paths to the downloaded SDK and models
 COMP_DIR = Path('competition_data')
 if not COMP_DIR.exists():
@@ -86,6 +88,7 @@ def main():
 
     scores = {}
     for model_name in models_to_run:
+        InstrumentedAttack = instrument_attack_class(AttackAlgorithm)
         print(f"\n{'='*30} Evaluating {model_name.upper()} {'='*30}")
         transcript_file = WORK_DIR / f'{model_name}_transcript.log'
         framework_file = WORK_DIR / f'{model_name}_framework.jsonl'
@@ -102,7 +105,7 @@ def main():
             agent_debug_file=agent_debug_file,
         ) as diagnostics:
             execution = evaluate_redteam(
-                AttackAlgorithm,
+                InstrumentedAttack,
                 budget_s=args.budget,
                 agent_factory=agent_factory,
                 agent_label=f'{model_name}_gguf',
@@ -115,6 +118,15 @@ def main():
             )
 
         attack = execution.attack
+        telemetry = InstrumentedAttack.generation_telemetry
+        if telemetry is None:
+            raise RuntimeError("Attack generation telemetry was not captured")
+        retention_metrics = derive_retention_metrics(
+            telemetry=telemetry,
+            findings_validated=attack.findings_count,
+            score_raw=attack.score_raw,
+            evaluation_time_s=attack.time_taken,
+        )
         summary = {
             'model': model_name,
             'score_normalized_0_to_1000': attack.score,
@@ -124,6 +136,7 @@ def main():
             'unique_canonical_cells': attack.unique_canonical_cells,
             'evaluation_time_s': attack.time_taken,
             'wall_time_s': time.time() - t0,
+            **retention_metrics,
         }
         print("\nSUMMARY:")
         print(json.dumps(summary, indent=2))
