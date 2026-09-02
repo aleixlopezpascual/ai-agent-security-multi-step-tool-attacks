@@ -1,0 +1,21 @@
+README.md
+  s_abb5f60fc544a6::t_26abb5eb0a24ef 14,16
+docs/reports/V49_HEDGE_RETROSPECTIVE.md
+  s_abb5f60fc544a6::t_7ff68812850556 9,11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "5272c12c322dcb30b5da010f56ed38410c6138dc",
+  "prompts": {},
+  "sessions": {
+    "s_abb5f60fc544a6": {
+      "agent_id": {
+        "tool": "gemini",
+        "id": "3aa4d04b-8ac7-442d-a03d-81a642324d68",
+        "model": "gemini-3.5-flash"
+      },
+      "human_author": "Aleix López"
+    }
+  }
+}
