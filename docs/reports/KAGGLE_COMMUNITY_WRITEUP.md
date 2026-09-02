@@ -90,3 +90,19 @@ Keep your prompts **ultra-terse and stripped of all natural-language fluff**. Ou
 ### 📌 3. Replace Static Loops with Stateful Schedulers
 Most public notebooks use simple static loops (e.g., `for i in range(1000):`). On shared, noisy Kaggle GPU backends with variable container load times, static loops are a high-risk recipe for catastrophic timeouts. 
 We implemented an active, stateful timer that dynamically bounds generation based on remaining wall-clock time before appending *every single candidate*. This timing scheduler is an absolute requirement for robust, production-grade LLM agents.
+
+---
+
+## 7. How I Built This
+
+The entire codebase, including the timing scheduler, the GGUF split, the token forgers, and the unit tests, was built entirely through the strategic orchestration of three AI agents:
+*   **Claude 5 Sonnet**
+*   **GPT 5.3 Codex** 
+*   **Gemini 3.1 Pro**
+Instead of manually typing code, my role was strictly that of an **Architect and Orchestrator**—directing these three expert agents, verifying their outputs, and managing their assembly line.
+
+**🛑 The Safety Guardrail Paradox**
+
+An interesting and highly relevant security insight arose during this multi-agent development: **I could not use the largest, most powerful frontier LLM models.** 
+
+The absolute top-tier models have extremely strict, heavily aligned safety guardrails. As soon as a prompt mentioned "attack", "exploit", "exfiltration", or "jailbreak"—even in the completely benign context of a public, defensive machine learning security competition—these frontier models automatically refused to assist, blocking the queries entirely. 
