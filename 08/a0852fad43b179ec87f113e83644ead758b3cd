@@ -1,0 +1,19 @@
+docs/reports/KAGGLE_COMMUNITY_WRITEUP.md
+  s_abb5f60fc544a6::t_4eeed1c614bb22 50
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "08a0852fad43b179ec87f113e83644ead758b3cd",
+  "prompts": {},
+  "sessions": {
+    "s_abb5f60fc544a6": {
+      "agent_id": {
+        "tool": "gemini",
+        "id": "3aa4d04b-8ac7-442d-a03d-81a642324d68",
+        "model": "gemini-3.5-flash"
+      },
+      "human_author": "Aleix López"
+    }
+  }
+}
