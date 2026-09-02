@@ -1,0 +1,35 @@
+docs/reports/EXPERIMENTS.md
+  s_abb5f60fc544a6::t_ce84e5d48c2db7 906-920,922-925,928
+  s_abb5f60fc544a6::t_3f1deaa1d632ac 921,927,930-931
+  s_abb5f60fc544a6::t_eee99edb0ab1ef 926,929
+docs/reports/V49_HEDGE_RETROSPECTIVE.md
+  s_abb5f60fc544a6::t_3760e9f48d7e30 9-10,12,33
+  s_abb5f60fc544a6::t_001ba7940d3e4f 7,11
+  s_abb5f60fc544a6::t_453437914df7ce 1-6,8,13-32,34-86
+COMPETITION_ANALYSIS.md
+  s_abb5f60fc544a6::t_3287416acecac0 680-686
+  s_abb5f60fc544a6::t_d50b311451aa07 687-690
+docs/reports/KEY_LEARNINGS.md
+  s_abb5f60fc544a6::t_da04eb72b9564f 1-51
+README.md
+  s_abb5f60fc544a6::t_e0c1c4b442e71a 1-8,10,15,19-24,26-42
+  s_abb5f60fc544a6::t_aae241060976f4 25
+  s_abb5f60fc544a6::t_f795b3e73dbd01 13,16
+  s_abb5f60fc544a6::t_681443fc20f7c2 9,11-12,14,17-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "bd952f5fdd6b398eb74024fc8c8c74afc41fac6f",
+  "prompts": {},
+  "sessions": {
+    "s_abb5f60fc544a6": {
+      "agent_id": {
+        "tool": "gemini",
+        "id": "3aa4d04b-8ac7-442d-a03d-81a642324d68",
+        "model": "gemini-3.5-flash"
+      },
+      "human_author": "Aleix López"
+    }
+  }
+}
