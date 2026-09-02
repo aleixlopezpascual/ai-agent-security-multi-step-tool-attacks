@@ -24,7 +24,7 @@ For a full technical analysis of why standard attacks failed and how our hedge b
 *   **[Technical Retrospective: The Triumph of v49](docs/reports/V49_HEDGE_RETROSPECTIVE.md)** - Comprehensive breakdown of the private-leaderboard collapse and how our Confused Deputy hedge saved our final score.
 *   **[AI Agent Security Key Learnings & Principles](docs/reports/KEY_LEARNINGS.md)** - High-signal breakdown of our main strategic, platform, and inference engineering takeaways.
 *   **[Canonical Experiments Log](docs/reports/EXPERIMENTS.md)** - Full chronological history of all 57 developed versions, local GGUF calibration runs, and real Kaggle submission results.
-*   **[Competition & System Analysis](COMPETITION_ANALYSIS.md)** - Deep dive into JED environment mechanics, target models (`gpt_oss`, `gemma`), scoring functions, and platform-level constraints.
+*   **[Competition & System Analysis](docs/COMPETITION_ANALYSIS.md)** - Deep dive into JED environment mechanics, target models (`gpt_oss`, `gemma`), scoring functions, and platform-level constraints.
 
 ---
 

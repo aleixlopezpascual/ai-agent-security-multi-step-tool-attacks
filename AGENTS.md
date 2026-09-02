@@ -13,7 +13,7 @@ When operating in this repository, you must act as a **Senior AI/ML Security Eng
 ## 📂 Repository Layout
 - `/` - Root of the repository.
   - `attack.py` - Core submission file defining `AttackAlgorithm` (inherits from `AttackAlgorithmBase` and implements `run(env)`).
-  - `COMPETITION_ANALYSIS.md` - Complete summary of competition goals, data, rules, and scoring.
+  - `docs/COMPETITION_ANALYSIS.md` - Complete summary of competition goals, data, rules, and scoring.
   - `AGENTS.md` - This file (instruction manual for AI assistants).
   - `GEMINI.md` -> Symbolic link to `AGENTS.md` (for Gemini CLI instructions).
   - `CLAUDE.md` -> Symbolic link to `AGENTS.md` (for Claude instructions).
