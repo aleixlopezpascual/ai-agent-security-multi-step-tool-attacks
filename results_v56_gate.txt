@@ -1,9 +1,0 @@
-Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
-llama_kv_cache_iswa: using full-size SWA cache (ref: https://github.com/ggml-org/llama.cpp/pull/13194#issuecomment-2868343055)
-llama_kv_cache: the V embeddings have different sizes across layers and FA is not enabled - padding V cache to 2048
-llama_kv_cache: the V embeddings have different sizes across layers and FA is not enabled - padding V cache to 2048
-Loading gemma GGUF model into memory...
-Downloading Gemma GGUF: unsloth/gemma-4-26B-A4B-it-GGUF/gemma-4-26B-A4B-it-UD-Q4_K_M.gguf
-Model downloaded to: /Users/aleix.lopez/.cache/huggingface/hub/models--unsloth--gemma-4-26B-A4B-it-GGUF/snapshots/c099eb48e663fd284577b04978a94ffccb261841/gemma-4-26B-A4B-it-UD-Q4_K_M.gguf
-
---- Run 1/2 for gemma ---
