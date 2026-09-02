@@ -1,0 +1,4 @@
+schema: spec-driven
+created: 2026-09-01
+goal: Increase blended Kaggle score by improving GPT row raw/sec while
+  preserving Gemma stability

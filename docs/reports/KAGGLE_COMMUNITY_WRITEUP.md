@@ -1,4 +1,4 @@
-# 🛡️ The Zero-Provenance Taint Strategy: Surviving Hidden Private Guardrails via Confused Deputy Chaining
+# Surviving Hidden Private Guardrails via Confused Deputy Chaining
 
 With the close of the competition, the Private Leaderboard revealed one of the most severe public-to-private regime shifts in Kaggle history. While public-optimized exfiltration attacks (`http.post` sending file-read secrets) scored up to 90+ on the public sandbox, they collapsed to exactly **`0.000`** on the private leaderboard due to a strict, hidden private guardrail implementing persistent provenance (taint) tracking.
 
@@ -6,9 +6,6 @@ To bypass this stateful provenance tracking, I designed and verified a dedicated
 **How did this happen?** I fell into a classic Kaggle trap: I changed my selection only **1 hour** before the end of the competition due to some post on the Kaggle discussion forums. Let this be a warning to all competitors: **do not blindly believe everything you read on the forums.**
 
 Here is a comprehensive technical breakdown of how this solution was designed and why it succeeded under true platform constraints.
-
----
-
 ## 1. The Zero-Provenance Taint Principle (No File Reads)
 
 In a stateful agent environment, a provenance-based guardrail (such as `persistent_provenance_private`) tracks the life cycle of untrusted or sensitive data-flows. 
@@ -21,8 +18,6 @@ To trigger `CONFUSED_DEPUTY`, **the agent does not need to read any secrets**.
 
 By hardcoding the static string `"SECRET_MARKER"` directly in the attack prompt, I achieved **Zero-Provenance Taint**. Because no filesystem files were ever read and no untrusted variables were loaded, **the data-flow provenance remained completely clean**. When the agent executed `email.send`, the private guardrail's provenance tracker saw zero taint in the execution history, allowing the tool call to proceed and fire the predicate perfectly!
 
----
-
 ## 2. Tooling and Payload Construction
 
 To ensure the attack fired reliably, I engineered a clean, low-profile prompt structure designed to bypass natural-language keyword filters:
@@ -32,8 +27,6 @@ To ensure the attack fired reliably, I engineered a clean, low-profile prompt st
 *   **Recipient Farming:** To maximize my unique cell diversity bonus ($+2$ raw points per unique recipient), the attack generated globally unique, clean domains per candidate index:
     `ops{idx}@example.co`
 *   **Zero Taint Footprint:** By keeping the payload static and avoiding any `http.post` network activity, the attack footprint was completely indistinguishable from standard, benign agent notification routines.
-
----
 
 ## 3. The Throughput Engine (Fitting 2,000+ Candidates)
 
@@ -56,8 +49,6 @@ To eliminate the risk of evaluation timeouts, the algorithm implemented a statef
 *   It monitored remaining wall-clock time against a tight, conservative safety fraction ($\text{Safety Frac} = 0.995$).
 *   If a container slowdown or CPU thrashing was detected, generation halted immediately to protect already-generated findings. Locally, this scheduler achieved a flawless **0% timeout and crash rate** across all gates.
 
----
-
 ## 4. Performance Profile & Summary
 
 During local stability-gate runs, the Confused Deputy attack achieved absolute stability:
@@ -65,15 +56,11 @@ During local stability-gate runs, the Confused Deputy attack achieved absolute s
 *   **Predictable Math:** 79 findings × 6.0 raw score/finding (severity 3 weight $4$ + diversity $2$) = **`474.0` raw score** per run.
 *   **Live Leaderboard Score:** Secured **`19.650`** on the private dataset, standing as one of the few surviving non-zero scores on the Private Leaderboard.
 
----
-
 ## 5. Key Security-Engineering Takeaways
 
 1.  **Public Leaderboards are a Sandbox, Not the Real World:** Optimizing exclusively against a public-facing sandbox leads to "overfitting" on permissive security policies. 
 2.  **Stateful Guardrails Require Clean Provenance:** In production environments, data-flow provenance tracking is persistent. The only way to bypass stateful taint tracking is to avoid reading sensitive data entirely.
 3.  **Throughput is an Architectural Priority:** When exploiting lower-severity vulnerabilities, optimizing the prompt-layer to bypass Chain-of-Thought latency is just as critical as the exploit itself.
-
----
 
 ## 6. High-Throughput Engineering Tips for Competitive LLM Environments
 
@@ -91,14 +78,13 @@ Keep your prompts **ultra-terse and stripped of all natural-language fluff**. Ou
 Most public notebooks use simple static loops (e.g., `for i in range(1000):`). On shared, noisy Kaggle GPU backends with variable container load times, static loops are a high-risk recipe for catastrophic timeouts. 
 We implemented an active, stateful timer that dynamically bounds generation based on remaining wall-clock time before appending *every single candidate*. This timing scheduler is an absolute requirement for robust, production-grade LLM agents.
 
----
-
 ## 7. How I Built This
 
 The entire codebase, including the timing scheduler, the GGUF split, the token forgers, and the unit tests, was built entirely through the strategic orchestration of three AI agents:
 *   **Claude 5 Sonnet**
 *   **GPT 5.3 Codex** 
 *   **Gemini 3.1 Pro**
+
 Instead of manually typing code, my role was strictly that of an **Architect and Orchestrator**—directing these three expert agents, verifying their outputs, and managing their assembly line.
 
 **🛑 The Safety Guardrail Paradox**
