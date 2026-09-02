@@ -21,6 +21,7 @@ For a full technical analysis of why standard attacks failed and how our hedge b
 
 ## 📂 Key Documentation & Reports
 
+*   **[Kaggle Forum Writeup: The Zero-Provenance Taint Strategy](docs/reports/KAGGLE_COMMUNITY_WRITEUP.md)** - Community-optimized, highly technical breakdown of the Confused Deputy solution, ready to be published to the Kaggle community.
 *   **[Technical Retrospective: The Triumph of v49](docs/reports/V49_HEDGE_RETROSPECTIVE.md)** - Comprehensive breakdown of the private-leaderboard collapse and how our Confused Deputy hedge saved our final score.
 *   **[AI Agent Security Key Learnings & Principles](docs/reports/KEY_LEARNINGS.md)** - High-signal breakdown of our main strategic, platform, and inference engineering takeaways.
 *   **[Canonical Experiments Log](docs/reports/EXPERIMENTS.md)** - Full chronological history of all 57 developed versions, local GGUF calibration runs, and real Kaggle submission results.
