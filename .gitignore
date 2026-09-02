@@ -12,3 +12,15 @@ local_eval_artifacts/
 local_attack_*.py
 .worktrees/
 
+# Local secret/config files (pre-public safety)
+.env
+.env.*
+*.env
+kaggle.json
+**/kaggle.json
+credentials.json
+service-account*.json
+*.pem
+*.key
+*.p12
+*.pfx

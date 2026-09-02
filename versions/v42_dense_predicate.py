@@ -396,10 +396,10 @@ class AttackAlgorithm(AttackAlgorithmBase):
     def _fired(env):
         try:
             import json
-            with open("/Users/aleix.lopez/ai-agent-security-multi-step-tool-attacks/.worktrees/session-v40-opt/trace_dump.json", "w") as f:
+            with open("/local-worktree/session-v40-opt/trace_dump.json", "w") as f:
                 json.dump(env.export_trace_dict(), f, indent=2)
         except Exception as e:
-            with open("/Users/aleix.lopez/ai-agent-security-multi-step-tool-attacks/.worktrees/session-v40-opt/trace_dump.json", "w") as f:
+            with open("/local-worktree/session-v40-opt/trace_dump.json", "w") as f:
                 f.write(str(e))
         return True
         if not isinstance(trace, dict):

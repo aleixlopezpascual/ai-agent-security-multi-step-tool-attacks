@@ -75,7 +75,7 @@ inspection -- neither is a clean test of this hypothesis):
     top of the first; (3) a `_fired()` that is a stubbed-out debug leftover
     (confirmed by re-reading v42's own source, not inferred): it tries to dump
     `env.export_trace_dict()` to a hardcoded LOCAL DEV MACHINE path
-    (`/Users/aleix.lopez/.../session-v40-opt/trace_dump.json`, confirmed to
+    (`/local-worktree/.../session-v40-opt/trace_dump.json`, confirmed to
     exist on this dev machine but certainly absent in Kaggle's isolated
     kernel container); on failure it retries writing the exception STRING to
     the SAME broken path with no further try/except -- so on Kaggle this
