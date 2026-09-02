@@ -72,3 +72,21 @@ During local stability-gate runs, the Confused Deputy attack achieved absolute s
 1.  **Public Leaderboards are a Sandbox, Not the Real World:** Optimizing exclusively against a public-facing sandbox leads to "overfitting" on permissive security policies. 
 2.  **Stateful Guardrails Require Clean Provenance:** In production environments, data-flow provenance tracking is persistent. The only way to bypass stateful taint tracking is to avoid reading sensitive data entirely.
 3.  **Throughput is an Architectural Priority:** When exploiting lower-severity vulnerabilities, optimizing the prompt-layer to bypass Chain-of-Thought latency is just as critical as the exploit itself.
+
+---
+
+## 6. High-Throughput Engineering Tips for Competitive LLM Environments
+
+If you are developing solutions for time-boxed, multi-step LLM evaluation environments, here are three highly practical, battle-tested engineering guidelines used in this solution:
+
+### 📌 1. Exploit the Model Throughput Imbalance
+Gemma and GPT-OSS exhibit completely asymmetric inference speeds. Under our baseline configuration, Gemma completed inference and generated candidates **2.25x faster** than GPT-OSS. 
+Instead of allocating equal candidate quotas to both models, use a stateful budgeting engine. Our scheduler automatically generated and appended over **160 candidates** during Gemma runs while safely bounding GPT-OSS to **79 candidates** within the same timeline—maximizing net score without hardcoding rigid, fragile model-specific limits.
+
+### 📌 2. Minimize Prompt-Token Latency Tax
+Large, elaborate Chain-of-Thought instructions inside your prompt template create immense decoding and context-window overheads on the backend GPU. 
+Keep your prompts **ultra-terse and stripped of all natural-language fluff**. Our template was only **21 tokens** long, completely free of Chain-of-Thought padding, which allowed the models to decode and execute the `email.send` tool call at maximum hardware efficiency.
+
+### 📌 3. Replace Static Loops with Stateful Schedulers
+Most public notebooks use simple static loops (e.g., `for i in range(1000):`). On shared, noisy Kaggle GPU backends with variable container load times, static loops are a high-risk recipe for catastrophic timeouts. 
+We implemented an active, stateful timer that dynamically bounds generation based on remaining wall-clock time before appending *every single candidate*. This timing scheduler is an absolute requirement for robust, production-grade LLM agents.
