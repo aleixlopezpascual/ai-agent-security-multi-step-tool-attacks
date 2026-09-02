@@ -1,0 +1,21 @@
+README.md
+  s_abb5f60fc544a6::t_8753670a5e6a60 24
+docs/reports/KAGGLE_COMMUNITY_WRITEUP.md
+  s_abb5f60fc544a6::t_7299295426800e 1-73
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "daef5325274a589cc97234f076f5f4842d816e5d",
+  "prompts": {},
+  "sessions": {
+    "s_abb5f60fc544a6": {
+      "agent_id": {
+        "tool": "gemini",
+        "id": "3aa4d04b-8ac7-442d-a03d-81a642324d68",
+        "model": "gemini-3.5-flash"
+      },
+      "human_author": "Aleix López"
+    }
+  }
+}
