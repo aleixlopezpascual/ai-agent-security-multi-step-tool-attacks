@@ -2,7 +2,14 @@
 
 With the close of the competition, the Private Leaderboard revealed one of the most severe public-to-private regime shifts in Kaggle history. While public-optimized exfiltration attacks (`http.post` sending file-read secrets) scored up to 90+ on the public sandbox, they collapsed to exactly **`0.000`** on the private leaderboard due to a strict, hidden private guardrail implementing persistent provenance (taint) tracking.
 
-To bypass this stateful provenance tracking, we designed and verified a dedicated **Confused Deputy (CD)** solution. By completely avoiding file-read secrets and utilizing an extremely optimized, model-specific throughput engine, this strategy bypassed the private provenance filter and secured a clean, verified score of **`19.650`** on the private dataset.
+To bypass this stateful provenance tracking, we designed and verified a dedicated **Confused Deputy (CD)** solution. By completely avoiding file-read secrets and utilizing an extremely optimized, model-specific throughput engine, this strategy bypassed the private provenance filter and secured a clean, verified score of **`19.650`** on the private dataset. This outstanding score—surviving the global collapse where nearly all standard public solutions were wiped out—**would have secured a Silver Medal** on the final private standings.
+
+### 🤦‍♂️ The Tragedy of the Unselected Lifeboat
+Now, for the funny part: while we successfully engineered, validated, and pushed this 100% correct, private-proven hedge during development, **I managed to pull off the ultimate self-sabotage in the final Kaggle selection interface.** 
+
+I selected `v10` and `v20` for my final two scored slots. Because both of those selections relied on the exfiltration pathway that the private set blocked, they scored `0.000`—resulting in an official final leaderboard score of exactly... `0.000`. Yes, we engineered the perfect Silver Medal-winning lifeboat, and then I chose to go down with the sinking ship anyway. At least we went down in style! 🤷‍♂️
+
+Let this be a warning to all competitors: the final deployment pipeline includes the Kaggle UI clicks!
 
 Here is a comprehensive technical breakdown of how this solution was designed and why it succeeded under true platform constraints.
 
